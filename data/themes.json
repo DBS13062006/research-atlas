@@ -1,0 +1,317 @@
+[
+  {
+    "key": "snn",
+    "name": "Spiking neural networks and neuromorphic computing",
+    "search": "\"spiking neural network\" OR \"spiking neural networks\" OR neuromorphic",
+    "topics": [
+      {
+        "id": "T10502",
+        "name": "Advanced Memory and Neural Computing",
+        "subfield": "Electrical and Electronic Engineering",
+        "field": "Engineering",
+        "works": 81662
+      },
+      {
+        "id": "T10581",
+        "name": "Neural dynamics and brain function",
+        "subfield": "Cognitive Neuroscience",
+        "field": "Neuroscience",
+        "works": 105162
+      },
+      {
+        "id": "T12611",
+        "name": "Neural Networks and Reservoir Computing",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 17319
+      }
+    ]
+  },
+  {
+    "key": "llm",
+    "name": "Transformers, large language models and retrieval-augmented generation",
+    "search": "\"large language model\" OR \"large language models\" OR \"retrieval-augmented\" OR \"self-attention\" OR \"pre-trained language model\"",
+    "topics": [
+      {
+        "id": "T10181",
+        "name": "Natural Language Processing Techniques",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 213266
+      },
+      {
+        "id": "T10028",
+        "name": "Topic Modeling",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 176441
+      },
+      {
+        "id": "T11710",
+        "name": "Biomedical Text Mining and Ontologies",
+        "subfield": "Molecular Biology",
+        "field": "Biochemistry, Genetics and Molecular Biology",
+        "works": 44658
+      },
+      {
+        "id": "T11550",
+        "name": "Text and Document Classification Technologies",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 39476
+      },
+      {
+        "id": "T12488",
+        "name": "Mental Health via Writing",
+        "subfield": "Social Psychology",
+        "field": "Psychology",
+        "works": 18958
+      },
+      {
+        "id": "T10201",
+        "name": "Speech Recognition and Synthesis",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 150428
+      },
+      {
+        "id": "T10286",
+        "name": "Information Retrieval and Search Behavior",
+        "subfield": "Information Systems",
+        "field": "Computer Science",
+        "works": 126448
+      },
+      {
+        "id": "T11450",
+        "name": "Model-Driven Software Engineering Techniques",
+        "subfield": "Software",
+        "field": "Computer Science",
+        "works": 75619
+      },
+      {
+        "id": "T11343",
+        "name": "Power Transformer Diagnostics and Insulation",
+        "subfield": "Electrical and Electronic Engineering",
+        "field": "Engineering",
+        "works": 37699
+      },
+      {
+        "id": "T10175",
+        "name": "Advanced DC-DC Converters",
+        "subfield": "Electrical and Electronic Engineering",
+        "field": "Engineering",
+        "works": 155749
+      },
+      {
+        "id": "T11222",
+        "name": "Magnetic Properties and Applications",
+        "subfield": "Electronic, Optical and Magnetic Materials",
+        "field": "Materials Science",
+        "works": 74801
+      },
+      {
+        "id": "T14502",
+        "name": "High-Voltage Power Transmission Systems",
+        "subfield": "Electrical and Electronic Engineering",
+        "field": "Engineering",
+        "works": 48349
+      },
+      {
+        "id": "T10775",
+        "name": "Generative Adversarial Networks and Image Synthesis",
+        "subfield": "Computer Vision and Pattern Recognition",
+        "field": "Computer Science",
+        "works": 59982
+      }
+    ]
+  },
+  {
+    "key": "gnn",
+    "name": "Graph neural networks",
+    "search": "\"graph neural network\" OR \"graph neural networks\" OR \"graph convolutional network\" OR \"graph attention network\"",
+    "topics": [
+      {
+        "id": "T11273",
+        "name": "Advanced Graph Neural Networks",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 36196
+      },
+      {
+        "id": "T11344",
+        "name": "Traffic Prediction and Management Techniques",
+        "subfield": "Building and Construction",
+        "field": "Engineering",
+        "works": 29156
+      },
+      {
+        "id": "T11714",
+        "name": "Multimodal Machine Learning Applications",
+        "subfield": "Computer Vision and Pattern Recognition",
+        "field": "Computer Science",
+        "works": 66722
+      },
+      {
+        "id": "T13083",
+        "name": "Advanced Text Analysis Techniques",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 27735
+      }
+    ]
+  },
+  {
+    "key": "cv",
+    "name": "Computer vision benchmarks",
+    "search": "\"object detection\" OR \"image classification\" OR \"semantic segmentation\" OR \"vision transformer\"",
+    "topics": [
+      {
+        "id": "T12549",
+        "name": "Image and Object Detection Techniques",
+        "subfield": "Computer Vision and Pattern Recognition",
+        "field": "Computer Science",
+        "works": 24621
+      },
+      {
+        "id": "T10036",
+        "name": "Advanced Neural Network Applications",
+        "subfield": "Computer Vision and Pattern Recognition",
+        "field": "Computer Science",
+        "works": 210163
+      },
+      {
+        "id": "T11605",
+        "name": "Visual Attention and Saliency Detection",
+        "subfield": "Computer Vision and Pattern Recognition",
+        "field": "Computer Science",
+        "works": 21044
+      },
+      {
+        "id": "T10331",
+        "name": "Video Surveillance and Tracking Methods",
+        "subfield": "Computer Vision and Pattern Recognition",
+        "field": "Computer Science",
+        "works": 119912
+      },
+      {
+        "id": "T10689",
+        "name": "Remote-Sensing Image Classification",
+        "subfield": "Media Technology",
+        "field": "Engineering",
+        "works": 122505
+      },
+      {
+        "id": "T10824",
+        "name": "Image Retrieval and Classification Techniques",
+        "subfield": "Computer Vision and Pattern Recognition",
+        "field": "Computer Science",
+        "works": 82808
+      },
+      {
+        "id": "T12072",
+        "name": "Machine Learning and Algorithms",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 29637
+      },
+      {
+        "id": "T10627",
+        "name": "Advanced Image and Video Retrieval Techniques",
+        "subfield": "Computer Vision and Pattern Recognition",
+        "field": "Computer Science",
+        "works": 51629
+      },
+      {
+        "id": "T10185",
+        "name": "Lymphoma Diagnosis and Treatment",
+        "subfield": "Pathology and Forensic Medicine",
+        "field": "Medicine",
+        "works": 197979
+      }
+    ]
+  },
+  {
+    "key": "clinical",
+    "name": "Clinical machine learning",
+    "search": "(\"machine learning\" OR \"deep learning\") AND (\"electronic health records\" OR \"intensive care\" OR MIMIC OR \"clinical prediction\")",
+    "topics": [
+      {
+        "id": "T10218",
+        "name": "Sepsis Diagnosis and Treatment",
+        "subfield": "Epidemiology",
+        "field": "Medicine",
+        "works": 156243
+      },
+      {
+        "id": "T11642",
+        "name": "Genomics and Rare Diseases",
+        "subfield": "Genetics",
+        "field": "Biochemistry, Genetics and Molecular Biology",
+        "works": 70866
+      },
+      {
+        "id": "T10455",
+        "name": "Foot and Ankle Surgery",
+        "subfield": "Orthopedics and Sports Medicine",
+        "field": "Medicine",
+        "works": 137773
+      },
+      {
+        "id": "T13639",
+        "name": "Paraquat toxicity studies and treatments",
+        "subfield": "Surgery",
+        "field": "Medicine",
+        "works": 6472
+      },
+      {
+        "id": "T13702",
+        "name": "Machine Learning in Healthcare",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 25346
+      }
+    ]
+  },
+  {
+    "key": "rl",
+    "name": "Reinforcement learning",
+    "search": "\"reinforcement learning\"",
+    "topics": [
+      {
+        "id": "T10462",
+        "name": "Reinforcement Learning in Robotics",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 94128
+      },
+      {
+        "id": "T10524",
+        "name": "Traffic control and management",
+        "subfield": "Control and Systems Engineering",
+        "field": "Engineering",
+        "works": 136143
+      },
+      {
+        "id": "T12031",
+        "name": "Speech and dialogue systems",
+        "subfield": "Artificial Intelligence",
+        "field": "Computer Science",
+        "works": 54208
+      },
+      {
+        "id": "T12794",
+        "name": "Adaptive Dynamic Programming Control",
+        "subfield": "Computational Theory and Mathematics",
+        "field": "Computer Science",
+        "works": 13290
+      },
+      {
+        "id": "T13553",
+        "name": "Age of Information Optimization",
+        "subfield": "Computer Networks and Communications",
+        "field": "Computer Science",
+        "works": 4741
+      }
+    ]
+  }
+]

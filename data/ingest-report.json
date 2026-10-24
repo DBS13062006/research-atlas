@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-10-24T20:53:07.590Z",
+  "counts": {
+    "papers": 5761,
+    "citations": 77024,
+    "authors": 24736,
+    "institutions": 2941,
+    "venues": 1135,
+    "topics": 1189,
+    "methods": 117,
+    "datasets": 60,
+    "paper_methods": 10854,
+    "paper_datasets": 879,
+    "resources": 5529,
+    "retractions": 33,
+    "papers_with_abstract": 4612,
+    "method_or_dataset_pct": 49.2
+  },
+  "gate": {
+    "papers_at_least_2000": true,
+    "citations_at_least_6000": true,
+    "retractions_at_least_25": true,
+    "method_or_dataset_on_40pct": true
+  },
+  "gate_passed": true
+}
