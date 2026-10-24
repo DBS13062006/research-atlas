@@ -29,11 +29,12 @@
     "layout:umap": "node scripts/stub.mjs layout:umap",
     "seed:demo": "node scripts/stub.mjs seed:demo",
     "demo:reset": "node scripts/stub.mjs demo:reset",
-    "docs:schema": "node scripts/stub.mjs docs:schema",
+    "docs:schema": "tsx --env-file-if-exists=.env.local scripts/docs/schema.ts",
     "docs:screenshots": "node scripts/stub.mjs docs:screenshots",
     "verify:all": "node scripts/stub.mjs verify:all",
     "db:down": "docker compose --env-file .env.local stop",
-    "db:rollback-all": "tsx --env-file-if-exists=.env.local scripts/db/migrate.ts down-all"
+    "db:rollback-all": "tsx --env-file-if-exists=.env.local scripts/db/migrate.ts down-all",
+    "docs:er": "tsx scripts/er/generate-drawio.ts && /Applications/draw.io.app/Contents/MacOS/draw.io -x -f png --scale 0.6 -b 20 -o docs/er/research-atlas-er.png docs/er/research-atlas-er.drawio && /Applications/draw.io.app/Contents/MacOS/draw.io -x -f svg -b 20 -o docs/er/research-atlas-er.svg docs/er/research-atlas-er.drawio"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
