@@ -1,0 +1,62 @@
+# Local stack for Research Atlas. Start with `pnpm db:up`, which passes .env.local for the passwords.
+# Memory caps keep both databases comfortable next to the dev server on a 16 GB laptop.
+name: research-atlas
+
+services:
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    image: research-atlas-postgres:18
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-researchatlas}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.local}
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - pg_stat_statements.track=all
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./db:/workspace/db:ro
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  neo4j:
+    image: neo4j:2026.09
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:?set NEO4J_PASSWORD in .env.local}
+      NEO4J_PLUGINS: '["apoc", "graph-data-science"]'
+      NEO4J_server_memory_heap_initial__size: 1500m
+      NEO4J_server_memory_heap_max__size: 1500m
+      NEO4J_server_memory_pagecache_size: 768m
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*,gds.*
+      NEO4J_dbms_security_procedures_allowlist: apoc.*,gds.*
+    ports:
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
+    volumes:
+      - neo4jstore:/data
+      - neo4jplugins:/plugins
+    mem_limit: 3g
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+volumes:
+  pgdata:
+  neo4jstore:
+  neo4jplugins:
