@@ -525,7 +525,7 @@ SELECT is_empty(
     JOIN pg_class i ON i.oid = x.indexrelid
     JOIN pg_class t ON t.oid = x.indrelid
     JOIN pg_namespace n ON n.oid = t.relnamespace
-    WHERE n.nspname = 'public' AND x.indisunique AND NOT t.relispartition
+    WHERE n.nspname = 'public' AND x.indisunique AND NOT t.relispartition AND t.relkind IN ('r', 'p')
       AND NOT EXISTS (SELECT 1 FROM pg_constraint c WHERE c.conindid = x.indexrelid)
   )
   SELECT name || ' (' || k.kind || ')'

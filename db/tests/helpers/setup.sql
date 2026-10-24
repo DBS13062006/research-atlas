@@ -93,3 +93,28 @@ BEGIN
   RETURN v_state;
 END
 $$;
+
+-- Runs a single-value query as a given database role and application user, the way a web request
+-- does, and returns the value as text. Assertions then run as the test owner, which matters because
+-- pgTAP's bookkeeping tables are not writable by the application roles.
+CREATE OR REPLACE FUNCTION ra_test.value_as(p_role NAME, p_user_id BIGINT, p_sql TEXT)
+RETURNS TEXT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_result TEXT;
+BEGIN
+  EXECUTE format('SET LOCAL ROLE %I', p_role);
+  PERFORM set_config('app.user_id', coalesce(p_user_id::TEXT, ''), TRUE);
+  BEGIN
+    EXECUTE p_sql INTO v_result;
+  EXCEPTION WHEN OTHERS THEN
+    RESET ROLE;
+    PERFORM set_config('app.user_id', '', TRUE);
+    RAISE;
+  END;
+  RESET ROLE;
+  PERFORM set_config('app.user_id', '', TRUE);
+  RETURN v_result;
+END
+$$;
