@@ -16,7 +16,7 @@
     "db:reset": "tsx --env-file-if-exists=.env.local scripts/db/migrate.ts reset",
     "db:test": "tsx --env-file-if-exists=.env.local scripts/db/test.ts",
     "db:seed:fixture": "node scripts/stub.mjs db:seed:fixture",
-    "queries:run": "node scripts/stub.mjs queries:run",
+    "queries:run": "tsx --env-file-if-exists=.env.local scripts/queries/run.ts",
     "graph:schema": "node scripts/stub.mjs graph:schema",
     "graph:sync": "node scripts/stub.mjs graph:sync",
     "graph:rebuild": "node scripts/stub.mjs graph:rebuild",
