@@ -11,9 +11,9 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "db:up": "node scripts/stub.mjs db:up",
-    "db:migrate": "node scripts/stub.mjs db:migrate",
-    "db:reset": "node scripts/stub.mjs db:reset",
+    "db:up": "docker compose --env-file .env.local up -d --wait",
+    "db:migrate": "tsx --env-file-if-exists=.env.local scripts/db/migrate.ts up",
+    "db:reset": "tsx --env-file-if-exists=.env.local scripts/db/migrate.ts reset",
     "db:test": "node scripts/stub.mjs db:test",
     "db:seed:fixture": "node scripts/stub.mjs db:seed:fixture",
     "queries:run": "node scripts/stub.mjs queries:run",
@@ -31,7 +31,9 @@
     "demo:reset": "node scripts/stub.mjs demo:reset",
     "docs:schema": "node scripts/stub.mjs docs:schema",
     "docs:screenshots": "node scripts/stub.mjs docs:screenshots",
-    "verify:all": "node scripts/stub.mjs verify:all"
+    "verify:all": "node scripts/stub.mjs verify:all",
+    "db:down": "docker compose --env-file .env.local stop",
+    "db:rollback-all": "tsx --env-file-if-exists=.env.local scripts/db/migrate.ts down-all"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
