@@ -1,0 +1,27 @@
+                                                                Table "public.author"
+     Column     |          Type          | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+----------------+------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ author_id      | bigint                 |           | not null | generated always as identity | plain    |             |              | 
+ openalex_id    | character varying(20)  |           |          |                              | extended |             |              | 
+ orcid          | character varying(19)  |           |          |                              | extended |             |              | 
+ author_name    | character varying(200) |           | not null |                              | extended |             |              | 
+ institution_id | bigint                 |           |          |                              | plain    |             |              | 
+ profile_url    | character varying(500) |           |          |                              | extended |             |              | 
+Indexes:
+    "pk_author" PRIMARY KEY, btree (author_id)
+    "ix_author_institution_id" btree (institution_id)
+    "ix_author_name_trgm" gin (author_name gin_trgm_ops)
+    "uq_author_openalex_id" UNIQUE CONSTRAINT, btree (openalex_id)
+    "uq_author_orcid" UNIQUE CONSTRAINT, btree (orcid)
+Check constraints:
+    "chk_author_name_not_blank" CHECK (length(btrim(author_name::text)) > 0)
+    "chk_author_orcid_format" CHECK (orcid::text ~ '^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$'::text)
+Foreign-key constraints:
+    "fk_author_institution" FOREIGN KEY (institution_id) REFERENCES institution(institution_id) ON DELETE SET NULL
+Referenced by:
+    TABLE "paper_author" CONSTRAINT "fk_paper_author_author" FOREIGN KEY (author_id) REFERENCES author(author_id) ON DELETE RESTRICT
+Not-null constraints:
+    "author_author_id_not_null" NOT NULL "author_id"
+    "author_author_name_not_null" NOT NULL "author_name"
+Access method: heap
+

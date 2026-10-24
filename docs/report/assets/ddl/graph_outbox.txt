@@ -1,0 +1,27 @@
+                                                             Table "public.graph_outbox"
+    Column     |           Type           | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+---------------+--------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ outbox_id     | bigint                   |           | not null | generated always as identity | plain    |             |              | 
+ aggregate     | character varying(30)    |           | not null |                              | extended |             |              | 
+ aggregate_key | jsonb                    |           | not null |                              | extended |             |              | 
+ operation     | character varying(10)    |           | not null |                              | extended |             |              | 
+ payload       | jsonb                    |           |          |                              | extended |             |              | 
+ created_at    | timestamp with time zone |           | not null | now()                        | plain    |             |              | 
+ processed_at  | timestamp with time zone |           |          |                              | plain    |             |              | 
+ attempts      | smallint                 |           | not null | 0                            | plain    |             |              | 
+ last_error    | text                     |           |          |                              | extended |             |              | 
+Indexes:
+    "pk_graph_outbox" PRIMARY KEY, btree (outbox_id)
+    "ix_outbox_pending" btree (outbox_id) WHERE processed_at IS NULL
+Check constraints:
+    "chk_graph_outbox_attempts_non_negative" CHECK (attempts >= 0)
+    "chk_graph_outbox_operation" CHECK (operation::text = ANY (ARRAY['UPSERT'::character varying, 'DELETE'::character varying]::text[]))
+Not-null constraints:
+    "graph_outbox_outbox_id_not_null" NOT NULL "outbox_id"
+    "graph_outbox_aggregate_not_null" NOT NULL "aggregate"
+    "graph_outbox_aggregate_key_not_null" NOT NULL "aggregate_key"
+    "graph_outbox_operation_not_null" NOT NULL "operation"
+    "graph_outbox_created_at_not_null" NOT NULL "created_at"
+    "graph_outbox_attempts_not_null" NOT NULL "attempts"
+Access method: heap
+

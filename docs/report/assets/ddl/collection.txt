@@ -1,0 +1,32 @@
+                                                               Table "public.collection"
+     Column      |           Type           | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+-----------------+--------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ collection_id   | bigint                   |           | not null | generated always as identity | plain    |             |              | 
+ public_id       | uuid                     |           | not null | uuidv7()                     | plain    |             |              | 
+ user_id         | bigint                   |           | not null |                              | plain    |             |              | 
+ collection_name | character varying(150)   |           | not null |                              | extended |             |              | 
+ description     | text                     |           |          |                              | extended |             |              | 
+ is_public       | boolean                  |           | not null | false                        | plain    |             |              | 
+ created_at      | timestamp with time zone |           | not null | now()                        | plain    |             |              | 
+ updated_at      | timestamp with time zone |           | not null | now()                        | plain    |             |              | 
+Indexes:
+    "pk_collection" PRIMARY KEY, btree (collection_id)
+    "ix_collection_user_id" btree (user_id)
+    "uq_collection_public_id" UNIQUE CONSTRAINT, btree (public_id)
+    "uq_user_collection_name" UNIQUE CONSTRAINT, btree (user_id, collection_name)
+Check constraints:
+    "chk_collection_name_not_blank" CHECK (length(btrim(collection_name::text)) > 0)
+Foreign-key constraints:
+    "fk_collection_user" FOREIGN KEY (user_id) REFERENCES user_account(user_id) ON DELETE CASCADE
+Referenced by:
+    TABLE "collection_paper" CONSTRAINT "fk_collection_paper_collection" FOREIGN KEY (collection_id) REFERENCES collection(collection_id) ON DELETE CASCADE
+Not-null constraints:
+    "collection_collection_id_not_null" NOT NULL "collection_id"
+    "collection_public_id_not_null" NOT NULL "public_id"
+    "collection_user_id_not_null" NOT NULL "user_id"
+    "collection_collection_name_not_null" NOT NULL "collection_name"
+    "collection_is_public_not_null" NOT NULL "is_public"
+    "collection_created_at_not_null" NOT NULL "created_at"
+    "collection_updated_at_not_null" NOT NULL "updated_at"
+Access method: heap
+

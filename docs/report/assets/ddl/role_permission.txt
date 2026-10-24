@@ -1,0 +1,16 @@
+                                        Table "public.role_permission"
+    Column     |  Type   | Collation | Nullable | Default | Storage | Compression | Stats target | Description 
+---------------+---------+-----------+----------+---------+---------+-------------+--------------+-------------
+ role_id       | integer |           | not null |         | plain   |             |              | 
+ permission_id | integer |           | not null |         | plain   |             |              | 
+Indexes:
+    "pk_role_permission" PRIMARY KEY, btree (role_id, permission_id)
+    "ix_role_permission_permission_id" btree (permission_id)
+Foreign-key constraints:
+    "fk_role_permission_permission" FOREIGN KEY (permission_id) REFERENCES permission(permission_id) ON DELETE CASCADE
+    "fk_role_permission_role" FOREIGN KEY (role_id) REFERENCES role(role_id) ON DELETE CASCADE
+Not-null constraints:
+    "role_permission_role_id_not_null" NOT NULL "role_id"
+    "role_permission_permission_id_not_null" NOT NULL "permission_id"
+Access method: heap
+

@@ -1,0 +1,29 @@
+                                                                 Table "public.topic"
+     Column      |          Type          | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+-----------------+------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ topic_id        | bigint                 |           | not null | generated always as identity | plain    |             |              | 
+ openalex_id     | character varying(20)  |           |          |                              | extended |             |              | 
+ topic_name      | character varying(200) |           | not null |                              | extended |             |              | 
+ topic_level     | smallint               |           | not null |                              | plain    |             |              | 
+ description     | text                   |           |          |                              | extended |             |              | 
+ parent_topic_id | bigint                 |           |          |                              | plain    |             |              | 
+Indexes:
+    "pk_topic" PRIMARY KEY, btree (topic_id)
+    "ix_topic_parent_topic_id" btree (parent_topic_id)
+    "uq_topic_name_in_parent" UNIQUE CONSTRAINT, btree (parent_topic_id, topic_name) NULLS NOT DISTINCT
+    "uq_topic_openalex_id" UNIQUE CONSTRAINT, btree (openalex_id)
+Check constraints:
+    "chk_topic_level_range" CHECK (topic_level >= 0 AND topic_level <= 3)
+    "chk_topic_not_own_parent" CHECK (parent_topic_id IS NULL OR parent_topic_id <> topic_id)
+    "chk_topic_only_domains_are_roots" CHECK ((topic_level = 0) = (parent_topic_id IS NULL))
+Foreign-key constraints:
+    "fk_topic_parent" FOREIGN KEY (parent_topic_id) REFERENCES topic(topic_id) ON DELETE RESTRICT
+Referenced by:
+    TABLE "paper_topic" CONSTRAINT "fk_paper_topic_topic" FOREIGN KEY (topic_id) REFERENCES topic(topic_id) ON DELETE RESTRICT
+    TABLE "topic" CONSTRAINT "fk_topic_parent" FOREIGN KEY (parent_topic_id) REFERENCES topic(topic_id) ON DELETE RESTRICT
+Not-null constraints:
+    "topic_topic_id_not_null" NOT NULL "topic_id"
+    "topic_topic_name_not_null" NOT NULL "topic_name"
+    "topic_topic_level_not_null" NOT NULL "topic_level"
+Access method: heap
+

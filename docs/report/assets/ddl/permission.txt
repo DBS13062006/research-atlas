@@ -1,0 +1,18 @@
+                                                              Table "public.permission"
+     Column      |         Type          | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+-----------------+-----------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ permission_id   | integer               |           | not null | generated always as identity | plain    |             |              | 
+ permission_code | character varying(60) |           | not null |                              | extended |             |              | 
+ description     | text                  |           |          |                              | extended |             |              | 
+Indexes:
+    "pk_permission" PRIMARY KEY, btree (permission_id)
+    "uq_permission_code" UNIQUE CONSTRAINT, btree (permission_code)
+Check constraints:
+    "chk_permission_code_format" CHECK (permission_code::text ~ '^[a-z_]+:[a-z_]+$'::text)
+Referenced by:
+    TABLE "role_permission" CONSTRAINT "fk_role_permission_permission" FOREIGN KEY (permission_id) REFERENCES permission(permission_id) ON DELETE CASCADE
+Not-null constraints:
+    "permission_permission_id_not_null" NOT NULL "permission_id"
+    "permission_permission_code_not_null" NOT NULL "permission_code"
+Access method: heap
+

@@ -1,0 +1,51 @@
+                                                         Partitioned table "public.audit_log"
+    Column     |           Type           | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+---------------+--------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ audit_id      | bigint                   |           | not null | generated always as identity | plain    |             |              | 
+ occurred_at   | timestamp with time zone |           | not null | now()                        | plain    |             |              | 
+ table_name    | name                     |           | not null |                              | plain    |             |              | 
+ operation     | character(1)             |           | not null |                              | extended |             |              | 
+ row_pk        | jsonb                    |           | not null |                              | extended |             |              | 
+ old_row       | jsonb                    |           |          |                              | extended |             |              | 
+ new_row       | jsonb                    |           |          |                              | extended |             |              | 
+ actor_user_id | bigint                   |           |          |                              | plain    |             |              | 
+ db_role       | name                     |           | not null | CURRENT_USER                 | plain    |             |              | 
+Partition key: RANGE (occurred_at)
+Indexes:
+    "pk_audit_log" PRIMARY KEY, btree (audit_id, occurred_at)
+    "ix_audit_log_occurred_at_brin" brin (occurred_at)
+Check constraints:
+    "chk_audit_log_operation" CHECK (operation = ANY (ARRAY['I'::bpchar, 'U'::bpchar, 'D'::bpchar]))
+Not-null constraints:
+    "audit_log_audit_id_not_null" NOT NULL "audit_id"
+    "audit_log_occurred_at_not_null" NOT NULL "occurred_at"
+    "audit_log_table_name_not_null" NOT NULL "table_name"
+    "audit_log_operation_not_null" NOT NULL "operation"
+    "audit_log_row_pk_not_null" NOT NULL "row_pk"
+    "audit_log_db_role_not_null" NOT NULL "db_role"
+Partitions: audit_log_y2026m01 FOR VALUES FROM ('2026-01-01 00:00:00+00') TO ('2026-02-01 00:00:00+00'),
+            audit_log_y2026m02 FOR VALUES FROM ('2026-02-01 00:00:00+00') TO ('2026-03-01 00:00:00+00'),
+            audit_log_y2026m03 FOR VALUES FROM ('2026-03-01 00:00:00+00') TO ('2026-04-01 00:00:00+00'),
+            audit_log_y2026m04 FOR VALUES FROM ('2026-04-01 00:00:00+00') TO ('2026-05-01 00:00:00+00'),
+            audit_log_y2026m05 FOR VALUES FROM ('2026-05-01 00:00:00+00') TO ('2026-06-01 00:00:00+00'),
+            audit_log_y2026m06 FOR VALUES FROM ('2026-06-01 00:00:00+00') TO ('2026-07-01 00:00:00+00'),
+            audit_log_y2026m07 FOR VALUES FROM ('2026-07-01 00:00:00+00') TO ('2026-08-01 00:00:00+00'),
+            audit_log_y2026m08 FOR VALUES FROM ('2026-08-01 00:00:00+00') TO ('2026-09-01 00:00:00+00'),
+            audit_log_y2026m09 FOR VALUES FROM ('2026-09-01 00:00:00+00') TO ('2026-10-01 00:00:00+00'),
+            audit_log_y2026m10 FOR VALUES FROM ('2026-10-01 00:00:00+00') TO ('2026-11-01 00:00:00+00'),
+            audit_log_y2026m11 FOR VALUES FROM ('2026-11-01 00:00:00+00') TO ('2026-12-01 00:00:00+00'),
+            audit_log_y2026m12 FOR VALUES FROM ('2026-12-01 00:00:00+00') TO ('2027-01-01 00:00:00+00'),
+            audit_log_y2027m01 FOR VALUES FROM ('2027-01-01 00:00:00+00') TO ('2027-02-01 00:00:00+00'),
+            audit_log_y2027m02 FOR VALUES FROM ('2027-02-01 00:00:00+00') TO ('2027-03-01 00:00:00+00'),
+            audit_log_y2027m03 FOR VALUES FROM ('2027-03-01 00:00:00+00') TO ('2027-04-01 00:00:00+00'),
+            audit_log_y2027m04 FOR VALUES FROM ('2027-04-01 00:00:00+00') TO ('2027-05-01 00:00:00+00'),
+            audit_log_y2027m05 FOR VALUES FROM ('2027-05-01 00:00:00+00') TO ('2027-06-01 00:00:00+00'),
+            audit_log_y2027m06 FOR VALUES FROM ('2027-06-01 00:00:00+00') TO ('2027-07-01 00:00:00+00'),
+            audit_log_y2027m07 FOR VALUES FROM ('2027-07-01 00:00:00+00') TO ('2027-08-01 00:00:00+00'),
+            audit_log_y2027m08 FOR VALUES FROM ('2027-08-01 00:00:00+00') TO ('2027-09-01 00:00:00+00'),
+            audit_log_y2027m09 FOR VALUES FROM ('2027-09-01 00:00:00+00') TO ('2027-10-01 00:00:00+00'),
+            audit_log_y2027m10 FOR VALUES FROM ('2027-10-01 00:00:00+00') TO ('2027-11-01 00:00:00+00'),
+            audit_log_y2027m11 FOR VALUES FROM ('2027-11-01 00:00:00+00') TO ('2027-12-01 00:00:00+00'),
+            audit_log_y2027m12 FOR VALUES FROM ('2027-12-01 00:00:00+00') TO ('2028-01-01 00:00:00+00'),
+            audit_log_default DEFAULT
+

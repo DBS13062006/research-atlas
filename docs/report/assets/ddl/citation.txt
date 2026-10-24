@@ -1,0 +1,20 @@
+                                                     Table "public.citation"
+     Column      |           Type           | Collation | Nullable | Default | Storage | Compression | Stats target | Description 
+-----------------+--------------------------+-----------+----------+---------+---------+-------------+--------------+-------------
+ citing_paper_id | bigint                   |           | not null |         | plain   |             |              | 
+ cited_paper_id  | bigint                   |           | not null |         | plain   |             |              | 
+ created_at      | timestamp with time zone |           | not null | now()   | plain   |             |              | 
+Indexes:
+    "pk_citation" PRIMARY KEY, btree (citing_paper_id, cited_paper_id)
+    "ix_citation_cited_paper_id" btree (cited_paper_id)
+Check constraints:
+    "chk_no_self_citation" CHECK (citing_paper_id <> cited_paper_id)
+Foreign-key constraints:
+    "fk_citation_cited" FOREIGN KEY (cited_paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    "fk_citation_citing" FOREIGN KEY (citing_paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+Not-null constraints:
+    "citation_citing_paper_id_not_null" NOT NULL "citing_paper_id"
+    "citation_cited_paper_id_not_null" NOT NULL "cited_paper_id"
+    "citation_created_at_not_null" NOT NULL "created_at"
+Access method: heap
+

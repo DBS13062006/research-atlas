@@ -1,0 +1,21 @@
+                                                               Table "public.dataset"
+    Column    |          Type           | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+--------------+-------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ dataset_id   | bigint                  |           | not null | generated always as identity | plain    |             |              | 
+ dataset_name | character varying(200)  |           | not null |                              | extended |             |              | 
+ modality     | character varying(40)   |           |          |                              | extended |             |              | 
+ domain       | character varying(150)  |           |          |                              | extended |             |              | 
+ dataset_url  | character varying(1000) |           |          |                              | extended |             |              | 
+ description  | text                    |           |          |                              | extended |             |              | 
+ pwc_slug     | character varying(200)  |           |          |                              | extended |             |              | 
+Indexes:
+    "pk_dataset" PRIMARY KEY, btree (dataset_id)
+    "uq_dataset_name" UNIQUE CONSTRAINT, btree (dataset_name)
+    "uq_dataset_pwc_slug" UNIQUE CONSTRAINT, btree (pwc_slug)
+Referenced by:
+    TABLE "paper_dataset" CONSTRAINT "fk_paper_dataset_dataset" FOREIGN KEY (dataset_id) REFERENCES dataset(dataset_id) ON DELETE RESTRICT
+Not-null constraints:
+    "dataset_dataset_id_not_null" NOT NULL "dataset_id"
+    "dataset_dataset_name_not_null" NOT NULL "dataset_name"
+Access method: heap
+

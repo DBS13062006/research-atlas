@@ -15,7 +15,11 @@
       "!docs/schema",
       "!playwright-report",
       "!test-results",
-      "!src/components/ui"
+      "!src/components/ui",
+      "!docs/er",
+      "!docs/report/assets",
+      "!docs/screenshots",
+      "!db/seed/fixture.sql"
     ]
   },
   "formatter": {

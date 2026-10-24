@@ -1,0 +1,22 @@
+                                                                Table "public.method"
+     Column      |          Type          | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+-----------------+------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ method_id       | bigint                 |           | not null | generated always as identity | plain    |             |              | 
+ method_name     | character varying(200) |           | not null |                              | extended |             |              | 
+ method_category | character varying(80)  |           |          |                              | extended |             |              | 
+ description     | text                   |           |          |                              | extended |             |              | 
+ introduced_year | smallint               |           |          |                              | plain    |             |              | 
+ pwc_slug        | character varying(200) |           |          |                              | extended |             |              | 
+Indexes:
+    "pk_method" PRIMARY KEY, btree (method_id)
+    "uq_method_name" UNIQUE CONSTRAINT, btree (method_name)
+    "uq_method_pwc_slug" UNIQUE CONSTRAINT, btree (pwc_slug)
+Check constraints:
+    "chk_method_introduced_year" CHECK (introduced_year >= 1900 AND introduced_year <= 2100)
+Referenced by:
+    TABLE "paper_method" CONSTRAINT "fk_paper_method_method" FOREIGN KEY (method_id) REFERENCES method(method_id) ON DELETE RESTRICT
+Not-null constraints:
+    "method_method_id_not_null" NOT NULL "method_id"
+    "method_method_name_not_null" NOT NULL "method_name"
+Access method: heap
+

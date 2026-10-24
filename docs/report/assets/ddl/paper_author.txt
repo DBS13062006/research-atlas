@@ -1,0 +1,26 @@
+                                                 Table "public.paper_author"
+           Column           |   Type   | Collation | Nullable | Default | Storage | Compression | Stats target | Description 
+----------------------------+----------+-----------+----------+---------+---------+-------------+--------------+-------------
+ paper_id                   | bigint   |           | not null |         | plain   |             |              | 
+ author_id                  | bigint   |           | not null |         | plain   |             |              | 
+ author_order               | smallint |           | not null |         | plain   |             |              | 
+ is_corresponding           | boolean  |           | not null | false   | plain   |             |              | 
+ affiliation_institution_id | bigint   |           |          |         | plain   |             |              | 
+Indexes:
+    "pk_paper_author" PRIMARY KEY, btree (paper_id, author_id)
+    "ix_paper_author_affiliation" btree (affiliation_institution_id)
+    "ix_paper_author_author_id" btree (author_id)
+    "uq_paper_author_order" UNIQUE CONSTRAINT, btree (paper_id, author_order) DEFERRABLE
+Check constraints:
+    "chk_paper_author_order_positive" CHECK (author_order > 0)
+Foreign-key constraints:
+    "fk_paper_author_author" FOREIGN KEY (author_id) REFERENCES author(author_id) ON DELETE RESTRICT
+    "fk_paper_author_institution" FOREIGN KEY (affiliation_institution_id) REFERENCES institution(institution_id) ON DELETE SET NULL
+    "fk_paper_author_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+Not-null constraints:
+    "paper_author_paper_id_not_null" NOT NULL "paper_id"
+    "paper_author_author_id_not_null" NOT NULL "author_id"
+    "paper_author_author_order_not_null" NOT NULL "author_order"
+    "paper_author_is_corresponding_not_null" NOT NULL "is_corresponding"
+Access method: heap
+

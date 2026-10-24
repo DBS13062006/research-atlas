@@ -1,0 +1,20 @@
+                                                Table "public.paper_method"
+   Column   |         Type          | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+------------+-----------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ paper_id   | bigint                |           | not null |         | plain    |             |              | 
+ method_id  | bigint                |           | not null |         | plain    |             |              | 
+ usage_type | character varying(20) |           | not null |         | extended |             |              | 
+Indexes:
+    "pk_paper_method" PRIMARY KEY, btree (paper_id, method_id)
+    "ix_paper_method_method_id" btree (method_id)
+Check constraints:
+    "chk_paper_method_usage_type" CHECK (usage_type::text = ANY (ARRAY['PROPOSED'::character varying, 'USED'::character varying, 'COMPARED'::character varying, 'EXTENDED'::character varying, 'BASELINE'::character varying, 'OTHER'::character varying]::text[]))
+Foreign-key constraints:
+    "fk_paper_method_method" FOREIGN KEY (method_id) REFERENCES method(method_id) ON DELETE RESTRICT
+    "fk_paper_method_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+Not-null constraints:
+    "paper_method_paper_id_not_null" NOT NULL "paper_id"
+    "paper_method_method_id_not_null" NOT NULL "method_id"
+    "paper_method_usage_type_not_null" NOT NULL "usage_type"
+Access method: heap
+

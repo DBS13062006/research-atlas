@@ -1,0 +1,24 @@
+                                                               Table "public.venue"
+   Column    |          Type          | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+-------------+------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ venue_id    | bigint                 |           | not null | generated always as identity | plain    |             |              | 
+ openalex_id | character varying(20)  |           |          |                              | extended |             |              | 
+ venue_name  | character varying(250) |           | not null |                              | extended |             |              | 
+ venue_type  | character varying(20)  |           | not null |                              | extended |             |              | 
+ publisher   | character varying(200) |           |          |                              | extended |             |              | 
+ issn_l      | character(9)           |           |          |                              | extended |             |              | 
+Indexes:
+    "pk_venue" PRIMARY KEY, btree (venue_id)
+    "uq_venue_issn_l" UNIQUE CONSTRAINT, btree (issn_l)
+    "uq_venue_openalex_id" UNIQUE CONSTRAINT, btree (openalex_id)
+Check constraints:
+    "chk_venue_issn_l_format" CHECK (issn_l ~ '^\d{4}-\d{3}[\dX]$'::text)
+    "chk_venue_type" CHECK (venue_type::text = ANY (ARRAY['JOURNAL'::character varying, 'CONFERENCE'::character varying, 'WORKSHOP'::character varying, 'REPOSITORY'::character varying, 'BOOK_SERIES'::character varying, 'OTHER'::character varying]::text[]))
+Referenced by:
+    TABLE "paper" CONSTRAINT "fk_paper_venue" FOREIGN KEY (venue_id) REFERENCES venue(venue_id) ON DELETE SET NULL
+Not-null constraints:
+    "venue_venue_id_not_null" NOT NULL "venue_id"
+    "venue_venue_name_not_null" NOT NULL "venue_name"
+    "venue_venue_type_not_null" NOT NULL "venue_type"
+Access method: heap
+

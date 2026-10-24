@@ -1,0 +1,66 @@
+                                                                                                                                                                      Table "public.paper"
+        Column        |           Type           | Collation | Nullable |                                                                                                             Default                                                                                                             | Storage  | Compression | Stats target | Description 
+----------------------+--------------------------+-----------+----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------+-------------+--------------+-------------
+ paper_id             | bigint                   |           | not null | generated always as identity                                                                                                                                                                                                    | plain    |             |              | 
+ openalex_id          | character varying(20)    |           |          |                                                                                                                                                                                                                                 | extended |             |              | 
+ doi                  | character varying(255)   |           |          |                                                                                                                                                                                                                                 | extended |             |              | 
+ arxiv_id             | character varying(30)    |           |          |                                                                                                                                                                                                                                 | extended |             |              | 
+ title                | character varying(1000)  |           | not null |                                                                                                                                                                                                                                 | extended |             |              | 
+ abstract             | text                     |           |          |                                                                                                                                                                                                                                 | extended |             |              | 
+ publication_date     | date                     |           |          |                                                                                                                                                                                                                                 | plain    |             |              | 
+ publication_year     | smallint                 |           |          | generated always as (EXTRACT(year FROM publication_date)::smallint)                                                                                                                                                             | plain    |             |              | 
+ venue_id             | bigint                   |           |          |                                                                                                                                                                                                                                 | plain    |             |              | 
+ work_type            | character varying(20)    |           | not null | 'ARTICLE'::character varying                                                                                                                                                                                                    | extended |             |              | 
+ open_access          | boolean                  |           | not null | false                                                                                                                                                                                                                           | plain    |             |              | 
+ oa_status            | character varying(10)    |           |          |                                                                                                                                                                                                                                 | extended |             |              | 
+ cited_by_count       | integer                  |           | not null | 0                                                                                                                                                                                                                               | plain    |             |              | 
+ local_citation_count | integer                  |           | not null | 0                                                                                                                                                                                                                               | plain    |             |              | 
+ paper_url            | character varying(1000)  |           |          |                                                                                                                                                                                                                                 | extended |             |              | 
+ search_vector        | tsvector                 |           |          | generated always as (setweight(to_tsvector('english'::regconfig, COALESCE(title, ''::character varying)::text), 'A'::"char") || setweight(to_tsvector('english'::regconfig, COALESCE(abstract, ''::text)), 'B'::"char")) stored | extended |             |              | 
+ created_at           | timestamp with time zone |           | not null | now()                                                                                                                                                                                                                           | plain    |             |              | 
+ updated_at           | timestamp with time zone |           | not null | now()                                                                                                                                                                                                                           | plain    |             |              | 
+Indexes:
+    "pk_paper" PRIMARY KEY, btree (paper_id)
+    "ix_paper_cited_by_keyset" btree (cited_by_count DESC, paper_id DESC)
+    "ix_paper_open_access_date" btree (publication_date) WHERE open_access
+    "ix_paper_publication_date" btree (publication_date)
+    "ix_paper_search_vector" gin (search_vector)
+    "ix_paper_title_trgm" gin (title gin_trgm_ops)
+    "ix_paper_venue_id" btree (venue_id)
+    "uq_paper_arxiv_id" UNIQUE CONSTRAINT, btree (arxiv_id)
+    "uq_paper_doi" UNIQUE CONSTRAINT, btree (doi)
+    "uq_paper_openalex_id" UNIQUE CONSTRAINT, btree (openalex_id)
+Check constraints:
+    "chk_paper_cited_by_count_non_negative" CHECK (cited_by_count >= 0)
+    "chk_paper_doi_format" CHECK (doi::text ~* '^10\.\d{4,9}/\S+$'::text)
+    "chk_paper_doi_lowercase" CHECK (doi::text = lower(doi::text))
+    "chk_paper_local_citation_count_non_negative" CHECK (local_citation_count >= 0)
+    "chk_paper_oa_status" CHECK (oa_status::text = ANY (ARRAY['DIAMOND'::character varying, 'GOLD'::character varying, 'GREEN'::character varying, 'HYBRID'::character varying, 'BRONZE'::character varying, 'CLOSED'::character varying]::text[]))
+    "chk_paper_oa_status_matches_flag" CHECK (oa_status IS NULL OR (oa_status::text = 'CLOSED'::text) <> open_access)
+    "chk_paper_publication_date_floor" CHECK (publication_date >= '1665-01-01'::date)
+    "chk_paper_title_not_blank" CHECK (length(btrim(title::text)) > 0)
+    "chk_paper_work_type" CHECK (work_type::text = ANY (ARRAY['ARTICLE'::character varying, 'PREPRINT'::character varying, 'PROCEEDINGS'::character varying, 'REVIEW'::character varying, 'BOOK_CHAPTER'::character varying, 'DATASET'::character varying, 'OTHER'::character varying]::text[]))
+Foreign-key constraints:
+    "fk_paper_venue" FOREIGN KEY (venue_id) REFERENCES venue(venue_id) ON DELETE SET NULL
+Referenced by:
+    TABLE "citation" CONSTRAINT "fk_citation_cited" FOREIGN KEY (cited_paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    TABLE "citation" CONSTRAINT "fk_citation_citing" FOREIGN KEY (citing_paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    TABLE "collection_paper" CONSTRAINT "fk_collection_paper_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    TABLE "note" CONSTRAINT "fk_note_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    TABLE "paper_author" CONSTRAINT "fk_paper_author_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    TABLE "paper_dataset" CONSTRAINT "fk_paper_dataset_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    TABLE "paper_method" CONSTRAINT "fk_paper_method_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    TABLE "paper_topic" CONSTRAINT "fk_paper_topic_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    TABLE "resource" CONSTRAINT "fk_resource_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    TABLE "retraction" CONSTRAINT "fk_retraction_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+Not-null constraints:
+    "paper_paper_id_not_null" NOT NULL "paper_id"
+    "paper_title_not_null" NOT NULL "title"
+    "paper_work_type_not_null" NOT NULL "work_type"
+    "paper_open_access_not_null" NOT NULL "open_access"
+    "paper_cited_by_count_not_null" NOT NULL "cited_by_count"
+    "paper_local_citation_count_not_null" NOT NULL "local_citation_count"
+    "paper_created_at_not_null" NOT NULL "created_at"
+    "paper_updated_at_not_null" NOT NULL "updated_at"
+Access method: heap
+

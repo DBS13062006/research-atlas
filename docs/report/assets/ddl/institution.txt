@@ -1,0 +1,25 @@
+                                                              Table "public.institution"
+      Column      |          Type          | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+------------------+------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ institution_id   | bigint                 |           | not null | generated always as identity | plain    |             |              | 
+ openalex_id      | character varying(20)  |           |          |                              | extended |             |              | 
+ ror_id           | character varying(40)  |           |          |                              | extended |             |              | 
+ institution_name | character varying(200) |           | not null |                              | extended |             |              | 
+ country_code     | character(2)           |           |          |                              | extended |             |              | 
+ institution_type | character varying(20)  |           |          |                              | extended |             |              | 
+ website          | character varying(500) |           |          |                              | extended |             |              | 
+Indexes:
+    "pk_institution" PRIMARY KEY, btree (institution_id)
+    "uq_institution_openalex_id" UNIQUE CONSTRAINT, btree (openalex_id)
+    "uq_institution_ror_id" UNIQUE CONSTRAINT, btree (ror_id)
+Check constraints:
+    "chk_institution_country_code" CHECK (country_code ~ '^[A-Z]{2}$'::text)
+    "chk_institution_type" CHECK (institution_type::text = ANY (ARRAY['EDUCATION'::character varying, 'COMPANY'::character varying, 'GOVERNMENT'::character varying, 'FACILITY'::character varying, 'NONPROFIT'::character varying, 'HEALTHCARE'::character varying, 'ARCHIVE'::character varying, 'OTHER'::character varying]::text[]))
+Referenced by:
+    TABLE "author" CONSTRAINT "fk_author_institution" FOREIGN KEY (institution_id) REFERENCES institution(institution_id) ON DELETE SET NULL
+    TABLE "paper_author" CONSTRAINT "fk_paper_author_institution" FOREIGN KEY (affiliation_institution_id) REFERENCES institution(institution_id) ON DELETE SET NULL
+Not-null constraints:
+    "institution_institution_id_not_null" NOT NULL "institution_id"
+    "institution_institution_name_not_null" NOT NULL "institution_name"
+Access method: heap
+

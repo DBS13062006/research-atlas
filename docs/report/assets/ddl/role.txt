@@ -1,0 +1,28 @@
+                                                               Table "public.role"
+    Column    |         Type          | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+--------------+-----------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ role_id      | integer               |           | not null | generated always as identity | plain    |             |              | 
+ role_code    | character varying(30) |           | not null |                              | extended |             |              | 
+ role_name    | character varying(50) |           | not null |                              | extended |             |              | 
+ db_role_name | name                  |           | not null |                              | plain    |             |              | 
+ rank         | smallint              |           | not null |                              | plain    |             |              | 
+Indexes:
+    "pk_role" PRIMARY KEY, btree (role_id)
+    "uq_role_code" UNIQUE CONSTRAINT, btree (role_code)
+    "uq_role_db_role_name" UNIQUE CONSTRAINT, btree (db_role_name)
+    "uq_role_name" UNIQUE CONSTRAINT, btree (role_name)
+    "uq_role_rank" UNIQUE CONSTRAINT, btree (rank)
+Check constraints:
+    "chk_role_code_format" CHECK (role_code::text ~ '^[A-Z_]+$'::text)
+    "chk_role_rank_positive" CHECK (rank > 0)
+Referenced by:
+    TABLE "role_permission" CONSTRAINT "fk_role_permission_role" FOREIGN KEY (role_id) REFERENCES role(role_id) ON DELETE CASCADE
+    TABLE "user_account" CONSTRAINT "fk_user_account_role" FOREIGN KEY (role_id) REFERENCES role(role_id) ON UPDATE CASCADE ON DELETE RESTRICT
+Not-null constraints:
+    "role_role_id_not_null" NOT NULL "role_id"
+    "role_role_code_not_null" NOT NULL "role_code"
+    "role_role_name_not_null" NOT NULL "role_name"
+    "role_db_role_name_not_null" NOT NULL "db_role_name"
+    "role_rank_not_null" NOT NULL "rank"
+Access method: heap
+

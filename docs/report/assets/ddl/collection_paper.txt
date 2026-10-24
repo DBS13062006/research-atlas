@@ -1,0 +1,30 @@
+                                                            Table "public.collection_paper"
+     Column     |           Type           | Collation | Nullable |            Default            | Storage  | Compression | Stats target | Description 
+----------------+--------------------------+-----------+----------+-------------------------------+----------+-------------+--------------+-------------
+ collection_id  | bigint                   |           | not null |                               | plain    |             |              | 
+ paper_id       | bigint                   |           | not null |                               | plain    |             |              | 
+ reading_status | character varying(10)    |           | not null | 'NOT_READ'::character varying | extended |             |              | 
+ priority       | character varying(10)    |           | not null | 'MEDIUM'::character varying   | extended |             |              | 
+ position       | integer                  |           | not null | 0                             | plain    |             |              | 
+ added_at       | timestamp with time zone |           | not null | now()                         | plain    |             |              | 
+ read_at        | timestamp with time zone |           |          |                               | plain    |             |              | 
+Indexes:
+    "pk_collection_paper" PRIMARY KEY, btree (collection_id, paper_id)
+    "ix_collection_paper_paper_id" btree (paper_id)
+Check constraints:
+    "chk_collection_paper_position_non_negative" CHECK ("position" >= 0)
+    "chk_collection_paper_priority" CHECK (priority::text = ANY (ARRAY['LOW'::character varying, 'MEDIUM'::character varying, 'HIGH'::character varying]::text[]))
+    "chk_collection_paper_read_at_matches_status" CHECK ((reading_status::text = 'READ'::text) = (read_at IS NOT NULL))
+    "chk_collection_paper_reading_status" CHECK (reading_status::text = ANY (ARRAY['NOT_READ'::character varying, 'READING'::character varying, 'READ'::character varying]::text[]))
+Foreign-key constraints:
+    "fk_collection_paper_collection" FOREIGN KEY (collection_id) REFERENCES collection(collection_id) ON DELETE CASCADE
+    "fk_collection_paper_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+Not-null constraints:
+    "collection_paper_collection_id_not_null" NOT NULL "collection_id"
+    "collection_paper_paper_id_not_null" NOT NULL "paper_id"
+    "collection_paper_reading_status_not_null" NOT NULL "reading_status"
+    "collection_paper_priority_not_null" NOT NULL "priority"
+    "collection_paper_position_not_null" NOT NULL "position"
+    "collection_paper_added_at_not_null" NOT NULL "added_at"
+Access method: heap
+

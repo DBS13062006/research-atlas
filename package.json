@@ -34,7 +34,8 @@
     "verify:all": "node scripts/stub.mjs verify:all",
     "db:down": "docker compose --env-file .env.local stop",
     "db:rollback-all": "tsx --env-file-if-exists=.env.local scripts/db/migrate.ts down-all",
-    "docs:er": "tsx scripts/er/generate-drawio.ts && /Applications/draw.io.app/Contents/MacOS/draw.io -x -f png --scale 0.6 -b 20 -o docs/er/research-atlas-er.png docs/er/research-atlas-er.drawio && /Applications/draw.io.app/Contents/MacOS/draw.io -x -f svg -b 20 -o docs/er/research-atlas-er.svg docs/er/research-atlas-er.drawio"
+    "docs:er": "tsx scripts/er/generate-drawio.ts && /Applications/draw.io.app/Contents/MacOS/draw.io -x -f png --scale 0.6 -b 20 -o docs/er/research-atlas-er.png docs/er/research-atlas-er.drawio && /Applications/draw.io.app/Contents/MacOS/draw.io -x -f svg -b 20 -o docs/er/research-atlas-er.svg docs/er/research-atlas-er.drawio",
+    "docs:ddl": "tsx --env-file-if-exists=.env.local scripts/psql-snapshots.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

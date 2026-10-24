@@ -1,0 +1,27 @@
+                                                  Table "public.user_session"
+    Column    |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+--------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ session_id   | character(64)            |           | not null |         | extended |             |              | 
+ user_id      | bigint                   |           | not null |         | plain    |             |              | 
+ created_at   | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ last_seen_at | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ expires_at   | timestamp with time zone |           | not null |         | plain    |             |              | 
+ ip           | inet                     |           |          |         | main     |             |              | 
+ user_agent   | text                     |           |          |         | extended |             |              | 
+Indexes:
+    "pk_user_session" PRIMARY KEY, btree (session_id)
+    "ix_user_session_expires_at" btree (expires_at)
+    "ix_user_session_user_id" btree (user_id)
+Check constraints:
+    "chk_user_session_expiry_after_creation" CHECK (expires_at > created_at)
+    "chk_user_session_id_is_sha256_hex" CHECK (session_id ~ '^[0-9a-f]{64}$'::text)
+Foreign-key constraints:
+    "fk_user_session_user" FOREIGN KEY (user_id) REFERENCES user_account(user_id) ON DELETE CASCADE
+Not-null constraints:
+    "user_session_session_id_not_null" NOT NULL "session_id"
+    "user_session_user_id_not_null" NOT NULL "user_id"
+    "user_session_created_at_not_null" NOT NULL "created_at"
+    "user_session_last_seen_at_not_null" NOT NULL "last_seen_at"
+    "user_session_expires_at_not_null" NOT NULL "expires_at"
+Access method: heap
+

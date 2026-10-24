@@ -1,0 +1,33 @@
+                                                               Table "public.retraction"
+     Column      |           Type           | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+-----------------+--------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ retraction_id   | bigint                   |           | not null | generated always as identity | plain    |             |              | 
+ paper_id        | bigint                   |           | not null |                              | plain    |             |              | 
+ retraction_date | date                     |           | not null |                              | plain    |             |              | 
+ reason          | text                     |           |          |                              | extended |             |              | 
+ notice_url      | character varying(1000)  |           |          |                              | extended |             |              | 
+ status          | character varying(30)    |           | not null |                              | extended |             |              | 
+ source          | character varying(20)    |           | not null | 'MANUAL'::character varying  | extended |             |              | 
+ rw_record_id    | integer                  |           |          |                              | plain    |             |              | 
+ recorded_by     | bigint                   |           |          |                              | plain    |             |              | 
+ created_at      | timestamp with time zone |           | not null | now()                        | plain    |             |              | 
+Indexes:
+    "pk_retraction" PRIMARY KEY, btree (retraction_id)
+    "ix_retraction_recorded_by" btree (recorded_by)
+    "uq_retraction_paper" UNIQUE CONSTRAINT, btree (paper_id)
+    "uq_retraction_rw_record_id" UNIQUE CONSTRAINT, btree (rw_record_id)
+Check constraints:
+    "chk_retraction_source" CHECK (source::text = ANY (ARRAY['RETRACTION_WATCH'::character varying, 'OPENALEX'::character varying, 'MANUAL'::character varying]::text[]))
+    "chk_retraction_status" CHECK (status::text = ANY (ARRAY['RETRACTED'::character varying, 'CORRECTED'::character varying, 'EXPRESSION_OF_CONCERN'::character varying, 'REINSTATED'::character varying]::text[]))
+Foreign-key constraints:
+    "fk_retraction_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    "fk_retraction_recorded_by" FOREIGN KEY (recorded_by) REFERENCES user_account(user_id) ON DELETE SET NULL
+Not-null constraints:
+    "retraction_retraction_id_not_null" NOT NULL "retraction_id"
+    "retraction_paper_id_not_null" NOT NULL "paper_id"
+    "retraction_retraction_date_not_null" NOT NULL "retraction_date"
+    "retraction_status_not_null" NOT NULL "status"
+    "retraction_source_not_null" NOT NULL "source"
+    "retraction_created_at_not_null" NOT NULL "created_at"
+Access method: heap
+

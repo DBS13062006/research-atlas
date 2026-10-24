@@ -1,0 +1,20 @@
+                                               Table "public.paper_dataset"
+   Column   |         Type          | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+------------+-----------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ paper_id   | bigint                |           | not null |         | plain    |             |              | 
+ dataset_id | bigint                |           | not null |         | plain    |             |              | 
+ usage_type | character varying(20) |           | not null |         | extended |             |              | 
+Indexes:
+    "pk_paper_dataset" PRIMARY KEY, btree (paper_id, dataset_id)
+    "ix_paper_dataset_dataset_id" btree (dataset_id)
+Check constraints:
+    "chk_paper_dataset_usage_type" CHECK (usage_type::text = ANY (ARRAY['TRAINING'::character varying, 'VALIDATION'::character varying, 'TESTING'::character varying, 'BENCHMARKING'::character varying, 'OTHER'::character varying]::text[]))
+Foreign-key constraints:
+    "fk_paper_dataset_dataset" FOREIGN KEY (dataset_id) REFERENCES dataset(dataset_id) ON DELETE RESTRICT
+    "fk_paper_dataset_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+Not-null constraints:
+    "paper_dataset_paper_id_not_null" NOT NULL "paper_id"
+    "paper_dataset_dataset_id_not_null" NOT NULL "dataset_id"
+    "paper_dataset_usage_type_not_null" NOT NULL "usage_type"
+Access method: heap
+

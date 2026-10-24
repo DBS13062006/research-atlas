@@ -1,0 +1,30 @@
+                                                                Table "public.note"
+   Column   |           Type           | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+------------+--------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ note_id    | bigint                   |           | not null | generated always as identity | plain    |             |              | 
+ user_id    | bigint                   |           | not null |                              | plain    |             |              | 
+ paper_id   | bigint                   |           | not null |                              | plain    |             |              | 
+ note_text  | text                     |           | not null |                              | extended |             |              | 
+ is_private | boolean                  |           | not null | true                         | plain    |             |              | 
+ created_at | timestamp with time zone |           | not null | now()                        | plain    |             |              | 
+ updated_at | timestamp with time zone |           | not null | now()                        | plain    |             |              | 
+Indexes:
+    "pk_note" PRIMARY KEY, btree (note_id)
+    "ix_note_paper_id" btree (paper_id)
+    "ix_note_user_paper" btree (user_id, paper_id)
+Check constraints:
+    "chk_note_text_length" CHECK (length(btrim(note_text)) >= 1 AND length(btrim(note_text)) <= 20000)
+    "chk_note_updated_after_created" CHECK (updated_at >= created_at)
+Foreign-key constraints:
+    "fk_note_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    "fk_note_user" FOREIGN KEY (user_id) REFERENCES user_account(user_id) ON DELETE CASCADE
+Not-null constraints:
+    "note_note_id_not_null" NOT NULL "note_id"
+    "note_user_id_not_null" NOT NULL "user_id"
+    "note_paper_id_not_null" NOT NULL "paper_id"
+    "note_note_text_not_null" NOT NULL "note_text"
+    "note_is_private_not_null" NOT NULL "is_private"
+    "note_created_at_not_null" NOT NULL "created_at"
+    "note_updated_at_not_null" NOT NULL "updated_at"
+Access method: heap
+

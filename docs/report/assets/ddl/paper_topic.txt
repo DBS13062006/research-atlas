@@ -1,0 +1,22 @@
+                                              Table "public.paper_topic"
+     Column      |     Type     | Collation | Nullable | Default | Storage | Compression | Stats target | Description 
+-----------------+--------------+-----------+----------+---------+---------+-------------+--------------+-------------
+ paper_id        | bigint       |           | not null |         | plain   |             |              | 
+ topic_id        | bigint       |           | not null |         | plain   |             |              | 
+ relevance_score | numeric(5,4) |           |          |         | main    |             |              | 
+ is_primary      | boolean      |           | not null | false   | plain   |             |              | 
+Indexes:
+    "pk_paper_topic" PRIMARY KEY, btree (paper_id, topic_id)
+    "ix_paper_topic_topic_id" btree (topic_id)
+    "uq_one_primary_topic" UNIQUE, btree (paper_id) WHERE is_primary
+Check constraints:
+    "chk_paper_topic_relevance_range" CHECK (relevance_score >= 0::numeric AND relevance_score <= 1::numeric)
+Foreign-key constraints:
+    "fk_paper_topic_paper" FOREIGN KEY (paper_id) REFERENCES paper(paper_id) ON DELETE CASCADE
+    "fk_paper_topic_topic" FOREIGN KEY (topic_id) REFERENCES topic(topic_id) ON DELETE RESTRICT
+Not-null constraints:
+    "paper_topic_paper_id_not_null" NOT NULL "paper_id"
+    "paper_topic_topic_id_not_null" NOT NULL "topic_id"
+    "paper_topic_is_primary_not_null" NOT NULL "is_primary"
+Access method: heap
+

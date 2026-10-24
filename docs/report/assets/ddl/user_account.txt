@@ -1,0 +1,45 @@
+                                                                Table "public.user_account"
+       Column       |           Type           | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description 
+--------------------+--------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------
+ user_id            | bigint                   |           | not null | generated always as identity | plain    |             |              | 
+ public_id          | uuid                     |           | not null | uuidv7()                     | plain    |             |              | 
+ name               | character varying(120)   |           | not null |                              | extended |             |              | 
+ email              | citext                   |           | not null |                              | extended |             |              | 
+ password_hash      | character varying(255)   |           | not null |                              | extended |             |              | 
+ role_id            | integer                  |           | not null |                              | plain    |             |              | 
+ is_active          | boolean                  |           | not null | true                         | plain    |             |              | 
+ failed_login_count | smallint                 |           | not null | 0                            | plain    |             |              | 
+ locked_until       | timestamp with time zone |           |          |                              | plain    |             |              | 
+ last_login_at      | timestamp with time zone |           |          |                              | plain    |             |              | 
+ created_at         | timestamp with time zone |           | not null | now()                        | plain    |             |              | 
+ updated_at         | timestamp with time zone |           | not null | now()                        | plain    |             |              | 
+Indexes:
+    "pk_user_account" PRIMARY KEY, btree (user_id)
+    "ix_user_account_role_id" btree (role_id)
+    "uq_user_account_email" UNIQUE CONSTRAINT, btree (email)
+    "uq_user_account_public_id" UNIQUE CONSTRAINT, btree (public_id)
+Check constraints:
+    "chk_user_account_email_format" CHECK (email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'::citext)
+    "chk_user_account_failed_logins_non_negative" CHECK (failed_login_count >= 0)
+    "chk_user_account_name_not_blank" CHECK (length(btrim(name::text)) > 0)
+    "chk_user_account_password_is_argon2id" CHECK (password_hash::text ~~ '$argon2id$%'::text)
+Foreign-key constraints:
+    "fk_user_account_role" FOREIGN KEY (role_id) REFERENCES role(role_id) ON UPDATE CASCADE ON DELETE RESTRICT
+Referenced by:
+    TABLE "collection" CONSTRAINT "fk_collection_user" FOREIGN KEY (user_id) REFERENCES user_account(user_id) ON DELETE CASCADE
+    TABLE "note" CONSTRAINT "fk_note_user" FOREIGN KEY (user_id) REFERENCES user_account(user_id) ON DELETE CASCADE
+    TABLE "retraction" CONSTRAINT "fk_retraction_recorded_by" FOREIGN KEY (recorded_by) REFERENCES user_account(user_id) ON DELETE SET NULL
+    TABLE "user_session" CONSTRAINT "fk_user_session_user" FOREIGN KEY (user_id) REFERENCES user_account(user_id) ON DELETE CASCADE
+Not-null constraints:
+    "user_account_user_id_not_null" NOT NULL "user_id"
+    "user_account_public_id_not_null" NOT NULL "public_id"
+    "user_account_name_not_null" NOT NULL "name"
+    "user_account_email_not_null" NOT NULL "email"
+    "user_account_password_hash_not_null" NOT NULL "password_hash"
+    "user_account_role_id_not_null" NOT NULL "role_id"
+    "user_account_is_active_not_null" NOT NULL "is_active"
+    "user_account_failed_login_count_not_null" NOT NULL "failed_login_count"
+    "user_account_created_at_not_null" NOT NULL "created_at"
+    "user_account_updated_at_not_null" NOT NULL "updated_at"
+Access method: heap
+
