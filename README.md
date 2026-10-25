@@ -31,8 +31,7 @@ hierarchy, methods and datasets from the Papers with Code archive, and **33 Retr
 themes: spiking neural networks, transformers, graph learning, computer vision, clinical machine learning and
 reinforcement learning.
 
-> DBMS mini-project · PES University · Aug–Dec 2026 · Daruru Bhuvan Sai (PES1UG24AM356) and
-> Deeptanshu Kumar (PES1UG24AM357), section F.
+> DBMS mini-project · PES University · Aug–Dec 2026 · by Daruru Bhuvan Sai and Deeptanshu Kumar.
 
 ## Highlights
 
@@ -347,13 +346,6 @@ The full **[project report (PDF)](docs/report/report.pdf)** follows the evaluati
 | 14  | Originality and contribution                     | Query Lab, dual-database comparisons, Integrity Radar; [contributions](docs/report/report.pdf)                                  |
 
 </details>
-
-## Team
-
-|                                       | Owns and presents                                                                                                         |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **Daruru Bhuvan Sai** · PES1UG24AM356 | ER model, relational schema, constraints, normalization, advanced SQL, RBAC and row-level security, authentication        |
-| **Deeptanshu Kumar** · PES1UG24AM357  | Neo4j model, outbox sync, embeddings and vector search, graph algorithms, graph-native features, explore pages, Query Lab |
 
 ## Acknowledgements
 

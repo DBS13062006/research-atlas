@@ -6,10 +6,7 @@ Database Management System · Aug–Dec 2026 · Experiential Learning Level 3 mi
 
 **See how an idea travelled: a map of research papers, their citations, topics and lineage**
 
-| Member            | SRN           | Section |
-| ----------------- | ------------- | ------- |
-| Daruru Bhuvan Sai | PES1UG24AM356 | F       |
-| Deeptanshu Kumar  | PES1UG24AM357 | F       |
+Daruru Bhuvan Sai · Deeptanshu Kumar
 
 Repository: `github.com/DBS13062006/research-atlas`
 
