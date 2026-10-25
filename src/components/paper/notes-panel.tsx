@@ -4,6 +4,7 @@ import { Lock, Pencil, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -134,7 +135,7 @@ export function NotesPanel({
             ) : (
               <div className="flex gap-3">
                 <div className="prose-sm flex-1 text-sm [&_a]:underline [&_p]:mb-2">
-                  <ReactMarkdown>{n.note_text}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{n.note_text}</ReactMarkdown>
                   <p className="flex items-center gap-1 font-mono text-xs text-muted-foreground">
                     {n.is_private ? (
                       <Lock className="size-3" aria-hidden />
