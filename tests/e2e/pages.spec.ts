@@ -33,6 +33,7 @@ const PAGES: PageCase[] = [
   { name: "curate", path: (i) => `/curate?paper=${i.paperId}`, heading: /catalog/i, role: "curator" },
   { name: "admin", path: () => "/admin", heading: /run the atlas/i, role: "admin" },
   { name: "login", path: () => "/login", heading: /sign in|welcome/i },
+  { name: "lab", path: () => "/lab?q=Q15", heading: /running live/i, role: "researcher" },
 ];
 
 let ids: Ids;

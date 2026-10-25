@@ -206,3 +206,20 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Catalog source highlighted on the server by shiki (dual theme via CSS variables). */
+.code-block pre.shiki {
+  background: transparent !important;
+  margin: 0;
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+.code-block .shiki span {
+  color: var(--shiki-light);
+}
+.dark .code-block .shiki span {
+  color: var(--shiki-dark);
+}

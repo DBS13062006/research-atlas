@@ -47,7 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 </Suspense>
               }
             />
-            <main id="main" className="flex flex-1 flex-col">
+            <main id="main" className="flex flex-1 flex-col *:w-full">
               {children}
             </main>
             <Toaster richColors closeButton />

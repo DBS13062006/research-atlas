@@ -49,3 +49,11 @@ export function collectErrors(page: Page): string[] {
   });
   return errors;
 }
+
+// Streams finish and React hydrates before a test clicks anything; until then a Suspense boundary's
+// content can briefly exist twice (the hidden streamed copy and the placed one).
+export async function gotoReady(page: Page, path: string) {
+  const res = await page.goto(path);
+  await page.waitForLoadState("networkidle");
+  return res;
+}

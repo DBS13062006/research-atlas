@@ -9,6 +9,7 @@
 //   -- @param     paper_id bigint = SELECT ... (one line per $n, in order; the default is a query)
 //   -- @params    none
 //   -- @stdin     dml/D10_citations.csv     (optional data for COPY ... FROM STDIN)
+//   -- @expect    chk_no_self_citation      (a constraint proof: the constraint name or SQLSTATE it must raise)
 
 export type CatalogParam = { name: string; type: string; defaultSql: string };
 
@@ -20,6 +21,7 @@ export type CatalogEntry = {
   role: string;
   params: CatalogParam[];
   stdin?: string;
+  expect?: string;
   file: string;
   body: string;
   language: "sql" | "cypher";
@@ -67,6 +69,7 @@ export function parseCatalogFile(file: string, text: string): CatalogEntry {
     role: meta.role,
     params,
     stdin: meta.stdin,
+    expect: meta.expect,
     file,
     body: bodyLines.join("\n").trim(),
     language,

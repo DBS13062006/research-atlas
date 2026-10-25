@@ -106,5 +106,15 @@ SELECT is((SELECT operation FROM graph_outbox WHERE outbox_id > (SELECT id FROM 
 SELECT ok((SELECT NOT (payload ? 'abstract') FROM graph_outbox WHERE aggregate = 'paper' AND payload IS NOT NULL LIMIT 1),
           'paper payloads leave out the abstract');
 
+-- fn_lab_side_effects: the Query Lab reads back what this transaction's triggers wrote
+UPDATE paper SET title = 'Side-effect probe' WHERE paper_id = 1;
+SELECT ok(EXISTS (SELECT 1 FROM fn_lab_side_effects() WHERE source = 'audit_log' AND target = 'paper' AND operation = 'U'
+                  AND detail -> 'changed' ? 'title'),
+          'the audit row of this transaction is returned with the changed column');
+SELECT ok(EXISTS (SELECT 1 FROM fn_lab_side_effects() WHERE source = 'graph_outbox' AND target = 'paper'),
+          'and so is the outbox row queued for Neo4j');
+SELECT is(ra_test.state_as('ra_anon', NULL, 'SELECT count(*) FROM fn_lab_side_effects()'), '42501',
+          'anonymous callers cannot read side effects');
+
 SELECT * FROM finish();
 ROLLBACK;

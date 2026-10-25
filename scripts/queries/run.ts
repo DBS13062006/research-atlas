@@ -23,19 +23,30 @@ const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : undefi
 const ROOT = "db/queries";
 const ROLLBACK = Symbol("rollback");
 
+const SUBDIRS = ["dml", "proofs", "routines", "triggers"];
+
 function loadCatalog(): CatalogEntry[] {
   const files = [
     ...readdirSync(ROOT).filter((f) => f.endsWith(".sql")),
-    ...readdirSync(join(ROOT, "dml"))
-      .filter((f) => f.endsWith(".sql"))
-      .map((f) => join("dml", f)),
+    ...SUBDIRS.flatMap((dir) =>
+      readdirSync(join(ROOT, dir))
+        .filter((f) => f.endsWith(".sql"))
+        .map((f) => join(dir, f)),
+    ),
   ];
   return files
     .map((f) => parseCatalogFile(f, readFileSync(join(ROOT, f), "utf8")))
     .sort((a, b) => a.id.localeCompare(b.id, "en", { numeric: true }));
 }
 
-type Outcome = { id: string; title: string; rows: number; ms: number; error?: string };
+type Outcome = { id: string; title: string; rows: number; ms: number; error?: string; proved?: string };
+
+// A constraint proof passes only when it fails with exactly the constraint (or SQLSTATE) it names.
+function provedBy(err: unknown, expect: string): string | null {
+  const e = err as { constraint_name?: string; code?: string };
+  if (e.constraint_name === expect || e.code === expect) return expect;
+  return null;
+}
 
 async function main(): Promise<void> {
   const sql = postgres(`${ownerUrl({ test })}?sslmode=disable`, { max: 1, onnotice: () => {} });
@@ -74,6 +85,20 @@ async function main(): Promise<void> {
           throw ROLLBACK;
         });
       } catch (err) {
+        if (entry.expect && err !== ROLLBACK) {
+          const proved = provedBy(err, entry.expect);
+          outcomes.push({
+            id: entry.id,
+            title: entry.title,
+            rows: 0,
+            ms: performance.now() - started,
+            proved: proved ?? undefined,
+            error: proved
+              ? undefined
+              : `expected ${entry.expect}, got: ${err instanceof Error ? err.message : err}`,
+          });
+          continue;
+        }
         if (err !== ROLLBACK) {
           outcomes.push({
             id: entry.id,
@@ -85,7 +110,13 @@ async function main(): Promise<void> {
           continue;
         }
       }
-      outcomes.push({ id: entry.id, title: entry.title, rows, ms: performance.now() - started });
+      outcomes.push({
+        id: entry.id,
+        title: entry.title,
+        rows,
+        ms: performance.now() - started,
+        error: entry.expect ? `expected ${entry.expect}, but the statement succeeded` : undefined,
+      });
     }
   } finally {
     await sql.end();
@@ -94,10 +125,10 @@ async function main(): Promise<void> {
   let failed = 0;
   for (const o of outcomes) {
     const empty = requireRows && o.id.startsWith("Q") && o.rows === 0;
-    const status = o.error ? "FAIL" : empty ? "EMPTY" : "ok";
+    const status = o.error ? "FAIL" : empty ? "EMPTY" : o.proved ? "proof" : "ok";
     if (o.error || empty) failed++;
     console.log(
-      `${status.padEnd(5)} ${o.id.padEnd(4)} ${String(o.rows).padStart(6)} rows ${o.ms.toFixed(0).padStart(6)} ms  ${o.title}${o.error ? `\n        ${o.error}` : ""}`,
+      `${status.padEnd(5)} ${o.id.padEnd(4)} ${(o.proved ? `refused by ${o.proved}` : `${String(o.rows).padStart(6)} rows`).padEnd(48)} ${o.ms.toFixed(0).padStart(6)} ms  ${o.title}${o.error ? `\n        ${o.error}` : ""}`,
     );
   }
   console.log(

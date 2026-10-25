@@ -13,6 +13,8 @@ import {
   collectionPaperUpdate,
   collectionUpdate,
   importDoi,
+  labCypher,
+  labRun,
   lineageQuery,
   loginSchema,
   noteCreate,
@@ -455,6 +457,28 @@ export const API = {
     tag: "Admin",
     minRole: "ADMIN",
     sample: { path: "/admin/graph-sync" },
+  },
+  "GET /lab/catalog": {
+    summary: "Every Query Lab catalog file: SQL queries, DML, proofs, routines, triggers and Cypher",
+    tag: "Query Lab",
+    minRole: "RESEARCHER",
+    sample: { path: "/lab/catalog" },
+  },
+  "POST /lab/run": {
+    summary: "Run a SQL catalog file as your database role (rolled back unless an admin commits)",
+    tag: "Query Lab",
+    minRole: "RESEARCHER",
+    body: labRun,
+    description:
+      "Only catalog files run, never typed SQL. mode=explain returns EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) for the last plannable statement. commit=true is honoured for administrators only.",
+    sample: { path: "/lab/run", body: { id: "Z99" } },
+  },
+  "POST /lab/cypher": {
+    summary: "Run a Cypher catalog file (always rolled back); mode=profile returns the PROFILE plan",
+    tag: "Query Lab",
+    minRole: "RESEARCHER",
+    body: labCypher,
+    sample: { path: "/lab/cypher", body: { id: "Z99" } },
   },
 } satisfies Record<string, Endpoint>;
 

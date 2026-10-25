@@ -166,3 +166,17 @@ export const paperDatasetLink = z.object({
   dataset_id: idParam,
   usage_type: z.enum(datasetUsages).default("BENCHMARKING"),
 });
+
+const labId = z.string().regex(/^[A-Z]\d{2}$/, "a catalog id such as Q15");
+const labParams = z.record(z.string().regex(/^\w{1,40}$/), z.string().max(500)).optional();
+export const labRun = z.object({
+  id: labId,
+  params: labParams,
+  mode: z.enum(["run", "explain"]).default("run"),
+  commit: z.boolean().default(false),
+});
+export const labCypher = z.object({
+  id: labId,
+  params: labParams,
+  mode: z.enum(["run", "profile"]).default("run"),
+});
