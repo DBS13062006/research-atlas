@@ -3,7 +3,7 @@ import { collectErrors, demoIds, setTheme, signIn } from "./helpers";
 import { type Ids, PAGES } from "./routes";
 
 // One smoke test per page: it renders its main heading for the right role, logs no errors,
-// and leaves a screenshot in each theme under docs/screenshots/.
+// and, with SCREENSHOTS=1 (pnpm docs:screenshots), leaves one per theme in docs/screenshots/.
 
 let ids: Ids;
 test.beforeAll(async ({ request }) => {
@@ -22,7 +22,10 @@ for (const p of PAGES) {
       if (p.ready) await page.locator(`main ${p.ready}`).first().waitFor();
       await page.waitForLoadState("networkidle");
       await expect(page.locator("html")).toHaveClass(new RegExp(theme));
-      await page.screenshot({ path: `docs/screenshots/${p.name}-${theme}.png`, fullPage: false });
+      // Committed screenshots change only on purpose: pnpm docs:screenshots sets SCREENSHOTS=1.
+      if (process.env.SCREENSHOTS) {
+        await page.screenshot({ path: `docs/screenshots/${p.name}-${theme}.png`, fullPage: false });
+      }
     }
     expect(errors).toEqual([]);
   });

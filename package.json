@@ -30,7 +30,7 @@
     "seed:demo": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/data/seed-demo.ts",
     "demo:reset": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/data/demo-reset.ts",
     "docs:schema": "tsx --env-file-if-exists=.env.local scripts/docs/schema.ts",
-    "docs:screenshots": "node scripts/stub.mjs docs:screenshots",
+    "docs:screenshots": "SCREENSHOTS=1 playwright test tests/e2e/pages.spec.ts",
     "verify:all": "tsx scripts/verify/all.ts",
     "db:down": "docker compose --env-file .env.local stop",
     "db:rollback-all": "tsx --env-file-if-exists=.env.local scripts/db/migrate.ts down-all",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T20:53:07.590Z",
+  "generated_at": "2026-10-25T06:49:03.193Z",
   "counts": {
     "papers": 5761,
     "citations": 77024,
@@ -7,14 +7,14 @@
     "institutions": 2941,
     "venues": 1135,
     "topics": 1189,
-    "methods": 117,
+    "methods": 160,
     "datasets": 60,
-    "paper_methods": 10854,
+    "paper_methods": 10937,
     "paper_datasets": 879,
     "resources": 5529,
     "retractions": 33,
     "papers_with_abstract": 4612,
-    "method_or_dataset_pct": 49.2
+    "method_or_dataset_pct": 49.6
   },
   "gate": {
     "papers_at_least_2000": true,
