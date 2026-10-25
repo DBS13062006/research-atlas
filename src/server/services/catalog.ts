@@ -93,8 +93,10 @@ export async function observatory(ctx: DbContext, limitMethods = 18, limitDatase
       { method_id: number; method_name: string; dataset_id: number; dataset_name: string; papers: number }[]
     >`
       WITH top_methods AS (
-        SELECT method_id FROM paper_method pm WHERE EXISTS (SELECT 1 FROM paper_dataset pd WHERE pd.paper_id = pm.paper_id)
-        GROUP BY method_id ORDER BY count(*) DESC LIMIT ${limitMethods}
+        SELECT pm.method_id FROM paper_method pm JOIN method m USING (method_id)
+        WHERE m.method_category IS DISTINCT FROM 'Building block'
+          AND EXISTS (SELECT 1 FROM paper_dataset pd WHERE pd.paper_id = pm.paper_id)
+        GROUP BY pm.method_id ORDER BY count(*) DESC LIMIT ${limitMethods}
       ), top_datasets AS (
         SELECT dataset_id FROM paper_dataset GROUP BY dataset_id ORDER BY count(*) DESC LIMIT ${limitDatasets}
       )
@@ -108,7 +110,7 @@ export async function observatory(ctx: DbContext, limitMethods = 18, limitDatase
     const unpaired = await tx<{ kind: string; name: string; papers: number }[]>`
       SELECT 'method' AS kind, m.method_name AS name, count(*)::INT AS papers
       FROM method m JOIN paper_method pm USING (method_id)
-      WHERE NOT EXISTS (SELECT 1 FROM paper_dataset pd WHERE pd.paper_id = pm.paper_id)
+      WHERE m.method_category IS DISTINCT FROM 'Building block' AND NOT EXISTS (SELECT 1 FROM paper_dataset pd WHERE pd.paper_id = pm.paper_id)
       GROUP BY m.method_id ORDER BY papers DESC LIMIT 8`;
     return { cells, unpaired };
   });

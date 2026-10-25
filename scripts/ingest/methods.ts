@@ -50,6 +50,74 @@ type DatasetRow = {
 };
 type CodeLink = { arxiv_id: string; repo_url: string; is_official: boolean };
 
+// The archive contains vandalised entries (customer-service spam, "Test"). A method name must look
+// like a method name to be imported.
+const SPAM =
+  /(customer|service|refund|contact|dispute|airline|bitcoin|support|phone|expedia|delta|helpline|\+\d|@|http|\?)/i;
+function isPlausibleMethodName(name: string): boolean {
+  return (
+    name.length >= 2 &&
+    name.length <= 60 &&
+    !SPAM.test(name) &&
+    !/^test$/i.test(name) &&
+    /^[\p{L}\p{N}]/u.test(name)
+  );
+}
+
+// Generic network components the archive tags on most deep-learning papers. They are kept, but
+// labelled, so views like the observatory can show the techniques that distinguish papers.
+const BUILDING_BLOCK = "Building block";
+const BUILDING_BLOCK_CATEGORIES = new Set([
+  "Convolutions",
+  "Pooling Operations",
+  "Activation Functions",
+  "Normalization",
+  "Regularization",
+  "Feedforward Networks",
+  "Output Functions",
+  "Learning Rate Schedules",
+  "Stochastic Optimization",
+  "Skip Connections",
+  "Image Model Blocks",
+  "Position Embeddings",
+  "Subword Segmentation",
+  "Image Data Augmentation",
+  "Proposal Filtering",
+  "Initialization",
+  "Attention Modules",
+  "Word Embeddings",
+  "Tokenizers",
+]);
+const BUILDING_BLOCK_NAMES = new Set([
+  "adam",
+  "batch normalization",
+  "kaiming initialization",
+  "sgd with momentum",
+  "step decay",
+  "weight decay",
+  "sigmoid activation",
+  "tanh activation",
+  "random resized crop",
+  "residual connection",
+  "position-wise feed-forward layer",
+  "layer normalization",
+  "softmax",
+  "dropout",
+  "relu",
+  "linear layer",
+  "dense connections",
+  "1x1 convolution",
+  "convolution",
+  "max pooling",
+  "average pooling",
+  "global average pooling",
+  "attention dropout",
+  "label smoothing",
+  "multi-head attention",
+  "wordpiece",
+  "bpe",
+]);
+
 const norm = (t: string) =>
   t
     .toLowerCase()
@@ -67,6 +135,13 @@ function duck(sqlText: string): void {
 function readJson<T>(file: string): T[] {
   const text = readFileSync(file, "utf8").trim();
   return text ? (JSON.parse(text) as T[]) : [];
+}
+
+function isBuildingBlock(name: string, category: string | null | undefined): boolean {
+  return (
+    BUILDING_BLOCK_NAMES.has(name.toLowerCase()) ||
+    (category ? BUILDING_BLOCK_CATEGORIES.has(category) : false)
+  );
 }
 
 async function main(): Promise<void> {
@@ -131,11 +206,26 @@ async function main(): Promise<void> {
     const methodInfo = new Map(allMethods.map((m) => [m.name.toLowerCase(), m]));
 
     // ── choose methods: the most frequent archive methods in the corpus plus the curated list ──
+    // Archive names that are aliases of a curated method fold into it (GCN → Graph Convolutional Network).
+    const canonical = new Map<string, string>();
+    for (const m of METHOD_ALIASES)
+      for (const a of [m.name, ...m.aliases]) canonical.set(a.toLowerCase(), m.name);
+    const canon = (name: string) => canonical.get(name.toLowerCase()) ?? name;
+    const rejected = new Set<string>();
+    for (const pm of paperMethods) {
+      if (!isPlausibleMethodName(pm.name) || canon(pm.name) !== pm.name) rejected.add(pm.name);
+      pm.name = canon(pm.name);
+    }
     const freq = new Map<string, number>();
-    for (const pm of paperMethods) freq.set(pm.name, (freq.get(pm.name) ?? 0) + 1);
+    for (const pm of paperMethods)
+      if (isPlausibleMethodName(pm.name)) freq.set(pm.name, (freq.get(pm.name) ?? 0) + 1);
     const curatedNames = new Set(METHOD_ALIASES.map((m) => m.name.toLowerCase()));
     const archiveTop = [...freq.entries()]
-      .filter(([name]) => !curatedNames.has(name.toLowerCase()))
+      .filter(
+        ([name]) =>
+          !curatedNames.has(name.toLowerCase()) &&
+          !isBuildingBlock(name, methodInfo.get(name.toLowerCase())?.collection),
+      )
       .sort((a, b) => b[1] - a[1])
       .slice(0, MAX_ARCHIVE_METHODS)
       .map(([name]) => name);
@@ -154,7 +244,9 @@ async function main(): Promise<void> {
       const info = methodInfo.get(name.toLowerCase());
       chosen.set(name.toLowerCase(), {
         name: name.slice(0, 200),
-        category: info?.collection?.slice(0, 80) ?? null,
+        category: isBuildingBlock(name, info?.collection)
+          ? BUILDING_BLOCK
+          : (info?.collection?.slice(0, 80) ?? null),
         description: info?.description ?? null,
         year:
           info?.introduced_year && info.introduced_year >= 1900 && info.introduced_year <= 2100
@@ -212,15 +304,47 @@ async function main(): Promise<void> {
     }
 
     // ── write ──
+    // Building blocks still get linked (they are real), but only the ones the corpus uses most.
+    const blocks = [...freq.entries()]
+      .filter(([name]) => isBuildingBlock(name, methodInfo.get(name.toLowerCase())?.collection))
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 20);
+    for (const [name] of blocks) {
+      if (chosen.has(name.toLowerCase())) continue;
+      const info = methodInfo.get(name.toLowerCase());
+      chosen.set(name.toLowerCase(), {
+        name,
+        category: BUILDING_BLOCK,
+        description: info?.description ?? null,
+        year: info?.introduced_year ?? null,
+        slug: info?.slug ?? null,
+        introducedBy: null,
+      });
+    }
+    for (const pm of paperMethods) {
+      const paper = (pm.arxiv_id && byArxiv.get(pm.arxiv_id)) || byTitle.get(pm.norm_title);
+      if (paper && blocks.some(([b]) => b === pm.name)) link(paper.paper_id, pm.name.toLowerCase(), "USED");
+    }
+
     const datasetInfo = new Map(allDatasets.map((d) => [d.name.toLowerCase(), d]));
     await sql.begin(async (tx) => {
+      // Remove what earlier runs imported from spam or duplicate archive names.
+      const gone = [...rejected];
+      await tx`DELETE FROM paper_method WHERE method_id IN (SELECT method_id FROM method WHERE method_name = ANY(${gone}::TEXT[]))`;
+      const removed = await tx`DELETE FROM method WHERE method_name = ANY(${gone}::TEXT[])`;
+      console.log(`removed ${removed.count} spam or duplicate methods from earlier runs`);
+      await tx`
+        UPDATE method SET method_category = ${BUILDING_BLOCK}
+        WHERE method_category = ANY(${[...BUILDING_BLOCK_CATEGORIES]}::TEXT[])
+           OR lower(method_name) = ANY(${[...BUILDING_BLOCK_NAMES]}::TEXT[])`;
       for (const m of chosen.values()) {
         await tx`
           INSERT INTO method (method_name, method_category, description, introduced_year, pwc_slug)
           VALUES (${m.name}, ${m.category}, ${m.description}, ${m.year},
                   ${m.slug && !(await tx`SELECT 1 FROM method WHERE pwc_slug = ${m.slug} AND method_name <> ${m.name}`).length ? m.slug : null})
           ON CONFLICT (method_name) DO UPDATE
-            SET method_category = coalesce(method.method_category, EXCLUDED.method_category),
+            SET method_category = CASE WHEN EXCLUDED.method_category = 'Building block' THEN EXCLUDED.method_category
+                                       ELSE coalesce(method.method_category, EXCLUDED.method_category) END,
                 description = coalesce(method.description, EXCLUDED.description),
                 introduced_year = coalesce(method.introduced_year, EXCLUDED.introduced_year)`;
       }
