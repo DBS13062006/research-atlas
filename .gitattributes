@@ -1,0 +1,20 @@
+* text=auto eol=lf
+
+# Generated files: collapsed in diffs and left out of language statistics
+pnpm-lock.yaml              linguist-generated=true
+docs/05-ddl.md              linguist-generated=true
+docs/06-dml.md              linguist-generated=true
+docs/07-queries.md          linguist-generated=true
+docs/report/report.md       linguist-generated=true
+docs/schema/**              linguist-generated=true
+db/seed/fixture.sql         linguist-generated=true
+db/seed/test_seed.sql       linguist-generated=true
+
+# Count SQL and Cypher as the project's languages
+*.sql    linguist-detectable=true
+*.cypher linguist-language=Cypher linguist-detectable=true
+
+# Binary assets
+*.png    binary
+*.pdf    binary
+*.drawio -diff

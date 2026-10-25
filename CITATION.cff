@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this project, please cite it as below."
+title: "Research Atlas: a map of research papers by meaning, citation and lineage"
+abstract: >-
+  A research-discovery platform built on PostgreSQL 18, with role-based access and row-level security enforced
+  in the database, and a Neo4j knowledge graph with vector search and graph algorithms, fed by a transactional
+  outbox. DBMS mini-project, PES University, 2026.
+type: software
+authors:
+  - given-names: Bhuvan Sai
+    family-names: Daruru
+    affiliation: PES University
+  - given-names: Deeptanshu
+    family-names: Kumar
+    affiliation: PES University
+version: 1.0.0
+date-released: 2026-10-25
+license: MIT
+repository-code: "https://github.com/DBS13062006/research-atlas"
+keywords:
+  - PostgreSQL
+  - Neo4j
+  - knowledge graph
+  - vector search
+  - row-level security
+  - research discovery

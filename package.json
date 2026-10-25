@@ -1,7 +1,30 @@
 {
   "name": "research-atlas",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "A map of research papers by meaning, citation and lineage: PostgreSQL 18 with in-database RBAC, a Neo4j knowledge graph with vector search, and a Next.js 16 app.",
+  "keywords": [
+    "postgresql",
+    "neo4j",
+    "knowledge-graph",
+    "vector-search",
+    "row-level-security",
+    "nextjs",
+    "openalex",
+    "dbms"
+  ],
+  "license": "MIT",
+  "author": "Daruru Bhuvan Sai",
+  "contributors": [
+    "Daruru Bhuvan Sai",
+    "Deeptanshu Kumar"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DBS13062006/research-atlas.git"
+  },
+  "homepage": "https://github.com/DBS13062006/research-atlas#readme",
+  "bugs": "https://github.com/DBS13062006/research-atlas/issues",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -35,7 +58,7 @@
     "db:down": "docker compose --env-file .env.local stop",
     "db:rollback-all": "tsx --env-file-if-exists=.env.local scripts/db/migrate.ts down-all",
     "docs:er": "tsx scripts/er/generate-drawio.ts && /Applications/draw.io.app/Contents/MacOS/draw.io -x -f png --scale 0.6 -b 20 -o docs/er/research-atlas-er.png docs/er/research-atlas-er.drawio && /Applications/draw.io.app/Contents/MacOS/draw.io -x -f svg -b 20 -o docs/er/research-atlas-er.svg docs/er/research-atlas-er.drawio",
-    "docs:ddl": "tsx --env-file-if-exists=.env.local scripts/psql-snapshots.ts",
+    "docs:ddl": "tsx --env-file-if-exists=.env.local scripts/docs/psql-snapshots.ts",
     "ingest:topics": "tsx --env-file-if-exists=.env.local scripts/ingest/topics.ts",
     "ingest:works": "tsx --env-file-if-exists=.env.local scripts/ingest/works.ts",
     "ingest:expand": "tsx --env-file-if-exists=.env.local scripts/ingest/expand.ts",
@@ -47,7 +70,8 @@
     "perf:lighthouse": "node scripts/perf/lighthouse.mts",
     "setup:fixture": "tsx scripts/setup/fixture.ts",
     "docs:catalog": "tsx --env-file-if-exists=.env.local scripts/docs/catalog.ts",
-    "docs:report": "tsx scripts/docs/report.tsx"
+    "docs:report": "tsx scripts/docs/report.tsx",
+    "docs:brand": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/docs/brand.tsx"
   },
   "dependencies": {
     "@base-ui/react": "1.9.0",
