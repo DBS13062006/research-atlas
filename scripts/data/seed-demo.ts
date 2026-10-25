@@ -139,7 +139,9 @@ async function main(): Promise<void> {
       >`SELECT paper_id::TEXT FROM paper WHERE venue_id IS NULL OR abstract IS NULL ORDER BY cited_by_count DESC LIMIT 5`;
       await add(c5, review, ["NOT_READ"], ["MEDIUM"]);
     });
-    await seedGraph(sql, ids);
+    // There is one Neo4j for both databases, so the test database never seeds it.
+    if (test) console.log("graph seed skipped for the test database (Neo4j is shared)");
+    else await seedGraph(sql, ids);
     const [s] = await sql<{ users: number; collections: number; entries: number; notes: number }[]>`
       SELECT (SELECT count(*) FROM user_account)::INT AS users, (SELECT count(*) FROM collection)::INT AS collections,
              (SELECT count(*) FROM collection_paper)::INT AS entries, (SELECT count(*) FROM note)::INT AS notes`;

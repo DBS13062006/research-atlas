@@ -26,3 +26,30 @@ jobs:
       - run: pnpm build
         env:
           NEXT_TELEMETRY_DISABLED: "1"
+
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Throwaway credentials for this run's containers only; nothing is stored.
+      - name: Generate container passwords
+        run: |
+          for v in POSTGRES_PASSWORD APP_DB_PASSWORD NEO4J_PASSWORD SEED_PASSWORD; do
+            p=$(openssl rand -hex 16); echo "::add-mask::$p"; echo "$v=$p" >> "$GITHUB_ENV"
+          done
+      - run: docker compose up -d --wait db
+      - name: Migrations from zero, back to zero, and up again
+        run: pnpm db:migrate && pnpm db:rollback-all && pnpm db:migrate
+      - name: pgTAP (constraints, functions, procedures, triggers, views, RBAC)
+        run: pnpm db:test
+      - name: SQL catalog on the test seed
+        run: pnpm queries:run --test
+      - name: SQL catalog on the committed fixture with the demo accounts
+        run: pnpm db:seed:fixture && pnpm seed:demo && pnpm queries:run
