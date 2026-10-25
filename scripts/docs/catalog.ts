@@ -93,6 +93,12 @@ async function run(sql: postgres.Sql, entry: CatalogEntry, explain: boolean): Pr
         }
         const args = outcome.params.slice(0, maxPlaceholder(statement));
         if (i === explainAt) {
+          // Read queries run twice: once for the sample output, once under EXPLAIN ANALYZE.
+          const result = await tx.unsafe(statement, args);
+          outcome.columns = (result.columns ?? []).map((c) => c.name);
+          outcome.rows = [...result.slice(0, SAMPLE_ROWS)];
+          outcome.rowCount = result.count ?? result.length;
+          outcome.command = result.command ?? "";
           const [row] = await tx.unsafe(`EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) ${statement}`, args);
           const doc = (Object.values(row)[0] as Record<string, unknown>[])[0];
           const top = doc.Plan as PlanNode;
@@ -149,7 +155,7 @@ function section(o: Outcome, level = "###"): string {
   if (o.error) {
     lines.push(
       e.expect && (o.error.constraint === e.expect || o.error.code === e.expect)
-        ? `**Refused, as intended,** by \`${e.expect}\`:`
+        ? `**Refused, as intended,** by ${/^[0-9A-Z]{5}$/.test(e.expect) && !e.expect.includes("_") ? `SQLSTATE \`${e.expect}\`` : `\`${e.expect}\``}:`
         : "**Error:**",
       "",
       "```text",
@@ -233,8 +239,17 @@ async function main(): Promise<void> {
       .sort()
       .map((f) => {
         const text = readFileSync(join("db/migrations", f), "utf8");
-        const first = text.split("\n").find((l) => /^-- \d{3}/.test(l)) ?? "";
-        return `| [\`${f}\`](../db/migrations/${f}) | ${first.replace(/^-- \d{3} · ?/, "").replace(/\|/g, "\\|")} |`;
+        // The header comment: from the "-- NNN ·" line to the first blank or non-comment line.
+        const lines = text.split("\n");
+        const start = lines.findIndex((l) => /^-- \d{3}/.test(l));
+        const header: string[] = [];
+        for (let i = start; start >= 0 && i < lines.length && /^-- \S/.test(lines[i]); i++)
+          header.push(lines[i].slice(3));
+        const purpose = header
+          .join(" ")
+          .replace(/^\d{3} · ?/, "")
+          .replace(/\|/g, "\\|");
+        return `| [\`${f}\`](../db/migrations/${f}) | ${purpose} |`;
       });
     const constraints = await sql<{ table: string; name: string; kind: string; def: string }[]>`
       SELECT c.conrelid::regclass::TEXT AS table, c.conname AS name,
