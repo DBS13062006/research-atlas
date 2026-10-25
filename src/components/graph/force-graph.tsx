@@ -102,13 +102,21 @@ export function ForceGraph({
       .scaleExtent([0.3, 4])
       .on("zoom", (event) => g.attr("transform", event.transform.toString()));
     svg.call(z);
-    // Fit the layout into view.
-    const xs = layout.simNodes.map((n) => n.x ?? 0);
+    // Fit the layout into view, labels included: a label runs to the right of its node, about
+    // 6 px per character at 11 px, so it widens the box on that side only.
+    const left = layout.simNodes.map((n) => (n.x ?? 0) - (n.size ?? 6));
+    const right = layout.simNodes.map((n) => {
+      const r = n.size ?? 6;
+      const labelled = r >= 9;
+      return (n.x ?? 0) + r + (labelled ? 4 + Math.min(n.label.length, 48) * 6 : 0);
+    });
     const ys = layout.simNodes.map((n) => n.y ?? 0);
-    const w = Math.max(...xs) - Math.min(...xs) + 120;
+    const x0 = Math.min(...left);
+    const x1 = Math.max(...right);
+    const w = x1 - x0 + 40;
     const h = Math.max(...ys) - Math.min(...ys) + 80;
-    const k = Math.min(1.6, Math.min(width / w, height / h));
-    const cx = (Math.max(...xs) + Math.min(...xs)) / 2;
+    const k = Math.min(1.2, Math.min(width / w, height / h));
+    const cx = (x0 + x1) / 2;
     const cy = (Math.max(...ys) + Math.min(...ys)) / 2;
     svg.call(z.transform, zoomIdentity.translate(width / 2 - cx * k, height / 2 - cy * k).scale(k));
     return () => {

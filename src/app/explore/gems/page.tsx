@@ -62,7 +62,7 @@ async function Gems() {
                       style={{ left: `calc(${g.influence_pct * 100}% - 6px)` }}
                     />
                   </div>
-                  <span className="font-mono text-xs text-muted-foreground">
+                  <span className="font-mono text-xs whitespace-nowrap text-muted-foreground">
                     {Math.round(g.influence_pct * 100)} vs {Math.round(g.citation_pct * 100)}
                   </span>
                 </div>

@@ -114,6 +114,26 @@ export function normaliseDoi(doi: string | null | undefined): string | null {
   return /^10\.\d{4,9}\/\S+$/.test(bare) && bare.length <= 255 ? bare : null;
 }
 
+// OpenAlex sometimes dates a well-known preprint by a much later re-deposit: the Transformer paper
+// (W2626778328, arXiv 1706.03762) carries 2025-08-23. For a preprint record, a new-style arXiv id
+// gives the submission year and month (YYMM), so a date more than a year after that month is
+// replaced with the first day of it. Journal versions keep their own (later) dates. Dates before
+// 1665 (the first journal) are treated as missing.
+export function publicationDate(
+  raw: string | null | undefined,
+  arxiv: string | null,
+  isPreprint: boolean,
+): string | null {
+  const date = raw && raw >= "1665-01-01" ? raw : null;
+  if (!isPreprint) return date;
+  const m = arxiv?.match(/^(\d{2})(\d{2})\.\d{4,5}$/);
+  if (!m || Number(m[2]) < 1 || Number(m[2]) > 12) return date;
+  const submitted = `20${m[1]}-${m[2]}-01`;
+  if (!date) return submitted;
+  const yearLater = `${Number(m[1]) + 2001}-${m[2]}-01`;
+  return date > yearLater ? submitted : date;
+}
+
 export function arxivId(work: OAWork): string | null {
   for (const loc of [work.primary_location, ...(work.locations ?? [])]) {
     const m = loc?.landing_page_url?.match(/arxiv\.org\/abs\/([0-9]{4}\.[0-9]{4,5}|[a-z\-.]+\/[0-9]{7})/i);
@@ -154,7 +174,7 @@ export function toPayload(work: OAWork): Record<string, unknown> | null {
   let oaStatus = work.open_access?.oa_status?.toUpperCase() ?? null;
   if (oaStatus && !OA_STATUS.has(oaStatus)) oaStatus = null;
   if (oaStatus && (oaStatus === "CLOSED") === isOa) oaStatus = isOa ? null : "CLOSED";
-  const date = work.publication_date && work.publication_date >= "1665-01-01" ? work.publication_date : null;
+  const date = publicationDate(work.publication_date, arxivId(work), workType(work) === "PREPRINT");
   const src = work.primary_location?.source;
   const issn = src?.issn_l && /^\d{4}-\d{3}[\dX]$/.test(src.issn_l) ? src.issn_l : null;
 

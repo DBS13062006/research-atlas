@@ -69,12 +69,13 @@ export function Streamgraph({
             </path>
           );
         })}
-        {x.ticks(8).map((t) => (
+        {x.ticks(8).map((t, i, all) => (
           <text
             key={t}
             x={x(t)}
             y={height - 6}
-            textAnchor="middle"
+            // The end labels hug the edges so neither is clipped.
+            textAnchor={i === 0 ? "start" : i === all.length - 1 ? "end" : "middle"}
             className="fill-muted-foreground font-mono text-[10px]"
           >
             {t}

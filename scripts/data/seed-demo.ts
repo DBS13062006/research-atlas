@@ -217,23 +217,81 @@ async function seedGraph(sql: postgres.Sql, ids: Record<string, string>): Promis
     const t2 = await createTrail(driver, { title: "Getting started with RAG", visibility: "PRIVATE" }, ravi);
     for (const r of rag) await addStep(driver, t2, r.paper_id, null, ravi);
 
-    const pairs = await sql<{ citing: number; cited: number }[]>`
-      SELECT c.citing_paper_id::INT AS citing, c.cited_paper_id::INT AS cited
-      FROM citation c JOIN paper a ON a.paper_id = c.citing_paper_id
-      WHERE a.title ~* 'spiking|attention|graph|reinforcement'
-      ORDER BY a.cited_by_count DESC LIMIT 4`;
-    const kinds = ["EXTENDS", "IMPROVES_UPON", "REPLICATES", "RELATED_TO"] as const;
-    for (const [i, p] of pairs.entries()) {
+    // Curated relations a reader would actually assert, found by title. On the 200-paper fixture
+    // some may be missing; then two real citation pairs stand in so the feature still has data.
+    const byTitle = async (pattern: string) => {
+      const [row] = await sql<{ paper_id: number }[]>`
+        SELECT paper_id::INT FROM paper WHERE title ILIKE ${pattern} ORDER BY cited_by_count DESC LIMIT 1`;
+      return row?.paper_id;
+    };
+    const curated = [
+      {
+        from: "Attention is Not All You Need%",
+        to: "Attention Is All You Need",
+        type: "CONTRADICTS",
+        note: "Pure self-attention loses rank doubly exponentially with depth; skip connections and MLPs are what keep transformers working.",
+        confidence: 4,
+        by: rhea,
+      },
+      {
+        from: "Densely Connected Convolutional Networks",
+        to: "Deep Residual Learning for Image Recognition",
+        type: "IMPROVES_UPON",
+        note: "Concatenating features instead of adding them reuses more and needs fewer parameters.",
+        confidence: 4,
+        by: ravi,
+      },
+      {
+        from: "Deep Residual Learning in Spiking Neural Networks",
+        to: "Deep Residual Learning for Image Recognition",
+        type: "EXTENDS",
+        note: "Brings residual blocks to spiking networks so they can be trained much deeper.",
+        confidence: 5,
+        by: rhea,
+      },
+      {
+        from: "Inductive Representation Learning on Large Graphs",
+        to: "Semi-Supervised Classification with Graph Convolutional Networks",
+        type: "EXTENDS",
+        note: "Samples and aggregates neighbours, so the model generalises to nodes it never saw in training.",
+        confidence: 4,
+        by: cyrus,
+      },
+      {
+        from: "Graph-Bert%",
+        to: "Attention Is All You Need",
+        type: "RELATED_TO",
+        note: "Applies the attention-only design to graphs, without message passing.",
+        confidence: 3,
+        by: ravi,
+      },
+    ] as const;
+    const pairs: {
+      from: number;
+      to: number;
+      type: (typeof curated)[number]["type"];
+      note: string | null;
+      confidence: number;
+      by: typeof rhea;
+    }[] = [];
+    for (const c of curated) {
+      const [from, to] = [await byTitle(c.from), await byTitle(c.to)];
+      if (from && to)
+        pairs.push({ from, to, type: c.type, note: c.note, confidence: c.confidence, by: c.by });
+    }
+    if (pairs.length === 0) {
+      const cites = await sql<{ citing: number; cited: number }[]>`
+        SELECT c.citing_paper_id::INT AS citing, c.cited_paper_id::INT AS cited
+        FROM citation c JOIN paper a ON a.paper_id = c.citing_paper_id
+        ORDER BY a.cited_by_count DESC LIMIT 2`;
+      for (const c of cites)
+        pairs.push({ from: c.citing, to: c.cited, type: "RELATED_TO", note: null, confidence: 3, by: rhea });
+    }
+    for (const p of pairs) {
       await createRelation(
         driver,
-        {
-          fromPaperId: p.citing,
-          toPaperId: p.cited,
-          type: kinds[i],
-          note: i === 0 ? "Same architecture, larger scale." : null,
-          confidence: 3 + (i % 3),
-        },
-        i === 3 ? cyrus : i % 2 === 0 ? rhea : ravi,
+        { fromPaperId: p.from, toPaperId: p.to, type: p.type, note: p.note, confidence: p.confidence },
+        p.by,
       );
     }
     console.log(`graph seed: 2 trails, ${pairs.length} curated relations`);

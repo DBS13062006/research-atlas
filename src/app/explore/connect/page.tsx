@@ -29,7 +29,7 @@ export default function ConnectPage({ searchParams }: PageProps<"/explore/connec
         title="How are these two papers connected?"
         description="Neo4j answers with a SHORTEST path pattern; PostgreSQL answers the same question with a breadth-first recursive CTE carrying the path as an array."
       />
-      <div className="mx-auto w-full max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 *:max-w-4xl">
         <Suspense fallback={<BlockSkeleton className="h-64" />}>
           <Explorer searchParams={searchParams as Promise<{ from?: string }>} />
         </Suspense>

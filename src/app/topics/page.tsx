@@ -36,7 +36,7 @@ export default function TopicsPage() {
         title="Domain → field → subfield → topic"
         description="OpenAlex's four-level hierarchy, stored as a self-referencing table. Counts include every topic below a node (recursive CTE)."
       />
-      <div className="mx-auto w-full max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 *:max-w-4xl">
         <Suspense fallback={<ListSkeleton rows={8} />}>
           <Tree />
         </Suspense>

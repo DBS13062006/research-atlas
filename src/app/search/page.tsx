@@ -171,7 +171,7 @@ export default function SearchPage({ searchParams }: PageProps<"/search">) {
         title="Find papers three ways"
         description="Compare keyword matching in PostgreSQL with meaning-based search in Neo4j, and the fused ranking of both."
       />
-      <div className="mx-auto w-full max-w-5xl space-y-6 px-4 py-8">
+      <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 *:max-w-5xl">
         <Suspense fallback={<div className="h-16" />}>
           <Filters />
         </Suspense>
