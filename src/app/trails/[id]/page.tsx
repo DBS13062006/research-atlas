@@ -62,7 +62,7 @@ export default function TrailPage({ params }: PageProps<"/trails/[id]">) {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="mx-auto max-w-7xl min-h-svh px-4 py-8">
           <BlockSkeleton className="h-96" />
         </div>
       }

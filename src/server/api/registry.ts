@@ -8,6 +8,7 @@ import {
   adminUserUpdate,
   auditQuery,
   authorMerge,
+  authorSearchQuery,
   collectionCreate,
   collectionPaperAdd,
   collectionPaperUpdate,
@@ -227,6 +228,13 @@ export const API = {
     minRole: "ANONYMOUS",
     query: searchQuery,
     sample: { path: "/search?q=spiking&mode=lexical&limit=2" },
+  },
+  "GET /authors": {
+    summary: "Find authors by name, tolerating typos (pg_trgm)",
+    tag: "Authors",
+    minRole: "ANONYMOUS",
+    query: authorSearchQuery,
+    sample: { path: "/authors?q=hinton" },
   },
   "GET /authors/{id}": {
     summary: "An author with papers, output per year and topics",

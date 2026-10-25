@@ -1,29 +1,26 @@
 "use client";
 
 import { Search } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import { Kbd } from "@/components/ui/kbd";
-import { NAV_SECTIONS } from "@/lib/nav";
+
+const CommandPaletteDialog = dynamic(() => import("./command-palette-dialog"), { ssr: false });
 
 export function CommandPalette() {
-  const [open, setOpen] = useState(false);
+  // "never" until the first open: the dialog (and cmdk with it) is only loaded once it is wanted.
+  const [state, setState] = useState<"never" | "open" | "closed">("never");
+  const open = state === "open";
+  const setOpen = (next: boolean) => setState(next ? "open" : "closed");
   const router = useRouter();
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((o) => !o);
+        setState((s) => (s === "open" ? "closed" : "open"));
       }
     }
     window.addEventListener("keydown", onKey);
@@ -58,32 +55,7 @@ export function CommandPalette() {
       >
         <Search className="size-4" aria-hidden />
       </Button>
-      <CommandDialog
-        open={open}
-        onOpenChange={setOpen}
-        title="Command palette"
-        description="Jump to a page or search the atlas"
-      >
-        <CommandInput placeholder="Type a page name, or search papers…" />
-        <CommandList>
-          <CommandEmpty>No matching pages.</CommandEmpty>
-          {NAV_SECTIONS.map((section) => (
-            <CommandGroup key={section.title} heading={section.title}>
-              {section.items.map((item) => (
-                <CommandItem
-                  key={item.href}
-                  value={`${item.label} ${item.hint}`}
-                  onSelect={() => go(item.href)}
-                >
-                  <item.icon className="size-4 text-muted-foreground" aria-hidden />
-                  <span>{item.label}</span>
-                  <span className="ml-auto truncate text-xs text-muted-foreground">{item.hint}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          ))}
-        </CommandList>
-      </CommandDialog>
+      {state !== "never" ? <CommandPaletteDialog open={open} onOpenChange={setOpen} go={go} /> : null}
     </>
   );
 }

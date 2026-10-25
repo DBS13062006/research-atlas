@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { NextRequest } from "next/server";
+import { connection, type NextRequest } from "next/server";
 import { ZodError, type z } from "zod";
 import { atLeast } from "@/lib/roles";
 import { AuthError, dbContext, graphActor, roleOf } from "@/server/auth/dal";
@@ -69,6 +69,9 @@ export function route<K extends EndpointKey>(key: K, fn: (ctx: ApiContext<K>) =>
     req: NextRequest,
     segment: { params: Promise<Record<string, string>> },
   ): Promise<Response> => {
+    // API responses depend on the session cookie, so they are never prerendered at build time.
+    // Outside the try: during a build prerender this rejects on purpose and Next handles it.
+    await connection();
     const cookiesToSet: [string, string, Record<string, unknown>][] = [];
     try {
       if (!["GET", "HEAD"].includes(method)) {

@@ -28,7 +28,13 @@ type Author = {
 
 export async function generateMetadata({ params }: PageProps<"/authors/[id]">): Promise<Metadata> {
   const a = (await cachedAuthor(Number((await params).id)).catch(() => null)) as Author | null;
-  return { title: a?.author_name ?? "Author" };
+  if (!a) return { title: "Author" };
+  const facts = [
+    a.institution_name,
+    a.papers ? `${a.papers} papers in the atlas` : null,
+    a.h_index ? `h-index ${a.h_index}` : null,
+  ].filter(Boolean);
+  return { title: a.author_name, description: `${a.author_name}: ${facts.join(", ")}.` };
 }
 
 async function Coauthors({ id, name }: { id: number; name: string }) {
@@ -138,7 +144,7 @@ export default function AuthorPage({ params }: PageProps<"/authors/[id]">) {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-7xl px-4 py-10">
+        <div className="mx-auto max-w-7xl min-h-svh px-4 py-10">
           <ListSkeleton />
         </div>
       }

@@ -87,6 +87,21 @@ export async function cachedAtlasPoints() {
   return graph.atlasPoints();
 }
 
+// The home page preview only draws dots, so it gets five integers per paper instead of full
+// records (titles made the page weigh a megabyte): x and y in thousandths, front, weight, retracted.
+export async function cachedAtlasPreview(): Promise<number[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(GRAPH_TAG);
+  return (await graph.atlasPoints()).flatMap((p) => [
+    Math.round(p.x * 1000),
+    Math.round(p.y * 1000),
+    p.c,
+    p.w,
+    p.r ? 1 : 0,
+  ]);
+}
+
 export async function cachedFronts() {
   "use cache";
   cacheLife("hours");

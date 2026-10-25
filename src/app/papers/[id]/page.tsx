@@ -10,7 +10,7 @@ import { BlockSkeleton } from "@/components/states";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDate, formatNumber, label } from "@/lib/format";
+import { formatDate, formatNumber, label, truncate } from "@/lib/format";
 import { dbContext, getCurrentUser } from "@/server/auth/dal";
 import { cachedPaper } from "@/server/cached";
 import { myCollections } from "@/server/services/library";
@@ -23,7 +23,9 @@ function parseId(raw: string) {
 export async function generateMetadata({ params }: PageProps<"/papers/[id]">): Promise<Metadata> {
   const id = parseId((await params).id);
   const paper = id ? await cachedPaper(id).catch(() => null) : null;
-  return { title: paper?.title ?? "Paper" };
+  if (!paper) return { title: "Paper" };
+  const byline = [paper.publication_year, paper.venue_name, paper.author_names].filter(Boolean).join(" · ");
+  return { title: paper.title, description: truncate(paper.abstract ?? byline, 160) };
 }
 
 async function Actions({ paperId }: { paperId: number }) {
@@ -143,13 +145,21 @@ async function Paper({ params }: { params: Promise<{ id: string }> }) {
             <h2 id="explore-heading" className="sr-only">
               Explore this paper
             </h2>
-            <Suspense fallback={<BlockSkeleton className="h-96" />}>
+            {/* Same shape as the tab list plus the first panel's skeleton, so nothing below moves. */}
+            <Suspense
+              fallback={
+                <div className="space-y-4">
+                  <Skeleton className="h-8 w-96 max-w-full" />
+                  <BlockSkeleton className="h-72" />
+                </div>
+              }
+            >
               <Tabs root={{ paper_id: p.paper_id, title: p.title, year: p.publication_year }} />
             </Suspense>
           </section>
         </div>
         <aside className="space-y-6">
-          <div className="rounded-xl border p-4">
+          <div className="min-h-24 rounded-xl border p-4">
             <Suspense fallback={<Skeleton className="h-16" />}>
               <Actions paperId={p.paper_id} />
             </Suspense>
@@ -296,9 +306,11 @@ async function Paper({ params }: { params: Promise<{ id: string }> }) {
   );
 }
 
+// Page-level fallbacks fill the viewport: a short skeleton would leave the footer on screen, and the
+// streamed article would then push it down (a layout shift on a cold cache).
 function PaperSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl space-y-4 px-4 py-10" aria-busy="true">
+    <div className="mx-auto min-h-svh max-w-7xl space-y-4 px-4 py-10" aria-busy="true">
       <Skeleton className="h-4 w-80" />
       <Skeleton className="h-10 w-3/4" />
       <Skeleton className="h-5 w-1/2" />

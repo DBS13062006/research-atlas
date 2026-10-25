@@ -30,6 +30,21 @@ export async function getAuthor(ctx: DbContext, authorId: number) {
   });
 }
 
+// Typo-tolerant author lookup for the command palette: trigram similarity (the GIN index from Q24)
+// plus a prefix match, so "hinton" and "hintn" both find Geoffrey Hinton.
+export async function searchAuthors(ctx: DbContext, q: string, limit = 6) {
+  return withDb(
+    ctx,
+    (tx) => tx<{ author_id: number; author_name: string; papers: number }[]>`
+      SELECT a.author_id::INT, a.author_name,
+             (SELECT count(*) FROM paper_author pa WHERE pa.author_id = a.author_id)::INT AS papers
+      FROM author a
+      WHERE a.author_name % ${q} OR a.author_name ILIKE ${`%${q.replace(/[%_\\]/g, "")}%`}
+      ORDER BY similarity(a.author_name, ${q}) DESC, papers DESC
+      LIMIT ${limit}`,
+  );
+}
+
 export async function mergeAuthors(ctx: DbContext, keepId: number, duplicateId: number) {
   return withDb(ctx, async (tx) => {
     await tx`CALL sp_merge_authors(${keepId}, ${duplicateId})`;

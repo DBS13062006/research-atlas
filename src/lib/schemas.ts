@@ -141,6 +141,10 @@ export const importDoi = z.object({
     .pipe(z.string().regex(/^10\.\d{4,9}\/\S+$/, "Enter a DOI such as 10.48550/arXiv.1706.03762")),
 });
 
+export const authorSearchQuery = z.object({
+  q: z.string().trim().min(2).max(100),
+  limit: z.coerce.number().int().min(1).max(20).default(6),
+});
 export const authorMerge = z.object({ keep_id: idParam, duplicate_id: idParam });
 export const adminUserUpdate = z
   .object({ role: z.enum(["RESEARCHER", "CURATOR", "ADMIN"]).optional(), is_active: z.boolean().optional() })

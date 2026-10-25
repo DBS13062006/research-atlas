@@ -14,6 +14,7 @@ export default defineConfig({
   test: {
     env: loadEnv("development", process.cwd(), ""),
     include: ["tests/unit/**/*.test.ts", "tests/integration/**/*.test.ts"],
+    setupFiles: ["tests/setup/next-request.ts"],
     fileParallelism: false,
     testTimeout: 30_000,
     hookTimeout: 60_000,

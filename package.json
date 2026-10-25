@@ -43,7 +43,8 @@
     "ingest:methods": "tsx --env-file-if-exists=.env.local scripts/ingest/methods.ts",
     "ingest:retractions": "tsx --env-file-if-exists=.env.local scripts/ingest/retractions.ts",
     "data:fixture": "tsx --env-file-if-exists=.env.local scripts/data/export-fixture.ts",
-    "data:report": "tsx --env-file-if-exists=.env.local scripts/data/report.ts"
+    "data:report": "tsx --env-file-if-exists=.env.local scripts/data/report.ts",
+    "perf:lighthouse": "node scripts/perf/lighthouse.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -83,6 +84,8 @@
     "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "chrome-launcher": "1.2.2",
+    "lighthouse": "13.5.0",
     "tailwindcss": "^4",
     "tsx": "4.23.15",
     "typescript": "^5",

@@ -76,7 +76,7 @@ export default function CollectionPage({ params }: PageProps<"/library/[collecti
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="mx-auto max-w-7xl min-h-svh px-4 py-8">
           <BlockSkeleton className="h-96" />
         </div>
       }

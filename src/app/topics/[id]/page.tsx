@@ -29,7 +29,11 @@ const LEVEL = ["Domain", "Field", "Subfield", "Topic"];
 
 export async function generateMetadata({ params }: PageProps<"/topics/[id]">): Promise<Metadata> {
   const t = (await cachedTopic(Number((await params).id)).catch(() => null)) as Topic | null;
-  return { title: t?.topic_name ?? "Topic" };
+  if (!t) return { title: "Topic" };
+  return {
+    title: t.topic_name,
+    description: t.description ?? `${t.topic_name} in the research atlas: ${t.path}.`,
+  };
 }
 
 async function TopicView({ params }: { params: Promise<{ id: string }> }) {
@@ -139,7 +143,7 @@ export default function TopicPage({ params }: PageProps<"/topics/[id]">) {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-7xl px-4 py-10">
+        <div className="mx-auto max-w-7xl min-h-svh px-4 py-10">
           <ListSkeleton />
         </div>
       }

@@ -10,12 +10,19 @@ import { categoryColor } from "@/lib/format";
 import type { RoleCode } from "@/lib/roles";
 import { BlockSkeleton, EmptyState, ErrorState } from "../states";
 import { api } from "./api";
-import { NotesPanel } from "./notes-panel";
-import { RelationsPanel } from "./relations-panel";
 
 const LineageTimeline = dynamic(() => import("../graph/lineage-timeline").then((m) => m.LineageTimeline), {
   ssr: false,
   loading: () => <BlockSkeleton className="h-72" />,
+});
+// Notes (with the Markdown renderer) and relations live in later tabs, so they load on demand.
+const NotesPanel = dynamic(() => import("./notes-panel").then((m) => m.NotesPanel), {
+  ssr: false,
+  loading: () => <BlockSkeleton className="h-40" />,
+});
+const RelationsPanel = dynamic(() => import("./relations-panel").then((m) => m.RelationsPanel), {
+  ssr: false,
+  loading: () => <BlockSkeleton className="h-40" />,
 });
 const ForceGraph = dynamic(() => import("../graph/force-graph").then((m) => m.ForceGraph), {
   ssr: false,

@@ -6,7 +6,7 @@ import { MiniAtlas } from "@/components/atlas/mini-atlas";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatNumber } from "@/lib/format";
-import { cachedAtlasPoints, cachedCorpusStats } from "@/server/cached";
+import { cachedAtlasPreview, cachedCorpusStats } from "@/server/cached";
 
 async function Counters() {
   await connection();
@@ -32,9 +32,9 @@ async function Counters() {
 
 async function MapPreview() {
   await connection();
-  const points = await cachedAtlasPoints().catch(() => []);
-  if (points.length === 0) return null;
-  return <MiniAtlas points={points} />;
+  const packed = await cachedAtlasPreview().catch(() => []);
+  if (packed.length === 0) return null;
+  return <MiniAtlas packed={packed} />;
 }
 
 const ENTRIES = [
