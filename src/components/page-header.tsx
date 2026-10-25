@@ -34,17 +34,22 @@ export function Section({
   description,
   children,
   id,
+  action,
 }: {
   title: string;
   description?: ReactNode;
   children: ReactNode;
   id?: string;
+  action?: ReactNode;
 }) {
   return (
     <section id={id} className="space-y-4">
-      <div>
-        <h2 className="text-2xl">{title}</h2>
-        {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="text-2xl">{title}</h2>
+          {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
+        </div>
+        {action}
       </div>
       {children}
     </section>

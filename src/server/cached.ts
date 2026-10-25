@@ -107,3 +107,10 @@ export async function cachedGraphStats() {
   cacheTag(GRAPH_TAG);
   return graph.graphStats();
 }
+
+export async function cachedCoauthors(authorId: number) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(GRAPH_TAG);
+  return graph.coauthors(authorId);
+}

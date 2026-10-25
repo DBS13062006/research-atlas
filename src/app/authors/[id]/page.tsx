@@ -9,8 +9,7 @@ import { PaperCard } from "@/components/paper/paper-card";
 import { BlockSkeleton, EmptyState, ListSkeleton } from "@/components/states";
 import { Badge } from "@/components/ui/badge";
 import { formatNumber } from "@/lib/format";
-import { cachedAuthor } from "@/server/cached";
-import { coauthors } from "@/server/services/graph-views";
+import { cachedAuthor, cachedCoauthors } from "@/server/cached";
 import type { PaperCard as Card } from "@/server/services/papers";
 
 type Author = {
@@ -33,7 +32,7 @@ export async function generateMetadata({ params }: PageProps<"/authors/[id]">): 
 }
 
 async function Coauthors({ id, name }: { id: number; name: string }) {
-  const list = await coauthors(id).catch(() => []);
+  const list = await cachedCoauthors(id).catch(() => []);
   if (list.length === 0) return <EmptyState title="No co-authors in the atlas" />;
   return <CoauthorGraph center={{ id, name }} coauthors={list} />;
 }

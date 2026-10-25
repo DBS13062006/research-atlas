@@ -9,6 +9,7 @@ import { ANONYMOUS, withDb } from "@/server/db/client";
 import { graphDriver } from "@/server/graph/driver";
 import { GraphNotFoundError } from "@/server/graph/errors";
 import { getTrail } from "@/server/graph/trails";
+import { displayNames } from "@/server/services/people";
 import { TrailEditor } from "../trail-forms";
 
 export const metadata: Metadata = { title: "Reading trail" };
@@ -34,6 +35,7 @@ async function TrailView({ params }: { params: Promise<{ id: string }> }) {
       SELECT citing_paper_id::INT AS citing, cited_paper_id::INT AS cited FROM citation
       WHERE citing_paper_id = ANY(${ids}::BIGINT[]) AND cited_paper_id = ANY(${ids}::BIGINT[])`,
   );
+  const owner = (await displayNames([trail.ownerId])).get(trail.ownerId);
   const editable = Boolean(user && (user.userId === trail.ownerId || user.role === "ADMIN"));
   return (
     <>
@@ -45,7 +47,7 @@ async function TrailView({ params }: { params: Promise<{ id: string }> }) {
           editable ? (
             <Badge>{user?.userId === trail.ownerId ? "Your trail" : "Moderating"}</Badge>
           ) : (
-            <Badge variant="secondary">Read only</Badge>
+            <Badge variant="secondary">By {owner ?? "a former member"}</Badge>
           )
         }
       />

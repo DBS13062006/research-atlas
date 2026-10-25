@@ -41,10 +41,7 @@ async function Library() {
   ];
   return (
     <div className="mx-auto max-w-7xl space-y-12 px-4 py-8">
-      <Section title="Collections">
-        <div className="flex justify-end">
-          <NewCollectionButton />
-        </div>
+      <Section title="Collections" action={<NewCollectionButton />}>
         {collections.length === 0 ? (
           <EmptyState title="No collections yet">
             Create one, then save papers to it from any paper page or the Atlas.

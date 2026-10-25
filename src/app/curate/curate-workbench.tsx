@@ -416,6 +416,7 @@ type Relation = {
   note: string | null;
   confidence: number;
   createdBy: number;
+  createdByName: string | null;
   updatedAt: string;
 };
 
@@ -441,7 +442,8 @@ function Moderation() {
             </Link>
             {r.note ? <p className="text-muted-foreground">{r.note}</p> : null}
             <p className="font-mono text-xs text-muted-foreground">
-              by user {r.createdBy} · confidence {r.confidence}/5 · {relativeTime(r.updatedAt)}
+              by {r.createdByName ?? "a former member"} · confidence {r.confidence}/5 ·{" "}
+              {relativeTime(r.updatedAt)}
             </p>
           </div>
           <Button

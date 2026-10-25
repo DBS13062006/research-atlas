@@ -8,6 +8,7 @@ import { relativeTime } from "@/lib/format";
 import { getCurrentUser } from "@/server/auth/dal";
 import { graphDriver } from "@/server/graph/driver";
 import { listTrails } from "@/server/graph/trails";
+import { withNames } from "@/server/services/people";
 import { NewTrailButton } from "./trail-forms";
 
 export const metadata: Metadata = { title: "Reading trails" };
@@ -15,7 +16,7 @@ export const metadata: Metadata = { title: "Reading trails" };
 async function Trails() {
   const user = await getCurrentUser();
   try {
-    const trails = await listTrails(graphDriver(), user?.userId ?? null);
+    const trails = await withNames(await listTrails(graphDriver(), user?.userId ?? null), "ownerId");
     return (
       <div className="space-y-4">
         {user ? (
@@ -53,7 +54,8 @@ async function Trails() {
                     <p className="mt-1 text-sm text-muted-foreground">{t.description}</p>
                   ) : null}
                   <p className="mt-3 font-mono text-xs text-muted-foreground">
-                    {t.steps} stops · {t.ownerId === user?.userId ? "yours" : `by user ${t.ownerId}`} ·
+                    {t.steps} stops ·{" "}
+                    {t.ownerId === user?.userId ? "yours" : `by ${t.ownerIdName ?? "a former member"}`} ·
                     updated {relativeTime(t.updatedAt)}
                   </p>
                 </Link>

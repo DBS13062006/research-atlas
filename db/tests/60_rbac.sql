@@ -86,5 +86,11 @@ SELECT is(ra_test.state_as('ra_admin', 1, 'SELECT count(*) FROM user_session'), 
 SELECT is(ra_test.value_as('ra_researcher', 4, 'SELECT count(*) FROM note WHERE user_id = 4'), '2',
           'as ra_researcher with app.user_id = 4, only that user''s notes are counted');
 
+-- Display names for Neo4j-authored content: names only, for any caller, without opening user_account.
+SELECT is(ra_test.value_as('ra_anon', NULL, 'SELECT string_agg(name, '','' ORDER BY user_id) FROM fn_user_display_names(ARRAY[3, 4]::BIGINT[])'),
+          'Rhea Researcher,Ravi Researcher', 'anonymous callers can resolve author display names');
+SELECT is((SELECT array_to_string(proargnames, ',') FROM pg_proc WHERE proname = 'fn_user_display_names'),
+          'p_user_ids,user_id,name', 'and the function returns the id and name, never the email or role');
+
 SELECT * FROM finish();
 ROLLBACK;

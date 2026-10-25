@@ -25,6 +25,7 @@ type Relation = {
   note: string | null;
   confidence: number;
   createdBy: number;
+  createdByName: string | null;
   updatedAt: string;
 };
 
@@ -201,7 +202,8 @@ export function RelationsPanel({
                     </p>
                     {r.note ? <p className="mt-1 text-muted-foreground">{r.note}</p> : null}
                     <p className="mt-1 font-mono text-xs text-muted-foreground">
-                      confidence {r.confidence}/5 · by user {r.createdBy} · {relativeTime(r.updatedAt)}
+                      confidence {r.confidence}/5 · by {r.createdByName ?? "a former member"} ·{" "}
+                      {relativeTime(r.updatedAt)}
                     </p>
                   </div>
                   {mine ? (
