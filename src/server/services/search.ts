@@ -71,7 +71,16 @@ export async function search(
     mode,
     limit,
     year_from,
-  }: { q: string; mode: "lexical" | "semantic" | "hybrid"; limit: number; year_from?: number },
+    topic_id,
+    open_access,
+  }: {
+    q: string;
+    mode: "lexical" | "semantic" | "hybrid";
+    limit: number;
+    year_from?: number;
+    topic_id?: number;
+    open_access?: "true" | "false";
+  },
 ) {
   const started = performance.now();
   const pool = Math.min(limit * 3, 100);
@@ -89,11 +98,26 @@ export async function search(
     ctx,
     fused.map((f) => f.id),
   );
+  // Facets: a field filter keeps papers anywhere in that topic's subtree.
+  const inTopic = topic_id
+    ? new Set(
+        (
+          await withDb(
+            ctx,
+            (tx) => tx<{ paper_id: number }[]>`
+              SELECT DISTINCT pt.paper_id::INT FROM paper_topic pt JOIN fn_topic_descendants(${topic_id}) d USING (topic_id)
+              WHERE pt.paper_id = ANY(${fused.map((f) => f.id)}::BIGINT[])`,
+          )
+        ).map((r) => r.paper_id),
+      )
+    : null;
   const hits: SearchHit[] = [];
   for (const f of fused) {
     const card = cards.get(f.id);
     if (!card) continue;
     if (year_from && (card.publication_year ?? 0) < year_from) continue;
+    if (inTopic && !inTopic.has(f.id)) continue;
+    if (open_access && card.open_access !== (open_access === "true")) continue;
     hits.push({
       ...card,
       // Single-engine modes report that engine's own score; hybrid reports the fused RRF score.

@@ -150,7 +150,7 @@ export async function atlasPoints(): Promise<AtlasPoint[]> {
   return readGraph<AtlasPoint>(
     `MATCH (p:Paper) WHERE p.umapX IS NOT NULL
      RETURN p.paperId AS id, p.umapX AS x, p.umapY AS y, coalesce(p.community, -1) AS c, p.year AS y_,
-            p.title AS t, coalesce(p.isRetracted, false) AS r, coalesce(p.localCitations, 0) AS w`,
+            left(p.title, 110) AS t, coalesce(p.isRetracted, false) AS r, coalesce(p.localCitations, 0) AS w`,
   );
 }
 

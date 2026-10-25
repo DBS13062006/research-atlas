@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Suspense } from "react";
+import { AccountMenu } from "@/components/auth/account-menu";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
@@ -36,11 +40,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             >
               Skip to content
             </a>
-            <SiteHeader />
+            <SiteHeader
+              account={
+                <Suspense fallback={<Skeleton className="h-8 w-20" />}>
+                  <AccountMenu />
+                </Suspense>
+              }
+            />
             <main id="main" className="flex flex-1 flex-col">
               {children}
             </main>
             <Toaster richColors closeButton />
+            <SiteFooter />
           </TooltipProvider>
         </ThemeProvider>
       </body>

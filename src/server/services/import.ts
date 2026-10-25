@@ -2,6 +2,7 @@ import "server-only";
 
 import neo4j from "neo4j-driver";
 import { type OAWork, toPayload, WORK_FIELDS } from "@/lib/openalex-transform";
+import { invalidateCatalog } from "@/server/cached";
 import { type DbContext, withDb } from "@/server/db/client";
 import { documentText, embeddingProvider } from "@/server/embeddings/provider";
 import { env } from "@/server/env";
@@ -43,6 +44,7 @@ export async function importByDoi(ctx: DbContext, doi: string) {
   });
 
   const sync = await syncGraphNow().catch(() => ({ processed: 0 }));
+  invalidateCatalog();
   let embedded = false;
   try {
     const [vector] = await embeddingProvider().embed([

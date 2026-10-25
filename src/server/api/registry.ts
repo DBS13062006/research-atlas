@@ -122,6 +122,12 @@ export const API = {
     query: lineageQuery,
     sample: { path: `/papers/${MISSING}/lineage?engine=sql` },
   },
+  "GET /papers/{id}/neighbourhood": {
+    summary: "One-hop citation neighbourhood and curated relations, as nodes and edges",
+    tag: "Graph",
+    minRole: "ANONYMOUS",
+    sample: { path: `/papers/${MISSING}/neighbourhood` },
+  },
   "GET /papers/{id}/similar": {
     summary: "Nearest papers by embedding",
     tag: "Graph",

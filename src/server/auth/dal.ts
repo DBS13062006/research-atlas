@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { cache } from "react";
 import { atLeast, can, DB_ROLE, type RoleCode } from "@/lib/roles";
 import type { DbContext } from "@/server/db/client";
@@ -21,6 +22,8 @@ export class AuthError extends Error {
 
 // Reads the session cookie once per request (React cache).
 export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
+  // A session check compares expiry with the clock, so it always happens at request time.
+  await connection();
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
   const result = await validateSessionToken(token);

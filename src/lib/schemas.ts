@@ -63,6 +63,8 @@ export const searchQuery = z.object({
   mode: z.enum(["lexical", "semantic", "hybrid"]).default("hybrid"),
   limit: z.coerce.number().int().min(1).max(50).default(20),
   year_from: z.coerce.number().int().min(1665).max(2100).optional(),
+  topic_id: idParam.optional(),
+  open_access: z.enum(["true", "false"]).optional(),
 });
 
 export const lineageQuery = z.object({
