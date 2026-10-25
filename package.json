@@ -46,7 +46,8 @@
     "data:report": "tsx --env-file-if-exists=.env.local scripts/data/report.ts",
     "perf:lighthouse": "node scripts/perf/lighthouse.mts",
     "setup:fixture": "tsx scripts/setup/fixture.ts",
-    "docs:catalog": "tsx --env-file-if-exists=.env.local scripts/docs/catalog.ts"
+    "docs:catalog": "tsx --env-file-if-exists=.env.local scripts/docs/catalog.ts",
+    "docs:report": "tsx scripts/docs/report.tsx"
   },
   "dependencies": {
     "@base-ui/react": "1.9.0",

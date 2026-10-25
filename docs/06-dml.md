@@ -4,18 +4,18 @@ Ten DML files in [`db/queries/dml/`](../db/queries/dml), one per technique. Each
 on 2026-10-25 inside a transaction that was rolled back, so the outputs below are real but changed nothing.
 In the Query Lab an administrator may switch on “Commit for real”.
 
-| File | Statement                                                   | Demonstrates                                                                                              |
-| ---- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| D01  | Add new methods in one statement                            | multi-row INSERT, column defaults, RETURNING                                                              |
-| D02  | Add every paper of a topic to a collection                  | INSERT ... SELECT with a window function for positions, ON CONFLICT DO NOTHING, RLS-checked               |
-| D03  | Re-score a paper's topics                                   | INSERT ... ON CONFLICT (key) DO UPDATE SET ... = EXCLUDED.... (upsert)                                    |
-| D04  | Mark collection items READ where the user has written notes | UPDATE ... FROM with a join; the read_at trigger fires; RLS limits rows to the caller's                   |
-| D05  | Raise a priority and show the before and after values       | UPDATE ... RETURNING old.* and new.* (PostgreSQL 18)                                                      |
-| D06  | Remove dead resource links                                  | DELETE ... USING a temporary table of URLs found to be dead                                               |
-| D07  | Delete a paper and show what cascaded                       | ON DELETE CASCADE across seven child tables, row counts before and after                                  |
-| D08  | Sync a subfield's topics from a staging table               | MERGE with WHEN MATCHED, WHEN NOT MATCHED and WHEN NOT MATCHED BY SOURCE, RETURNING merge_action()        |
-| D09  | Swap two authors' positions safely                          | SAVEPOINT, SET CONSTRAINTS ... DEFERRED on a DEFERRABLE UNIQUE constraint, RELEASE SAVEPOINT              |
-| D10  | Bulk-load citations from a CSV file                         | COPY ... FROM STDIN into a staging table (psql: \copy), then INSERT ... SELECT with joins and ON CONFLICT |
+| File | Statement | Demonstrates |
+| --- | --- | --- |
+| D01 | Add new methods in one statement | multi-row INSERT, column defaults, RETURNING |
+| D02 | Add every paper of a topic to a collection | INSERT ... SELECT with a window function for positions, ON CONFLICT DO NOTHING, RLS-checked |
+| D03 | Re-score a paper's topics | INSERT ... ON CONFLICT (key) DO UPDATE SET ... = EXCLUDED.... (upsert) |
+| D04 | Mark collection items READ where the user has written notes | UPDATE ... FROM with a join; the read_at trigger fires; RLS limits rows to the caller's |
+| D05 | Raise a priority and show the before and after values | UPDATE ... RETURNING old.* and new.* (PostgreSQL 18) |
+| D06 | Remove dead resource links | DELETE ... USING a temporary table of URLs found to be dead |
+| D07 | Delete a paper and show what cascaded | ON DELETE CASCADE across seven child tables, row counts before and after |
+| D08 | Sync a subfield's topics from a staging table | MERGE with WHEN MATCHED, WHEN NOT MATCHED and WHEN NOT MATCHED BY SOURCE, RETURNING merge_action() |
+| D09 | Swap two authors' positions safely | SAVEPOINT, SET CONSTRAINTS ... DEFERRED on a DEFERRABLE UNIQUE constraint, RELEASE SAVEPOINT |
+| D10 | Bulk-load citations from a CSV file | COPY ... FROM STDIN into a staging table (psql: \copy), then INSERT ... SELECT with joins and ON CONFLICT |
 
 ## D01 · Add new methods in one statement
 
@@ -29,17 +29,17 @@ VALUES ('Liquid State Machine', 'Reservoir computing', 'Fixed random spiking res
 RETURNING method_id, method_name, introduced_year;
 ```
 
-| method_id | method_name             | introduced_year |
-| --------- | ----------------------- | --------------- |
-| 522       | Liquid State Machine    | 2002            |
-| 523       | Echo State Network      | 2001            |
-| 524       | Modern Hopfield Network | 2020            |
+| method_id | method_name | introduced_year |
+| --- | --- | --- |
+| 525 | Liquid State Machine | 2002 |
+| 526 | Echo State Network | 2001 |
+| 527 | Modern Hopfield Network | 2020 |
 
 ## D02 · Add every paper of a topic to a collection
 
 **Technique:** INSERT ... SELECT with a window function for positions, ON CONFLICT DO NOTHING, RLS-checked · **runs as** `ra_researcher` · [`dml/D02_add_topic_to_collection.sql`](../db/queries/dml/D02_add_topic_to_collection.sql)
 
-Parameters (computed from the data): `collection_id` = 21, `topic_id` = 545
+Parameters (computed from the data): `collection_id` = 26, `topic_id` = 545
 
 ```sql
 INSERT INTO collection_paper (collection_id, paper_id, position)
@@ -54,8 +54,8 @@ RETURNING collection_id, paper_id, position;
 ```
 
 | collection_id | paper_id | position |
-| ------------- | -------- | -------- |
-| 21            | 62       | 7        |
+| --- | --- | --- |
+| 26 | 62 | 7 |
 
 ## D03 · Re-score a paper's topics
 
@@ -74,10 +74,10 @@ RETURNING paper_id, topic_id, relevance_score;
 ```
 
 | paper_id | topic_id | relevance_score |
-| -------- | -------- | --------------- |
-| 1        | 6        | 0.0000          |
-| 1        | 7        | 0.0000          |
-| 1        | 8        | 0.9480          |
+| --- | --- | --- |
+| 1 | 6 | 0.0000 |
+| 1 | 7 | 0.0000 |
+| 1 | 8 | 0.9480 |
 
 ## D04 · Mark collection items READ where the user has written notes
 
@@ -94,15 +94,15 @@ WHERE c.collection_id = cp.collection_id
 RETURNING cp.collection_id, cp.paper_id, cp.reading_status, cp.read_at;
 ```
 
-| collection_id | paper_id | reading_status | read_at                  |
-| ------------- | -------- | -------------- | ------------------------ |
-| 22            | 4911     | READ           | 2026-10-25T07:00:22.322Z |
+| collection_id | paper_id | reading_status | read_at |
+| --- | --- | --- | --- |
+| 27 | 4911 | READ | 2026-10-25T07:14:04.788Z |
 
 ## D05 · Raise a priority and show the before and after values
 
 **Technique:** UPDATE ... RETURNING old.* and new.* (PostgreSQL 18) · **runs as** `ra_researcher` · [`dml/D05_priority_before_after.sql`](../db/queries/dml/D05_priority_before_after.sql)
 
-Parameters (computed from the data): `collection_id` = 21
+Parameters (computed from the data): `collection_id` = 26
 
 ```sql
 UPDATE collection_paper
@@ -112,12 +112,12 @@ RETURNING paper_id, old.priority AS priority_before, new.priority AS priority_af
 ```
 
 | paper_id | priority_before | priority_after |
-| -------- | --------------- | -------------- |
-| 1        | LOW             | MEDIUM         |
-| 4933     | MEDIUM          | HIGH           |
-| 4934     | HIGH            | HIGH           |
-| 4975     | HIGH            | HIGH           |
-| 5021     | HIGH            | HIGH           |
+| --- | --- | --- |
+| 1 | LOW | MEDIUM |
+| 4933 | MEDIUM | HIGH |
+| 4934 | HIGH | HIGH |
+| 4975 | HIGH | HIGH |
+| 5021 | HIGH | HIGH |
 
 _7 rows; the first 5 are shown._
 
@@ -135,11 +135,11 @@ WHERE r.resource_url = d.resource_url
 RETURNING r.resource_id, r.paper_id, r.resource_url;
 ```
 
-| resource_id | paper_id | resource_url                                              |
-| ----------- | -------- | --------------------------------------------------------- |
-| 1           | 2        | https://arxiv.org/pdf/1412.0611                           |
-| 2           | 3        | https://ieeexplore.ieee.org/ielx7/34/9639876/09138762.pdf |
-| 3           | 4        | https://www.osti.gov/biblio/1336121                       |
+| resource_id | paper_id | resource_url |
+| --- | --- | --- |
+| 1 | 2 | https://arxiv.org/pdf/1412.0611 |
+| 2 | 3 | https://ieeexplore.ieee.org/ielx7/34/9639876/09138762.pdf |
+| 3 | 4 | https://www.osti.gov/biblio/1336121 |
 
 ## D07 · Delete a paper and show what cascaded
 
@@ -171,13 +171,13 @@ SELECT b.child,
 FROM before_counts b;
 ```
 
-| child         | rows_before | rows_after |
-| ------------- | ----------- | ---------- |
-| paper_author  | 4           | 0          |
-| citation      | 852         | 0          |
-| paper_topic   | 3           | 0          |
-| paper_method  | 3           | 0          |
-| paper_dataset | 3           | 0          |
+| child | rows_before | rows_after |
+| --- | --- | --- |
+| paper_author | 4 | 0 |
+| citation | 852 | 0 |
+| paper_topic | 3 | 0 |
+| paper_method | 3 | 0 |
+| paper_dataset | 3 | 0 |
 
 _7 rows; the first 5 are shown._
 
@@ -206,13 +206,13 @@ WHEN NOT MATCHED BY SOURCE AND t.parent_topic_id = $1 THEN
 RETURNING merge_action() AS action, t.topic_id, t.topic_name, t.description;
 ```
 
-| action | topic_id | topic_name                                     | description                                    |
-| ------ | -------- | ---------------------------------------------- | ---------------------------------------------- |
-| UPDATE | 7        | Low-power high-performance VLSI design         | Description refreshed from the latest taxonomy |
-| UPDATE | 8        | Advanced Memory and Neural Computing           | Description refreshed from the latest taxonomy |
-| UPDATE | 16       | Ferroelectric and Negative Capacitance Devices | Not in the latest taxonomy                     |
-| UPDATE | 24       | CCD and CMOS Imaging Sensors                   | Not in the latest taxonomy                     |
-| UPDATE | 68       | Organic Electronics and Photovoltaics          | Not in the latest taxonomy                     |
+| action | topic_id | topic_name | description |
+| --- | --- | --- | --- |
+| UPDATE | 7 | Low-power high-performance VLSI design | Description refreshed from the latest taxonomy |
+| UPDATE | 8 | Advanced Memory and Neural Computing | Description refreshed from the latest taxonomy |
+| UPDATE | 16 | Ferroelectric and Negative Capacitance Devices | Not in the latest taxonomy |
+| UPDATE | 24 | CCD and CMOS Imaging Sensors | Not in the latest taxonomy |
+| UPDATE | 68 | Organic Electronics and Photovoltaics | Not in the latest taxonomy |
 
 _63 rows; the first 5 are shown._
 
@@ -236,13 +236,13 @@ WHERE pa.paper_id = $1
 ORDER BY pa.author_order;
 ```
 
-| author_order | author_name       |
-| ------------ | ----------------- |
-| 1            | Narayan Srinivasa |
-| 2            | Mike Davies       |
-| 3            | Gautham N. Chinya |
-| 4            | Yongqiang Cao     |
-| 5            | Sri Harsha Choday |
+| author_order | author_name |
+| --- | --- |
+| 1 | Narayan Srinivasa |
+| 2 | Mike Davies |
+| 3 | Gautham N. Chinya |
+| 4 | Yongqiang Cao |
+| 5 | Sri Harsha Choday |
 
 _19 rows; the first 5 are shown._
 
@@ -264,11 +264,11 @@ RETURNING citing_paper_id, cited_paper_id;
 ```
 
 | citing_paper_id | cited_paper_id |
-| --------------- | -------------- |
-| 1               | 66             |
-| 34              | 4899           |
-| 64              | 5560           |
-| 108             | 26             |
-| 152             | 4935           |
+| --- | --- |
+| 1 | 66 |
+| 34 | 4899 |
+| 64 | 5560 |
+| 108 | 26 |
+| 152 | 4935 |
 
 _25 rows; the first 5 are shown._

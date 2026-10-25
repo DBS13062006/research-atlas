@@ -5,15 +5,15 @@ the sample output and the plan summary below were produced from the loaded corpu
 on 2026-10-25: each query ran as its declared role inside a transaction that was rolled back, and its plan
 comes from `EXPLAIN (ANALYZE, BUFFERS)`. The same files run live in the Query Lab (`/lab`).
 
-| Group          | Queries                           |
-| -------------- | --------------------------------- |
-| join           | Q01, Q02, Q03, Q04, Q05, Q06, Q07 |
-| nested         | Q08, Q09, Q10, Q11, Q12, Q13      |
-| recursive      | Q14, Q15, Q16, Q17                |
-| analytics      | Q18, Q19, Q20, Q21                |
-| set operations | Q22                               |
-| JSON           | Q23                               |
-| search         | Q24, Q25                          |
+| Group | Queries |
+| --- | --- |
+| join | Q01, Q02, Q03, Q04, Q05, Q06, Q07 |
+| nested | Q08, Q09, Q10, Q11, Q12, Q13 |
+| recursive | Q14, Q15, Q16, Q17 |
+| analytics | Q18, Q19, Q20, Q21 |
+| set operations | Q22 |
+| JSON | Q23 |
+| search | Q24, Q25 |
 
 ## Join queries
 
@@ -44,11 +44,11 @@ WHERE p.paper_id = $1
 GROUP BY p.paper_id, v.venue_name, t.topic_name, r.status;
 ```
 
-| paper_id | title                                        | publication_date | venue_name                                                             | authors                                           | primary_topic                        | retraction_status | cited_by_count | local_citation_count |
-| -------- | -------------------------------------------- | ---------------- | ---------------------------------------------------------------------- | ------------------------------------------------- | ------------------------------------ | ----------------- | -------------- | -------------------- |
-| 4897     | Deep Residual Learning for Image Recognition | 2016-06-01       | IEEE Computer Society Conference on Computer Vision and Pattern Recog… | Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun | Advanced Neural Network Applications | NULL              | 234936         | 826                  |
+| paper_id | title | publication_date | venue_name | authors | primary_topic | retraction_status | cited_by_count | local_citation_count |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 4897 | Deep Residual Learning for Image Recognition | 2016-06-01 | IEEE Computer Society Conference on Computer Vision and Pattern Recog… | Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun | Advanced Neural Network Applications | NULL | 234936 | 826 |
 
-**Plan:** Aggregate · planning 0.62 ms · execution 0.11 ms · operators: Aggregate, Sort, Nested Loop, Index Scan using pk_paper, Index Scan using pk_venue, Index Scan using uq_one_primary_topic, Index Scan using pk_topic, Index Scan using uq_retraction_paper, …
+**Plan:** Aggregate · planning 0.65 ms · execution 0.11 ms · operators: Aggregate, Sort, Nested Loop, Index Scan using pk_paper, Index Scan using pk_venue, Index Scan using uq_one_primary_topic, Index Scan using pk_topic, Index Scan using uq_retraction_paper, …
 
 ### Q02 · Which author pairs collaborate most
 
@@ -67,17 +67,17 @@ ORDER BY shared_papers DESC, author_a, author_b
 LIMIT 20;
 ```
 
-| author_a      | author_b      | shared_papers |
-| ------------- | ------------- | ------------- |
-| Su‐Ting Han   | Ye Zhou       | 19            |
-| Qiangfei Xia  | Zhongrui Wang | 18            |
-| Ross Girshick | Kaiming He    | 18            |
-| Qiangfei Xia  | Hao Jiang     | 16            |
-| Qiangfei Xia  | Can Li        | 15            |
+| author_a | author_b | shared_papers |
+| --- | --- | --- |
+| Su‐Ting Han | Ye Zhou | 19 |
+| Qiangfei Xia | Zhongrui Wang | 18 |
+| Ross Girshick | Kaiming He | 18 |
+| Qiangfei Xia | Hao Jiang | 16 |
+| Qiangfei Xia | Can Li | 15 |
 
 _20 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.27 ms · execution 62.74 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper_author, Hash, Seq Scan on author
+**Plan:** Limit · planning 0.26 ms · execution 62.27 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper_author, Hash, Seq Scan on author
 
 ### Q03 · Which methods are benchmarked on which datasets, including unpaired ones
 
@@ -102,17 +102,17 @@ FULL OUTER JOIN dataset d ON d.dataset_id = methods.dataset_id
 ORDER BY papers DESC, method, dataset;
 ```
 
-| method                       | dataset  | papers |
-| ---------------------------- | -------- | ------ |
-| Convolution                  | COCO     | 64     |
-| Convolution                  | ImageNet | 61     |
-| Convolutional Neural Network | ImageNet | 58     |
-| Softmax                      | ImageNet | 58     |
-| Residual Connection          | COCO     | 57     |
+| method | dataset | papers |
+| --- | --- | --- |
+| Convolution | COCO | 64 |
+| Convolution | ImageNet | 61 |
+| Convolutional Neural Network | ImageNet | 58 |
+| Softmax | ImageNet | 58 |
+| Residual Connection | COCO | 57 |
 
 _1168 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.11 ms · execution 2.19 ms · operators: Sort, Hash Join, Aggregate, Seq Scan on paper_method, Hash, Seq Scan on paper_dataset, Seq Scan on method, Seq Scan on dataset
+**Plan:** Sort · planning 0.08 ms · execution 2.18 ms · operators: Sort, Hash Join, Aggregate, Seq Scan on paper_method, Hash, Seq Scan on paper_dataset, Seq Scan on method, Seq Scan on dataset
 
 ### Q04 · Top 3 papers in every leaf topic
 
@@ -133,17 +133,17 @@ WHERE t.topic_level = 3
 ORDER BY t.topic_name, top3.cited_by_count DESC;
 ```
 
-| topic_name                    | title                                                                  | cited_by_count |
-| ----------------------------- | ---------------------------------------------------------------------- | -------------- |
-| 2D Materials and Applications | Electric Field Effect in Atomically Thin Carbon Films                  | 66784          |
-| 2D Materials and Applications | Two-dimensional materials for next-generation computing technologies   | 1047           |
-| 2D Materials and Applications | Multi-terminal memtransistors from polycrystalline monolayer molybden… | 1025           |
-| 3D IC and TSV technologies    | Three-dimensional integration of nanotechnologies for computing and d… | 865            |
-| 3D IC and TSV technologies    | Neurocube                                                              | 342            |
+| topic_name | title | cited_by_count |
+| --- | --- | --- |
+| 2D Materials and Applications | Electric Field Effect in Atomically Thin Carbon Films | 66784 |
+| 2D Materials and Applications | Two-dimensional materials for next-generation computing technologies | 1047 |
+| 2D Materials and Applications | Multi-terminal memtransistors from polycrystalline monolayer molybden… | 1025 |
+| 3D IC and TSV technologies | Three-dimensional integration of nanotechnologies for computing and d… | 865 |
+| 3D IC and TSV technologies | Neurocube | 342 |
 
 _2053 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.12 ms · execution 14.92 ms · operators: Sort, Nested Loop, Seq Scan on topic, Limit, Bitmap Heap Scan on paper_topic, Bitmap Index Scan using ix_paper_topic_topic_id, Index Scan using pk_paper
+**Plan:** Sort · planning 0.12 ms · execution 15.27 ms · operators: Sort, Nested Loop, Seq Scan on topic, Limit, Bitmap Heap Scan on paper_topic, Bitmap Index Scan using ix_paper_topic_topic_id, Index Scan using pk_paper
 
 ### Q05 · Papers with no topic, found two ways
 
@@ -160,12 +160,12 @@ FROM paper p
 WHERE NOT EXISTS (SELECT 1 FROM paper_topic pt WHERE pt.paper_id = p.paper_id);
 ```
 
-| technique           | papers_without_topic |
-| ------------------- | -------------------- |
-| LEFT JOIN … IS NULL | 0                    |
-| NOT EXISTS          | 0                    |
+| technique | papers_without_topic |
+| --- | --- |
+| LEFT JOIN … IS NULL | 0 |
+| NOT EXISTS | 0 |
 
-**Plan:** Append · planning 0.08 ms · execution 2.48 ms · operators: Append, Aggregate, Hash Join, Index Only Scan using pk_paper, Hash, Seq Scan on paper_topic
+**Plan:** Append · planning 0.08 ms · execution 2.51 ms · operators: Append, Aggregate, Hash Join, Index Only Scan using pk_paper, Hash, Seq Scan on paper_topic
 
 ### Q06 · Authors with both journal and conference papers
 
@@ -184,17 +184,17 @@ ORDER BY a.author_name
 LIMIT 50;
 ```
 
-| author_id | author_name         |
-| --------- | ------------------- |
-| 30348     | Abdelrahman Mohamed |
-| 15053     | Adela Barriuso      |
-| 14664     | Aditya Khosla       |
-| 16539     | Àgata Lapedriza     |
-| 9028      | Alaaeldin El-Nouby  |
+| author_id | author_name |
+| --- | --- |
+| 30348 | Abdelrahman Mohamed |
+| 15053 | Adela Barriuso |
+| 14664 | Aditya Khosla |
+| 16539 | Àgata Lapedriza |
+| 9028 | Alaaeldin El-Nouby |
 
 _50 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.30 ms · execution 3.32 ms · operators: Limit, Sort, Nested Loop, Aggregate, Seq Scan on venue, Index Scan using ix_paper_venue_id, Index Only Scan using pk_paper_author, Index Scan using pk_author, …
+**Plan:** Limit · planning 0.30 ms · execution 3.29 ms · operators: Limit, Sort, Nested Loop, Aggregate, Seq Scan on venue, Index Scan using ix_paper_venue_id, Index Only Scan using pk_paper_author, Index Scan using pk_author, …
 
 ### Q07 · Institution leaderboard by papers and citations
 
@@ -215,17 +215,17 @@ ORDER BY citations DESC, papers DESC
 LIMIT 20;
 ```
 
-| institution_name                 | country_code | papers | citations | authors |
-| -------------------------------- | ------------ | ------ | --------- | ------- |
-| Google (United States)           | US           | 203    | 4538945   | 531     |
-| Google DeepMind (United Kingdom) | GB           | 58     | 3002394   | 270     |
-| Microsoft (United States)        | US           | 71     | 1449115   | 156     |
-| Meta (United States)             | US           | 58     | 1247028   | 94      |
-| Stanford University              | US           | 145    | 1169724   | 285     |
+| institution_name | country_code | papers | citations | authors |
+| --- | --- | --- | --- | --- |
+| Google (United States) | US | 203 | 4538945 | 531 |
+| Google DeepMind (United Kingdom) | GB | 58 | 3002394 | 270 |
+| Microsoft (United States) | US | 71 | 1449115 | 156 |
+| Meta (United States) | US | 58 | 1247028 | 94 |
+| Stanford University | US | 145 | 1169724 | 285 |
 
 _20 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.10 ms · execution 12.99 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper_author, Hash, Seq Scan on institution, Index Only Scan using ix_paper_cited_by_keyset
+**Plan:** Limit · planning 0.12 ms · execution 12.99 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper_author, Hash, Seq Scan on institution, Index Only Scan using ix_paper_cited_by_keyset
 
 ## Nested queries
 
@@ -245,17 +245,17 @@ ORDER BY p.cited_by_count - (SELECT avg(p2.cited_by_count) FROM paper p2 WHERE p
 LIMIT 25;
 ```
 
-| title                                                           | venue_name                                                             | cited_by_count | venue_average |
-| --------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------- | ------------- |
-| Deep Residual Learning for Image Recognition                    | IEEE Computer Society Conference on Computer Vision and Pattern Recog… | 234936         | 11211.1       |
-| Random Forests                                                  | Machine Learning                                                       | 132569         | 24669.9       |
-| Adam: A Method for Stochastic Optimization                      | arXiv (Cornell University)                                             | 99043          | 1878.0        |
-| Long Short-Term Memory                                          | Neural Computation                                                     | 102073         | 13118.3       |
-| U-Net: Convolutional Networks for Biomedical Image Segmentation | Lecture notes in computer science                                      | 99143          | 10313.3       |
+| title | venue_name | cited_by_count | venue_average |
+| --- | --- | --- | --- |
+| Deep Residual Learning for Image Recognition | IEEE Computer Society Conference on Computer Vision and Pattern Recog… | 234936 | 11211.1 |
+| Random Forests | Machine Learning | 132569 | 24669.9 |
+| Adam: A Method for Stochastic Optimization | arXiv (Cornell University) | 99043 | 1878.0 |
+| Long Short-Term Memory | Neural Computation | 102073 | 13118.3 |
+| U-Net: Convolutional Networks for Biomedical Image Segmentation | Lecture notes in computer science | 99143 | 10313.3 |
 
 _25 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.12 ms · execution 162.69 ms · operators: Limit, Result, Sort, Nested Loop, Seq Scan on paper, Aggregate, Index Scan using ix_paper_venue_id, Index Scan using pk_venue
+**Plan:** Limit · planning 0.14 ms · execution 163.89 ms · operators: Limit, Result, Sort, Nested Loop, Seq Scan on paper, Aggregate, Index Scan using ix_paper_venue_id, Index Scan using pk_venue
 
 ### Q09 · Authors active in every year 2021-2024
 
@@ -276,17 +276,17 @@ WHERE NOT EXISTS (
 ORDER BY a.author_name;
 ```
 
-| author_id | author_name        |
-| --------- | ------------------ |
-| 989       | Bai Tao Sun        |
-| 11088     | Demis Hassabis     |
-| 9455      | Deng-Ping Fan      |
-| 6958      | Fahad Shahbaz Khan |
-| 991       | Guangdong Zhou     |
+| author_id | author_name |
+| --- | --- |
+| 989 | Bai Tao Sun |
+| 11088 | Demis Hassabis |
+| 9455 | Deng-Ping Fan |
+| 6958 | Fahad Shahbaz Khan |
+| 991 | Guangdong Zhou |
 
 _29 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.11 ms · execution 61.09 ms · operators: Sort, Nested Loop, Seq Scan on author, Function Scan, Index Scan using ix_paper_author_author_id, Index Scan using pk_paper
+**Plan:** Sort · planning 0.12 ms · execution 60.16 ms · operators: Sort, Nested Loop, Seq Scan on author, Function Scan, Index Scan using ix_paper_author_author_id, Index Scan using pk_paper
 
 ### Q10 · Datasets used more than every dataset in the medical domain
 
@@ -306,17 +306,17 @@ HAVING count(*) > ALL (
 ORDER BY papers DESC;
 ```
 
-| dataset_name | domain          | papers |
-| ------------ | --------------- | ------ |
-| ImageNet     | Computer vision | 164    |
-| COCO         | Computer vision | 133    |
-| PASCAL VOC   | Computer vision | 69     |
-| MNIST        | Computer vision | 68     |
-| CIFAR-10     | Computer vision | 54     |
+| dataset_name | domain | papers |
+| --- | --- | --- |
+| ImageNet | Computer vision | 164 |
+| COCO | Computer vision | 133 |
+| PASCAL VOC | Computer vision | 69 |
+| MNIST | Computer vision | 68 |
+| CIFAR-10 | Computer vision | 54 |
 
 _6 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.07 ms · execution 0.21 ms · operators: Sort, Aggregate, Hash Join, Seq Scan on paper_dataset, Hash, Seq Scan on dataset, Materialize
+**Plan:** Sort · planning 0.09 ms · execution 0.22 ms · operators: Sort, Aggregate, Hash Join, Seq Scan on paper_dataset, Hash, Seq Scan on dataset, Materialize
 
 ### Q11 · Topics whose median citations beat the global median
 
@@ -337,17 +337,17 @@ ORDER BY median_citations DESC
 LIMIT 25;
 ```
 
-| topic_name                              | papers | median_citations |
-| --------------------------------------- | ------ | ---------------- |
-| Delphi Technique in Research            | 1      | 107088           |
-| Surface and Thin Film Phenomena         | 1      | 66784            |
-| Advanced Statistical Methods and Models | 1      | 51405            |
-| Ion channel regulation and function     | 1      | 23189            |
-| Ion Transport and Channel Regulation    | 1      | 23189            |
+| topic_name | papers | median_citations |
+| --- | --- | --- |
+| Delphi Technique in Research | 1 | 107088 |
+| Surface and Thin Film Phenomena | 1 | 66784 |
+| Advanced Statistical Methods and Models | 1 | 51405 |
+| Ion channel regulation and function | 1 | 23189 |
+| Ion Transport and Channel Regulation | 1 | 23189 |
 
 _25 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.14 ms · execution 5.69 ms · operators: Limit, Aggregate, Index Only Scan using ix_paper_cited_by_keyset, Sort, Hash Join, Seq Scan on paper_topic, Hash, Seq Scan on topic
+**Plan:** Limit · planning 0.13 ms · execution 5.68 ms · operators: Limit, Aggregate, Index Only Scan using ix_paper_cited_by_keyset, Sort, Hash Join, Seq Scan on paper_topic, Hash, Seq Scan on topic
 
 ### Q12 · Users with notes on papers outside all their collections
 
@@ -366,11 +366,11 @@ WHERE NOT EXISTS (
 ORDER BY u.name, n.updated_at DESC;
 ```
 
-| name            | title                                               | updated_at               |
-| --------------- | --------------------------------------------------- | ------------------------ |
-| Rhea Researcher | Continuous control with deep reinforcement learning | 2026-10-25T06:53:03.538Z |
+| name | title | updated_at |
+| --- | --- | --- |
+| Rhea Researcher | Continuous control with deep reinforcement learning | 2026-10-25T07:06:09.483Z |
 
-**Plan:** Sort · planning 0.13 ms · execution 0.03 ms · operators: Sort, Nested Loop, Hash Join, Seq Scan on collection_paper, Memoize, Index Scan using pk_collection, Hash, Seq Scan on note, …
+**Plan:** Sort · planning 0.14 ms · execution 0.03 ms · operators: Sort, Nested Loop, Hash Join, Seq Scan on collection_paper, Hash, Seq Scan on collection, Seq Scan on note, Seq Scan on user_account, …
 
 ### Q13 · Most-cited paper per year
 
@@ -393,17 +393,17 @@ WHERE p.publication_date IS NOT NULL
 ORDER BY year;
 ```
 
-| year | title                                                                  | cited_by_count |
-| ---- | ---------------------------------------------------------------------- | -------------- |
-| 1943 | A logical calculus of the ideas immanent in nervous activity           | 18551          |
-| 1950 | I.—COMPUTING MACHINERY AND INTELLIGENCE                                | 10271          |
-| 1951 | On Information and Sufficiency                                         | 20169          |
-| 1952 | A quantitative description of membrane current and its application to… | 23189          |
-| 1958 | The perceptron: A probabilistic model for information storage and org… | 12270          |
+| year | title | cited_by_count |
+| --- | --- | --- |
+| 1943 | A logical calculus of the ideas immanent in nervous activity | 18551 |
+| 1950 | I.—COMPUTING MACHINERY AND INTELLIGENCE | 10271 |
+| 1951 | On Information and Sufficiency | 20169 |
+| 1952 | A quantitative description of membrane current and its application to… | 23189 |
+| 1958 | The perceptron: A probabilistic model for information storage and org… | 12270 |
 
 _55 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.08 ms · execution 658.20 ms · operators: Sort, Seq Scan on paper, Aggregate, Bitmap Heap Scan on paper, Bitmap Index Scan using ix_paper_publication_date
+**Plan:** Sort · planning 0.09 ms · execution 657.27 ms · operators: Sort, Seq Scan on paper, Aggregate, Bitmap Heap Scan on paper, Bitmap Index Scan using ix_paper_publication_date
 
 ## Recursive queries
 
@@ -427,17 +427,17 @@ FROM subtree
 ORDER BY path;
 ```
 
-| depth | topic                            | path                                                                   |
-| ----- | -------------------------------- | ---------------------------------------------------------------------- |
-| 0     | Medicine                         | Medicine                                                               |
-| 1     | Anesthesiology and Pain Medicine | Medicine › Anesthesiology and Pain Medicine                            |
-| 2     | Anesthesia and Sedative Agents   | Medicine › Anesthesiology and Pain Medicine › Anesthesia and Sedative… |
-| 2     | Pain Management and Opioid Use   | Medicine › Anesthesiology and Pain Medicine › Pain Management and Opi… |
-| 2     | Pain Management and Treatment    | Medicine › Anesthesiology and Pain Medicine › Pain Management and Tre… |
+| depth | topic | path |
+| --- | --- | --- |
+| 0 | Medicine | Medicine |
+| 1 |  Anesthesiology and Pain Medicine | Medicine › Anesthesiology and Pain Medicine |
+| 2 |  Anesthesia and Sedative Agents | Medicine › Anesthesiology and Pain Medicine › Anesthesia and Sedative… |
+| 2 |  Pain Management and Opioid Use | Medicine › Anesthesiology and Pain Medicine › Pain Management and Opi… |
+| 2 |  Pain Management and Treatment | Medicine › Anesthesiology and Pain Medicine › Pain Management and Tre… |
 
 _176 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.03 ms · execution 0.89 ms · operators: Sort, Recursive Union, Index Scan using pk_topic, Hash Join, Seq Scan on topic, Hash, WorkTable Scan, CTE Scan
+**Plan:** Sort · planning 0.04 ms · execution 0.88 ms · operators: Sort, Recursive Union, Index Scan using pk_topic, Hash Join, Seq Scan on topic, Hash, WorkTable Scan, CTE Scan
 
 ### Q15 · What a paper builds on, three levels deep
 
@@ -462,17 +462,17 @@ ORDER BY a.paper_id, a.depth
 LIMIT 100;
 ```
 
-| paper_id | depth | title                                                                  | publication_year |
-| -------- | ----- | ---------------------------------------------------------------------- | ---------------- |
-| 1        | 2     | Loihi: A Neuromorphic Manycore Processor with On-Chip Learning         | 2018             |
-| 2        | 1     | Training and operation of an integrated neuromorphic network based on… | 2015             |
-| 4        | 1     | Memristors with diffusive dynamics as synaptic emulators for neuromor… | 2016             |
-| 7        | 2     | The future of electronics based on memristive systems                  | 2017             |
-| 8        | 1     | Organic electrochemical transistors                                    | 2018             |
+| paper_id | depth | title | publication_year |
+| --- | --- | --- | --- |
+| 1 | 2 | Loihi: A Neuromorphic Manycore Processor with On-Chip Learning | 2018 |
+| 2 | 1 | Training and operation of an integrated neuromorphic network based on… | 2015 |
+| 4 | 1 | Memristors with diffusive dynamics as synaptic emulators for neuromor… | 2016 |
+| 7 | 2 | The future of electronics based on memristive systems | 2017 |
+| 8 | 1 | Organic electrochemical transistors | 2018 |
 
 _100 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.11 ms · execution 27.82 ms · operators: Limit, Recursive Union, Index Only Scan using pk_citation, Nested Loop, WorkTable Scan, Unique, Sort, Hash Join, …
+**Plan:** Limit · planning 0.11 ms · execution 27.76 ms · operators: Limit, Recursive Union, Index Only Scan using pk_citation, Nested Loop, WorkTable Scan, Unique, Sort, Hash Join, …
 
 ### Q16 · Shortest citation path between two papers
 
@@ -502,13 +502,13 @@ WHERE h.depth = (SELECT min(depth) FROM hits)
 LIMIT 3;
 ```
 
-| hops | chain                                                                  |
-| ---- | ---------------------------------------------------------------------- |
-| 3    | Loihi: A Neuromorphic Manycore Processor with On-Chip Learning → Even… |
-| 3    | Loihi: A Neuromorphic Manycore Processor with On-Chip Learning → Even… |
-| 3    | Loihi: A Neuromorphic Manycore Processor with On-Chip Learning → Even… |
+| hops | chain |
+| --- | --- |
+| 3 | Loihi: A Neuromorphic Manycore Processor with On-Chip Learning → Even… |
+| 3 | Loihi: A Neuromorphic Manycore Processor with On-Chip Learning → Even… |
+| 3 | Loihi: A Neuromorphic Manycore Processor with On-Chip Learning → Even… |
 
-**Plan:** Limit · planning 0.06 ms · execution 0.92 ms · operators: Limit, Recursive Union, Result, Nested Loop, WorkTable Scan, Index Only Scan using pk_citation, CTE Scan, Aggregate, …
+**Plan:** Limit · planning 0.07 ms · execution 0.94 ms · operators: Limit, Recursive Union, Result, Nested Loop, WorkTable Scan, Index Only Scan using pk_citation, CTE Scan, Aggregate, …
 
 ### Q17 · Papers within two hops of retracted work
 
@@ -534,17 +534,17 @@ ORDER BY e.paper_id, e.hops
 LIMIT 100;
 ```
 
-| exposed_paper                                                          | hops | retracted_paper                                                        |
-| ---------------------------------------------------------------------- | ---- | ---------------------------------------------------------------------- |
-| A Comprehensive Survey of Deep Learning Approaches in Image Processing | 2    | Deep Learning Model for the Automatic Classification of White Blood C… |
-| MA-Net: A Multi-Scale Attention Network for Liver and Tumor Segmentat… | 2    | U-Net-Based Medical Image Segmentation                                 |
-| Machine learning techniques for IoT security: Current research and fu… | 2    | RETRACTED ARTICLE: Maintaining Security and Privacy in Health Care Sy… |
-| CSWin-UNet: Transformer UNet with cross-shaped windows for medical im… | 2    | Deep Neural Networks for Medical Image Segmentation                    |
-| Permissioned Blockchain and Deep Learning for Secure and Efficient Da… | 2    | RETRACTED ARTICLE: Securing e-health records using keyless signature … |
+| exposed_paper | hops | retracted_paper |
+| --- | --- | --- |
+| A Comprehensive Survey of Deep Learning Approaches in Image Processing | 2 | Deep Learning Model for the Automatic Classification of White Blood C… |
+| MA-Net: A Multi-Scale Attention Network for Liver and Tumor Segmentat… | 2 | U-Net-Based Medical Image Segmentation |
+| Machine learning techniques for IoT security: Current research and fu… | 2 | RETRACTED ARTICLE: Maintaining Security and Privacy in Health Care Sy… |
+| CSWin-UNet: Transformer UNet with cross-shaped windows for medical im… | 2 | Deep Neural Networks for Medical Image Segmentation |
+| Permissioned Blockchain and Deep Learning for Secure and Efficient Da… | 2 | RETRACTED ARTICLE: Securing e-health records using keyless signature … |
 
 _100 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.14 ms · execution 81.90 ms · operators: Limit, Recursive Union, Hash Join, Seq Scan on citation, Hash, Seq Scan on retraction, Merge Join, Index Scan using ix_citation_cited_paper_id, …
+**Plan:** Limit · planning 0.14 ms · execution 82.69 ms · operators: Limit, Recursive Union, Hash Join, Seq Scan on citation, Hash, Seq Scan on retraction, Merge Join, Index Scan using ix_citation_cited_paper_id, …
 
 ## Analytics queries
 
@@ -570,17 +570,17 @@ WHERE rank_in_topic <= 5
 ORDER BY topic_name, rank_in_topic;
 ```
 
-| topic_name                    | title                                                                  | cited_by_count | rank_in_topic | percent_rank |
-| ----------------------------- | ---------------------------------------------------------------------- | -------------- | ------------- | ------------ |
-| 2D Materials and Applications | Two-dimensional materials for next-generation computing technologies   | 1047           | 1             | 0.000        |
-| 2D Materials and Applications | Transistors based on two-dimensional materials for future integrated … | 988            | 2             | 0.045        |
-| 2D Materials and Applications | 2D Heterostructures for Ubiquitous Electronics and Optoelectronics: P… | 716            | 3             | 0.091        |
-| 2D Materials and Applications | Bioinspired in-sensor visual adaptation for accurate perception        | 611            | 4             | 0.136        |
-| 2D Materials and Applications | Human eye-inspired soft optoelectronic device using high-density MoS2… | 541            | 5             | 0.182        |
+| topic_name | title | cited_by_count | rank_in_topic | percent_rank |
+| --- | --- | --- | --- | --- |
+| 2D Materials and Applications | Two-dimensional materials for next-generation computing technologies | 1047 | 1 | 0.000 |
+| 2D Materials and Applications | Transistors based on two-dimensional materials for future integrated … | 988 | 2 | 0.045 |
+| 2D Materials and Applications | 2D Heterostructures for Ubiquitous Electronics and Optoelectronics: P… | 716 | 3 | 0.091 |
+| 2D Materials and Applications | Bioinspired in-sensor visual adaptation for accurate perception | 611 | 4 | 0.136 |
+| 2D Materials and Applications | Human eye-inspired soft optoelectronic device using high-density MoS2… | 541 | 5 | 0.182 |
 
 _1118 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.13 ms · execution 3.85 ms · operators: Sort, Subquery Scan, WindowAgg, Hash Join, Index Scan using uq_one_primary_topic, Hash, Seq Scan on topic, Seq Scan on paper
+**Plan:** Sort · planning 0.14 ms · execution 3.77 ms · operators: Sort, Subquery Scan, WindowAgg, Hash Join, Index Scan using uq_one_primary_topic, Hash, Seq Scan on topic, Seq Scan on paper
 
 ### Q19 · Topic growth and three-year moving average
 
@@ -599,16 +599,16 @@ ORDER BY g.year;
 ```
 
 | year | papers | change | yoy_pct | moving_avg_3y |
-| ---- | ------ | ------ | ------- | ------------- |
-| 2012 | 9      | NULL   | NULL    | 9.0           |
-| 2013 | 15     | 6      | 66.7    | 12.0          |
-| 2014 | 39     | 24     | 160.0   | 21.0          |
-| 2015 | 43     | 4      | 10.3    | 32.3          |
-| 2016 | 73     | 30     | 69.8    | 51.7          |
+| --- | --- | --- | --- | --- |
+| 2012 | 9 | NULL | NULL | 9.0 |
+| 2013 | 15 | 6 | 66.7 | 12.0 |
+| 2014 | 39 | 24 | 160.0 | 21.0 |
+| 2015 | 43 | 4 | 10.3 | 32.3 |
+| 2016 | 73 | 30 | 69.8 | 51.7 |
 
 _15 rows; the first 5 are shown._
 
-**Plan:** WindowAgg · planning 0.01 ms · execution 1.20 ms · operators: WindowAgg, Sort, Function Scan
+**Plan:** WindowAgg · planning 0.01 ms · execution 1.22 ms · operators: WindowAgg, Sort, Function Scan
 
 ### Q20 · Papers by field and year with subtotals
 
@@ -628,17 +628,17 @@ GROUP BY GROUPING SETS ((f.topic_name, p.publication_year), (f.topic_name), ())
 ORDER BY grouping(f.topic_name), field, grouping(p.publication_year), year;
 ```
 
-| field                                | year | papers |
-| ------------------------------------ | ---- | ------ |
-| Agricultural and Biological Sciences | 2021 | 1      |
-| Agricultural and Biological Sciences | 2022 | 2      |
-| Agricultural and Biological Sciences | 2023 | 8      |
-| Agricultural and Biological Sciences | 2024 | 6      |
-| Agricultural and Biological Sciences | 2025 | 2      |
+| field | year | papers |
+| --- | --- | --- |
+| Agricultural and Biological Sciences | 2021 | 1 |
+| Agricultural and Biological Sciences | 2022 | 2 |
+| Agricultural and Biological Sciences | 2023 | 8 |
+| Agricultural and Biological Sciences | 2024 | 6 |
+| Agricultural and Biological Sciences | 2025 | 2 |
 
 _109 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.17 ms · execution 3.20 ms · operators: Sort, Aggregate, Hash Join, Index Scan using uq_one_primary_topic, Hash, Seq Scan on paper, Seq Scan on topic
+**Plan:** Sort · planning 0.18 ms · execution 3.14 ms · operators: Sort, Aggregate, Hash Join, Index Scan using uq_one_primary_topic, Hash, Seq Scan on paper, Seq Scan on topic
 
 ### Q21 · Open versus closed access per venue
 
@@ -658,17 +658,17 @@ ORDER BY papers DESC
 LIMIT 20;
 ```
 
-| venue_name                                                     | papers | open_access | closed | open_pct |
-| -------------------------------------------------------------- | ------ | ----------- | ------ | -------- |
-| arXiv (Cornell University)                                     | 779    | 779         | 0      | 100.0    |
-| Nature Communications                                          | 149    | 149         | 0      | 100.0    |
-| IEEE Transactions on Pattern Analysis and Machine Intelligence | 145    | 105         | 40     | 72.4     |
-| Advanced Materials                                             | 120    | 41          | 79     | 34.2     |
-| IEEE Access                                                    | 115    | 115         | 0      | 100.0    |
+| venue_name | papers | open_access | closed | open_pct |
+| --- | --- | --- | --- | --- |
+| arXiv (Cornell University) | 779 | 779 | 0 | 100.0 |
+| Nature Communications | 149 | 149 | 0 | 100.0 |
+| IEEE Transactions on Pattern Analysis and Machine Intelligence | 145 | 105 | 40 | 72.4 |
+| Advanced Materials | 120 | 41 | 79 | 34.2 |
+| IEEE Access | 115 | 115 | 0 | 100.0 |
 
 _20 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.05 ms · execution 1.28 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper, Hash, Seq Scan on venue
+**Plan:** Limit · planning 0.06 ms · execution 1.27 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper, Hash, Seq Scan on venue
 
 ## Set operations queries
 
@@ -694,13 +694,13 @@ ORDER BY membership, author_name
 LIMIT 60;
 ```
 
-| membership       | author_name   |
-| ---------------- | ------------- |
-| first topic only | Aapo Kyrola   |
-| first topic only | Aaron Jaffey  |
+| membership | author_name |
+| --- | --- |
+| first topic only | Aapo Kyrola |
+| first topic only | Aaron Jaffey |
 | first topic only | Adam K. Lerer |
-| first topic only | Adam Paszke   |
-| first topic only | Aditya Gilra  |
+| first topic only | Adam Paszke |
+| first topic only | Aditya Gilra |
 
 _60 rows; the first 5 are shown._
 
@@ -731,11 +731,11 @@ FROM paper p
 WHERE p.paper_id = $1;
 ```
 
-| document                                                               |
-| ---------------------------------------------------------------------- |
+| document |
+| --- |
 | { "doi": "10.1109/cvpr.2016.90", "year": 2016, "cites": 26, "title": … |
 
-**Plan:** Index Scan using pk_paper · planning 0.10 ms · execution 0.15 ms · operators: Index Scan using pk_paper, Index Scan using pk_venue, Aggregate, Nested Loop, Index Scan using uq_paper_author_order, Index Scan using pk_author, Sort, Index Scan using pk_paper_topic, …
+**Plan:** Index Scan using pk_paper · planning 0.10 ms · execution 0.17 ms · operators: Index Scan using pk_paper, Index Scan using pk_venue, Aggregate, Nested Loop, Index Scan using uq_paper_author_order, Index Scan using pk_author, Sort, Index Scan using pk_paper_topic, …
 
 ## Search queries
 
@@ -755,11 +755,11 @@ ORDER BY similarity DESC, papers DESC
 LIMIT 10;
 ```
 
-| author_name  | similarity | papers |
-| ------------ | ---------- | ------ |
-| Quoc Viet Le | 0.625      | 38     |
+| author_name | similarity | papers |
+| --- | --- | --- |
+| Quoc Viet Le | 0.625 | 38 |
 
-**Plan:** Limit · planning 0.21 ms · execution 0.14 ms · operators: Limit, Sort, Bitmap Heap Scan on author, Bitmap Index Scan using ix_author_name_trgm, Aggregate, Index Only Scan using ix_paper_author_author_id
+**Plan:** Limit · planning 0.24 ms · execution 0.15 ms · operators: Limit, Sort, Bitmap Heap Scan on author, Bitmap Index Scan using ix_author_name_trgm, Aggregate, Index Only Scan using ix_paper_author_author_id
 
 ### Q25 · Ranked full-text search with highlights
 
@@ -778,14 +778,14 @@ ORDER BY rank DESC, p.cited_by_count DESC
 LIMIT 10;
 ```
 
-| title                                                                  | rank   | snippet                                                                |
-| ---------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------- |
+| title | rank | snippet |
+| --- | --- | --- |
 | SIBoLS: Robust and Energy-Efficient Learning for Spike-Based Machine … | 0.6977 | theories to derive learning algorithms for improving the robustness a… |
 | An artificial visual neuron with multiplexed rate and time-to-first-s… | 0.6063 | Human visual neurons rely on event-driven, «energy»-«efficient» «spik… |
 | A Spiking Neural Network With Adaptive Graph Convolution and LSTM for… | 0.4156 | classification is essential for the brain-computer interface (BCI). R… |
-| Magnetic skyrmion-based artificial neuron device                       | 0.4000 | artificial neuron may enable us to build a dense and «energy»-«effici… |
+| Magnetic skyrmion-based artificial neuron device | 0.4000 | artificial neuron may enable us to build a dense and «energy»-«effici… |
 | High-performance deep spiking neural networks with 0.3 spikes per neu… | 0.1844 | Communication by rare, binary «spikes» is a key factor for the «energ… |
 
 _10 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.04 ms · execution 1.02 ms · operators: Limit, Result, Sort, Bitmap Heap Scan on paper, Bitmap Index Scan using ix_paper_search_vector
+**Plan:** Limit · planning 0.04 ms · execution 1.04 ms · operators: Limit, Result, Sort, Bitmap Heap Scan on paper, Bitmap Index Scan using ix_paper_search_vector

@@ -20,7 +20,11 @@
       "!docs/report/assets",
       "!docs/screenshots",
       "!db/seed/fixture.sql",
-      "!pnpm-lock.yaml"
+      "!pnpm-lock.yaml",
+      "!docs/report/report.md",
+      "!docs/05-ddl.md",
+      "!docs/06-dml.md",
+      "!docs/07-queries.md"
     ]
   },
   "formatter": {
