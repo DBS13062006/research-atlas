@@ -7,10 +7,13 @@ import { createHighlighter, type Highlighter } from "shiki";
 let highlighter: Promise<Highlighter> | null = null;
 
 export async function highlight(code: string, lang: "sql" | "cypher"): Promise<string> {
-  highlighter ??= createHighlighter({ themes: ["github-light", "github-dark"], langs: ["sql", "cypher"] });
+  highlighter ??= createHighlighter({
+    themes: ["github-light-default", "github-dark-default"],
+    langs: ["sql", "cypher"],
+  });
   return (await highlighter).codeToHtml(code, {
     lang,
-    themes: { light: "github-light", dark: "github-dark" },
+    themes: { light: "github-light-default", dark: "github-dark-default" },
     defaultColor: false,
   });
 }

@@ -34,7 +34,9 @@ export async function demoIds(request: APIRequestContext) {
   expect(search.ok()).toBeTruthy();
   const paperId: number = (await search.json()).hits[0].paper_id;
   const paper = await (await request.get(`/api/v1/papers/${paperId}`)).json();
+  const trails = await (await request.get("/api/v1/trails")).json();
   return {
+    trailId: trails.items[0].trailId as string,
     paperId,
     authorId: paper.authors[0].author_id as number,
     topicId: paper.primary_topic_id as number,

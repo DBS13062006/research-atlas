@@ -2,7 +2,7 @@
 
 import { scaleLinear, scaleSqrt } from "d3";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 // "Where did this idea come from, and where did it go?" Each paper sits at its publication year
 // (x) in the lane for its citation depth (y); a curve joins it to the paper it was reached through.
@@ -25,7 +25,8 @@ export function LineageTimeline({
   nodes: TimelineNode[];
   direction: "ancestors" | "descendants";
 }) {
-  const wrap = useRef<HTMLDivElement>(null);
+  const wrap = useRef<HTMLElement>(null);
+  const captionId = useId();
   const [width, setWidth] = useState(800);
   const [hover, setHover] = useState<number | null>(null);
   useEffect(() => {
@@ -67,13 +68,12 @@ export function LineageTimeline({
   const hovered = hover !== null ? (shown.find((n) => n.paper_id === hover) ?? null) : null;
 
   return (
-    <div ref={wrap} className="relative w-full overflow-hidden rounded-xl border bg-card">
-      <svg
-        width={width}
-        height={height}
-        role="img"
-        aria-label={`Timeline of ${shown.length} ${direction} by year and citation depth`}
-      >
+    <figure ref={wrap} className="relative m-0 w-full overflow-hidden rounded-xl border bg-card">
+      <figcaption id={captionId} className="sr-only">
+        Timeline of {shown.length} {direction} by year and citation depth
+      </figcaption>
+      {/* biome-ignore lint/a11y/noSvgWithoutTitle: labelled with aria-labelledby; must keep its interactive children */}
+      <svg width={width} height={height} aria-labelledby={captionId}>
         {Array.from({ length: maxDepth + 1 }, (_, d) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: lanes are positional
           <g key={d}>
@@ -171,6 +171,6 @@ export function LineageTimeline({
           ))}
         </ol>
       </details>
-    </div>
+    </figure>
   );
 }

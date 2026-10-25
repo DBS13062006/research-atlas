@@ -13,7 +13,7 @@ import {
   zoomIdentity,
 } from "d3";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 // A small force-directed graph in SVG: every node is a focusable link, so the graph works by
 // keyboard and screen reader too. Layout is computed once (fixed seed via deterministic start).
@@ -56,6 +56,7 @@ export function ForceGraph({
   const [width, setWidth] = useState(720);
   const [hover, setHover] = useState<string | null>(null);
   const router = useRouter();
+  const captionId = useId();
 
   useEffect(() => {
     const el = wrap.current;
@@ -129,9 +130,17 @@ export function ForceGraph({
 
   return (
     <figure ref={wrap} className="m-0 w-full overflow-hidden rounded-xl border bg-card">
-      <figcaption className="sr-only">{ariaLabel}</figcaption>
-      <svg ref={svgRef} width={width} height={height} className="block cursor-grab active:cursor-grabbing">
-        <title>{ariaLabel}</title>
+      <figcaption id={captionId} className="sr-only">
+        {ariaLabel}
+      </figcaption>
+      {/* biome-ignore lint/a11y/noSvgWithoutTitle: labelled with aria-labelledby; must keep its interactive children */}
+      <svg
+        ref={svgRef}
+        width={width}
+        height={height}
+        aria-labelledby={captionId}
+        className="block cursor-grab active:cursor-grabbing"
+      >
         <defs>
           <marker
             id="fg-arrow"
@@ -171,48 +180,56 @@ export function ForceGraph({
           {layout.simNodes.map((n) => {
             const dim = neighbours && !neighbours.has(n.id);
             const r = n.size ?? 6;
-            const content = (
-              <>
-                <circle
-                  r={r}
-                  fill={n.color}
-                  fillOpacity={dim ? 0.25 : 0.95}
-                  stroke={n.ring ?? "var(--background)"}
-                  strokeWidth={n.ring ? 2.5 : 1.5}
-                />
-                {r >= 9 || hover === n.id ? (
-                  <text
-                    x={r + 4}
-                    y={4}
-                    className="pointer-events-none fill-foreground text-[11px]"
-                    opacity={dim ? 0.3 : 1}
-                  >
-                    {n.label.length > 48 ? `${n.label.slice(0, 47)}…` : n.label}
-                  </text>
-                ) : null}
-                <title>{n.title ?? n.label}</title>
-              </>
+            const at = `translate(${n.x},${n.y})`;
+            const circle = (
+              <circle
+                r={r}
+                fill={n.color}
+                fillOpacity={dim ? 0.25 : 0.95}
+                stroke={n.ring ?? "var(--background)"}
+                strokeWidth={n.ring ? 2.5 : 1.5}
+              />
             );
-            return n.href ? (
-              <a
-                key={n.id}
-                href={n.href}
-                onMouseEnter={() => setHover(n.id)}
-                onMouseLeave={() => setHover(null)}
-                onFocus={() => setHover(n.id)}
-                onBlur={() => setHover(null)}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (n.href) router.push(n.href);
-                }}
-                className="focus:outline-none [&:focus-visible_circle]:stroke-[var(--ring)] [&:focus-visible_circle]:stroke-[3px]"
-                aria-label={n.label}
-              >
-                <g transform={`translate(${n.x},${n.y})`}>{content}</g>
-              </a>
-            ) : (
-              <g key={n.id} transform={`translate(${n.x},${n.y})`}>
-                {content}
+            // The visible label sits outside the link and is hidden from assistive technology: the
+            // link's accessible name is the full title, which a truncated label could not match.
+            const label =
+              r >= 9 || hover === n.id ? (
+                <text
+                  x={r + 4}
+                  y={4}
+                  aria-hidden
+                  className="pointer-events-none fill-foreground text-[11px]"
+                  opacity={dim ? 0.3 : 1}
+                >
+                  {n.label.length > 48 ? `${n.label.slice(0, 47)}…` : n.label}
+                </text>
+              ) : null;
+            return (
+              <g key={n.id} transform={at}>
+                {n.href ? (
+                  <a
+                    href={n.href}
+                    onMouseEnter={() => setHover(n.id)}
+                    onMouseLeave={() => setHover(null)}
+                    onFocus={() => setHover(n.id)}
+                    onBlur={() => setHover(null)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (n.href) router.push(n.href);
+                    }}
+                    className="focus:outline-none [&:focus-visible_circle]:stroke-[var(--ring)] [&:focus-visible_circle]:stroke-[3px]"
+                    aria-label={n.title ?? n.label}
+                  >
+                    {circle}
+                    <title>{n.title ?? n.label}</title>
+                  </a>
+                ) : (
+                  <>
+                    {circle}
+                    <title>{n.title ?? n.label}</title>
+                  </>
+                )}
+                {label}
               </g>
             );
           })}

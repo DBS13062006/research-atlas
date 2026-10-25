@@ -28,11 +28,16 @@ export async function AccountMenu() {
     <Popover>
       <PopoverTrigger
         render={
-          <Button variant="outline" size="sm" aria-label={`Account menu for ${user.name}`}>
-            <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+          <Button variant="outline" size="sm">
+            <span
+              aria-hidden
+              className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground"
+            >
               {user.name.slice(0, 1).toUpperCase()}
             </span>
-            <span className="hidden max-w-32 truncate sm:inline">{user.name}</span>
+            {/* The visible name is the start of the accessible name (WCAG 2.5.3, label in name). */}
+            <span className="max-w-32 truncate max-sm:sr-only">{user.name}</span>
+            <span className="sr-only">, account menu</span>
           </Button>
         }
       />

@@ -53,7 +53,7 @@ async function Heatmap() {
                         className="flex size-7 items-center justify-center rounded font-mono text-[10px]"
                         style={{
                           background: n
-                            ? `color-mix(in oklch, var(--chart-2) ${Math.round(15 + (85 * n) / max)}%, transparent)`
+                            ? `color-mix(in oklch, var(--heat) ${Math.round(20 + (80 * n) / max)}%, var(--card))`
                             : "var(--muted)",
                         }}
                         title={`${mname} on ${dname}: ${n} papers`}
