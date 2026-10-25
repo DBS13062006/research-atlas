@@ -155,3 +155,14 @@ export const retractionCreate = z.object({
   reason: z.string().trim().max(2000).nullish(),
   notice_url: z.url().max(1000).nullish(),
 });
+
+export const methodUsages = ["PROPOSED", "USED", "COMPARED", "EXTENDED", "BASELINE", "OTHER"] as const;
+export const datasetUsages = ["TRAINING", "VALIDATION", "TESTING", "BENCHMARKING", "OTHER"] as const;
+export const paperMethodLink = z.object({
+  method_id: idParam,
+  usage_type: z.enum(methodUsages).default("USED"),
+});
+export const paperDatasetLink = z.object({
+  dataset_id: idParam,
+  usage_type: z.enum(datasetUsages).default("BENCHMARKING"),
+});

@@ -166,3 +166,58 @@ export async function checkMyLibrary(ctx: DbContext) {
       ORDER BY cp.paper_id, x.retracted_paper_id, x.hops`,
   );
 }
+
+export async function listMethods(ctx: DbContext) {
+  return withDb(
+    ctx,
+    (tx) => tx`
+      SELECT m.method_id::INT, m.method_name, m.method_category, count(pm.paper_id)::INT AS papers
+      FROM method m LEFT JOIN paper_method pm USING (method_id)
+      GROUP BY m.method_id ORDER BY m.method_name`,
+  );
+}
+
+export async function listDatasets(ctx: DbContext) {
+  return withDb(
+    ctx,
+    (tx) => tx`
+      SELECT d.dataset_id::INT, d.dataset_name, d.modality, d.domain, count(pd.paper_id)::INT AS papers
+      FROM dataset d LEFT JOIN paper_dataset pd USING (dataset_id)
+      GROUP BY d.dataset_id ORDER BY d.dataset_name`,
+  );
+}
+
+export async function linkMethod(ctx: DbContext, paperId: number, methodId: number, usage: string) {
+  return withDb(ctx, async (tx) => {
+    await tx`
+      INSERT INTO paper_method (paper_id, method_id, usage_type) VALUES (${paperId}, ${methodId}, ${usage})
+      ON CONFLICT (paper_id, method_id) DO UPDATE SET usage_type = EXCLUDED.usage_type`;
+    return { paper_id: paperId, method_id: methodId, usage_type: usage };
+  });
+}
+
+export async function unlinkMethod(ctx: DbContext, paperId: number, methodId: number) {
+  return withDb(
+    ctx,
+    async (tx) =>
+      (await tx`DELETE FROM paper_method WHERE paper_id = ${paperId} AND method_id = ${methodId}`).count > 0,
+  );
+}
+
+export async function linkDataset(ctx: DbContext, paperId: number, datasetId: number, usage: string) {
+  return withDb(ctx, async (tx) => {
+    await tx`
+      INSERT INTO paper_dataset (paper_id, dataset_id, usage_type) VALUES (${paperId}, ${datasetId}, ${usage})
+      ON CONFLICT (paper_id, dataset_id) DO UPDATE SET usage_type = EXCLUDED.usage_type`;
+    return { paper_id: paperId, dataset_id: datasetId, usage_type: usage };
+  });
+}
+
+export async function unlinkDataset(ctx: DbContext, paperId: number, datasetId: number) {
+  return withDb(
+    ctx,
+    async (tx) =>
+      (await tx`DELETE FROM paper_dataset WHERE paper_id = ${paperId} AND dataset_id = ${datasetId}`).count >
+      0,
+  );
+}

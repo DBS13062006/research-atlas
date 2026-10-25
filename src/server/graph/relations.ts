@@ -67,6 +67,19 @@ export async function listRelations(driver: Driver, paperId: number): Promise<Re
   }
 }
 
+export async function recentRelations(driver: Driver, limit = 50): Promise<Relation[]> {
+  const session = driver.session({ defaultAccessMode: "READ" });
+  try {
+    const res = await session.run(
+      `MATCH (a:Paper)-[r]->(b:Paper) WHERE ${TYPE_FILTER} ${RETURN_RELATION} ORDER BY r.updatedAt DESC LIMIT $limit`,
+      { types: RELATION_TYPES, limit: neo4j.int(limit) },
+    );
+    return res.records.map((r) => r.toObject() as Relation);
+  } finally {
+    await session.close();
+  }
+}
+
 export async function getRelation(driver: Driver, relationId: string): Promise<Relation | null> {
   const session = driver.session({ defaultAccessMode: "READ" });
   try {
