@@ -207,7 +207,7 @@ ${html}
     });
     const pages = await tab.evaluate(() => document.body.scrollHeight);
     console.log(
-      `docs:report wrote report.md and report.pdf (${sections.length} sections, ~${Math.round(pages / 1050)} pages)`,
+      `docs:report wrote ${SUBMISSION ? "docs/_private/report-submission.pdf" : "report.md and report.pdf"} (${sections.length} sections, ~${Math.round(pages / 1050)} pages)`,
     );
   } finally {
     await browser.close();
