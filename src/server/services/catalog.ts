@@ -1,7 +1,7 @@
 import "server-only";
 
 import { type DbContext, withDb } from "@/server/db/client";
-import type { PaperCard } from "./papers";
+import type { PaperCard } from "@/server/services/papers";
 
 const CARD = `paper_id::INT, title, publication_year::INT, cited_by_count, local_citation_count, venue_name, author_names,
   primary_topic_name, retraction_status, open_access`;

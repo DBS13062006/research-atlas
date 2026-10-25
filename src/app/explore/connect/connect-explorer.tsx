@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { api } from "@/components/paper/api";
+import { BlockSkeleton, EmptyState, ErrorState } from "@/components/common/states";
 import { PaperPicker, type PickedPaper } from "@/components/paper/paper-picker";
-import { BlockSkeleton, EmptyState, ErrorState } from "@/components/states";
 import { Badge } from "@/components/ui/badge";
+import { api } from "@/lib/api-client";
 
 type PathResult = {
   graph: { hops: number; ids: number[]; titles: string[]; years: (number | null)[] } | null;

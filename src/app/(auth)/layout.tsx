@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { CompassMark } from "@/components/compass-mark";
+import { CompassMark } from "@/components/shell/compass-mark";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (

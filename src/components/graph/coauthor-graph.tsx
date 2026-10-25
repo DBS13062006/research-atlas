@@ -1,9 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { BlockSkeleton } from "../states";
+import { BlockSkeleton } from "@/components/common/states";
 
-const ForceGraph = dynamic(() => import("./force-graph").then((m) => m.ForceGraph), {
+const ForceGraph = dynamic(() => import("@/components/graph/force-graph").then((m) => m.ForceGraph), {
   ssr: false,
   loading: () => <BlockSkeleton className="h-[420px]" />,
 });

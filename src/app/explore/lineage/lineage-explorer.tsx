@@ -3,12 +3,12 @@
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { BlockSkeleton, EmptyState, ErrorState } from "@/components/common/states";
 import type { TimelineNode } from "@/components/graph/lineage-timeline";
-import { api } from "@/components/paper/api";
 import { PaperPicker, type PickedPaper } from "@/components/paper/paper-picker";
-import { BlockSkeleton, EmptyState, ErrorState } from "@/components/states";
 import { Badge } from "@/components/ui/badge";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { api } from "@/lib/api-client";
 
 const LineageTimeline = dynamic(
   () => import("@/components/graph/lineage-timeline").then((m) => m.LineageTimeline),

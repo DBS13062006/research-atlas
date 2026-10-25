@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { logoutAction } from "@/app/(auth)/actions";
-import { PageHeader } from "@/components/page-header";
-import { BlockSkeleton, SignInPrompt } from "@/components/states";
+import { PageHeader } from "@/components/common/page-header";
+import { BlockSkeleton, SignInPrompt } from "@/components/common/states";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";

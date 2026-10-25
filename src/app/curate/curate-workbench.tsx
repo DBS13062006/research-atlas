@@ -4,9 +4,8 @@ import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { api } from "@/components/paper/api";
+import { BlockSkeleton, EmptyState } from "@/components/common/states";
 import { PaperPicker, type PickedPaper } from "@/components/paper/paper-picker";
-import { BlockSkeleton, EmptyState } from "@/components/states";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { api } from "@/lib/api-client";
 import { label, relativeTime } from "@/lib/format";
 
 type Named = { id: number; name: string };

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import type { AtlasPoint } from "@/server/services/graph-views";
 
-const AtlasCanvas = dynamic(() => import("./atlas-canvas").then((m) => m.AtlasCanvas), {
+const AtlasCanvas = dynamic(() => import("@/components/atlas/atlas-canvas").then((m) => m.AtlasCanvas), {
   ssr: false,
   loading: () => <div className="h-[380px] animate-pulse rounded-xl border bg-muted/40" />,
 });

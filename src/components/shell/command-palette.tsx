@@ -7,7 +7,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 
-const CommandPaletteDialog = dynamic(() => import("./command-palette-dialog"), { ssr: false });
+const CommandPaletteDialog = dynamic(() => import("@/components/shell/command-palette-dialog"), {
+  ssr: false,
+});
 
 export function CommandPalette() {
   // "never" until the first open: the dialog (and cmdk with it) is only loaded once it is wanted.

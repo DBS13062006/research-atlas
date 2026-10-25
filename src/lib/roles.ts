@@ -1,6 +1,6 @@
 // Application roles, their rank on the privilege ladder and the PostgreSQL role each maps to.
 // Mirrors the `role` table (seeded in 900_reference_seed.sql); used by UI gating and the API.
-import type { DbRole } from "./query-catalog";
+import type { DbRole } from "@/lib/query-catalog";
 
 export type RoleCode = "ANONYMOUS" | "RESEARCHER" | "CURATOR" | "ADMIN";
 

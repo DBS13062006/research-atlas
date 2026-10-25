@@ -14,7 +14,7 @@ import { categoryColor } from "@/lib/format";
 import type { AtlasPoint, Front } from "@/server/services/graph-views";
 
 // The canvas (and d3) load only on the client, so the page shell stays small.
-const AtlasCanvas = dynamic(() => import("./atlas-canvas").then((m) => m.AtlasCanvas), {
+const AtlasCanvas = dynamic(() => import("@/components/atlas/atlas-canvas").then((m) => m.AtlasCanvas), {
   ssr: false,
   loading: () => <div className="h-[640px] animate-pulse rounded-xl border bg-muted/40" />,
 });

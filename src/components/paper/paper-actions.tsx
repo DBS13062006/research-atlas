@@ -17,8 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { api } from "@/lib/api-client";
 import { atLeast, type RoleCode } from "@/lib/roles";
-import { api } from "./api";
 
 type Collection = { collection_id: number; collection_name: string };
 

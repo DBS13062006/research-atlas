@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
-import { AccessDenied, BlockSkeleton, SignInPrompt } from "@/components/states";
+import { CurateWorkbench } from "@/app/curate/curate-workbench";
+import { PageHeader } from "@/components/common/page-header";
+import { AccessDenied, BlockSkeleton, SignInPrompt } from "@/components/common/states";
 import { atLeast } from "@/lib/roles";
 import { getCurrentUser } from "@/server/auth/dal";
 import { ANONYMOUS } from "@/server/db/client";
 import { getPaperCards } from "@/server/services/papers";
-import { CurateWorkbench } from "./curate-workbench";
 
 export const metadata: Metadata = { title: "Curate" };
 

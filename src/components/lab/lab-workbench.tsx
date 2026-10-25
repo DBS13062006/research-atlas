@@ -3,18 +3,18 @@
 import { CheckCircle2, FlaskConical, Gauge, Play, Search, TriangleAlert } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { api } from "@/components/paper/api";
-import { EmptyState } from "@/components/states";
+import { EmptyState } from "@/components/common/states";
+import { PlanTree } from "@/components/lab/plan-tree";
+import { ResultGrid } from "@/components/lab/result-grid";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { api } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 import type { LabRun } from "@/server/services/lab";
-import { PlanTree } from "./plan-tree";
-import { ResultGrid } from "./result-grid";
 
 export type LabItem = {
   id: string;

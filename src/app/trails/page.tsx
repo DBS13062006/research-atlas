@@ -2,14 +2,14 @@ import { Globe, Lock } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
-import { EmptyState, ErrorState, ListSkeleton } from "@/components/states";
+import { NewTrailButton } from "@/app/trails/trail-forms";
+import { PageHeader } from "@/components/common/page-header";
+import { EmptyState, ErrorState, ListSkeleton } from "@/components/common/states";
 import { relativeTime } from "@/lib/format";
 import { getCurrentUser } from "@/server/auth/dal";
 import { graphDriver } from "@/server/graph/driver";
 import { listTrails } from "@/server/graph/trails";
 import { withNames } from "@/server/services/people";
-import { NewTrailButton } from "./trail-forms";
 
 export const metadata: Metadata = { title: "Reading trails" };
 

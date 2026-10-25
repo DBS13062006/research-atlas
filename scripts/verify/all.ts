@@ -4,7 +4,7 @@
 //   served on its own port · Playwright (smoke, roles, Lab, accessibility) · Lighthouse.
 // Run with `next dev` stopped: the build and the dev server would compete for memory.
 import { type ChildProcess, spawn } from "node:child_process";
-import { pnpm, runSteps, type Step } from "../lib-steps";
+import { pnpm, runSteps, type Step } from "../lib/steps";
 
 const PORT = 3101;
 const BASE = `http://localhost:${PORT}`;

@@ -2,7 +2,12 @@ import "server-only";
 
 import { randomUUID } from "node:crypto";
 import neo4j, { type Driver } from "neo4j-driver";
-import { type GraphActor, GraphForbiddenError, GraphNotFoundError, GraphValidationError } from "./errors";
+import {
+  type GraphActor,
+  GraphForbiddenError,
+  GraphNotFoundError,
+  GraphValidationError,
+} from "@/server/graph/errors";
 
 // Curated relations: a researcher asserts that one paper EXTENDS, IMPROVES_UPON, CONTRADICTS,
 // REPLICATES or is RELATED_TO another. They live only in Neo4j (it is their system of record), with

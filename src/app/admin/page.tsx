@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { PageHeader, Section } from "@/components/page-header";
-import { AccessDenied, BlockSkeleton, SignInPrompt } from "@/components/states";
+import { ActionButton, ActiveToggle, RoleSelect } from "@/app/admin/admin-controls";
+import { PageHeader, Section } from "@/components/common/page-header";
+import { AccessDenied, BlockSkeleton, SignInPrompt } from "@/components/common/states";
 import { Badge } from "@/components/ui/badge";
 import { formatNumber, relativeTime } from "@/lib/format";
 import { dbContext, getCurrentUser } from "@/server/auth/dal";
 import { auditLog, listUsers, outboxHealth, slowQueries } from "@/server/services/admin";
-import { ActionButton, ActiveToggle, RoleSelect } from "./admin-controls";
 
 export const metadata: Metadata = { title: "Admin" };
 

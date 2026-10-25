@@ -14,9 +14,9 @@ import { GripVertical, NotebookPen, ShieldAlert, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import { api } from "@/components/paper/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api-client";
 import { label } from "@/lib/format";
 
 export type Item = {

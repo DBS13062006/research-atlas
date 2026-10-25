@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
-import { BlockSkeleton, EmptyState, ListSkeleton } from "@/components/states";
+import { CheckLibrary } from "@/app/integrity/check-library";
+import { PageHeader } from "@/components/common/page-header";
+import { BlockSkeleton, EmptyState, ListSkeleton } from "@/components/common/states";
 import { Badge } from "@/components/ui/badge";
 import { formatDate, formatNumber, label } from "@/lib/format";
 import { getCurrentUser } from "@/server/auth/dal";
 import { cachedExposure, cachedIntegrity } from "@/server/cached";
-import { CheckLibrary } from "./check-library";
 
 export const metadata: Metadata = { title: "Integrity Radar" };
 

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CommandPalette } from "@/components/command-palette";
-import { CompassMark } from "@/components/compass-mark";
-import { MobileNav } from "@/components/mobile-nav";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { CommandPalette } from "@/components/shell/command-palette";
+import { CompassMark } from "@/components/shell/compass-mark";
+import { MobileNav } from "@/components/shell/mobile-nav";
+import { ThemeToggle } from "@/components/shell/theme-toggle";
 import { PRIMARY_NAV } from "@/lib/nav";
 
 export function SiteHeader({ account }: { account?: ReactNode }) {

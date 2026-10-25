@@ -3,6 +3,7 @@ import "server-only";
 import { connection, type NextRequest } from "next/server";
 import { ZodError, type z } from "zod";
 import { atLeast } from "@/lib/roles";
+import { API, type EndpointKey } from "@/server/api/registry";
 import { AuthError, dbContext, graphActor, roleOf } from "@/server/auth/dal";
 import {
   SESSION_COOKIE,
@@ -13,7 +14,6 @@ import {
 import type { DbContext } from "@/server/db/client";
 import { type Problem, problemFromDbError } from "@/server/db/errors";
 import type { GraphActor } from "@/server/graph/errors";
-import { API, type EndpointKey } from "./registry";
 
 // Wraps every /api/v1 route handler: same-origin check on writes, session lookup, the role gate from
 // the registry, Zod validation of query and body, and errors as RFC 9457 problem+json.

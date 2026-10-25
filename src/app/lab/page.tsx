@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { cacheLife } from "next/cache";
 import { Suspense } from "react";
+import { PageHeader } from "@/components/common/page-header";
+import { BlockSkeleton, SignInPrompt } from "@/components/common/states";
 import { type LabItem, LabWorkbench } from "@/components/lab/lab-workbench";
-import { PageHeader } from "@/components/page-header";
-import { BlockSkeleton, SignInPrompt } from "@/components/states";
 import { DB_ROLE } from "@/lib/roles";
 import { getCurrentUser } from "@/server/auth/dal";
 import { highlight } from "@/server/highlight";

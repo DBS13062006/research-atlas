@@ -1,7 +1,7 @@
 // pnpm setup:fixture — a fresh clone to a working atlas from the committed 200-paper fixture:
 // containers, migrations, fixture rows, the Neo4j projection, embeddings, the map layout,
 // graph analytics and the demo accounts. No OpenAlex key or downloaded corpus is needed.
-import { pnpm, runSteps } from "../lib-steps";
+import { pnpm, runSteps } from "../lib/steps";
 
 runSteps("setup:fixture", [
   pnpm("db:up"),

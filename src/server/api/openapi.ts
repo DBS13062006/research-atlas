@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ROLE_LABEL } from "@/lib/roles";
-import { API, type Endpoint } from "./registry";
+import { API, type Endpoint } from "@/server/api/registry";
 
 // OpenAPI 3.1 generated from the endpoint registry: every request schema is the same Zod schema the
 // handler validates with, so the documentation cannot drift from the code.

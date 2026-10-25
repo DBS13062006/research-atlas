@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
+import { SearchForm } from "@/app/search/search-form";
+import { PageHeader } from "@/components/common/page-header";
+import { EmptyState, ErrorState, ListSkeleton } from "@/components/common/states";
 import { PaperCard } from "@/components/paper/paper-card";
-import { EmptyState, ErrorState, ListSkeleton } from "@/components/states";
 import { Badge } from "@/components/ui/badge";
 import { searchQuery } from "@/lib/schemas";
 import { dbContext, getCurrentUser } from "@/server/auth/dal";
 import { cachedTopicTree } from "@/server/cached";
 import { listPapers } from "@/server/services/papers";
 import { search } from "@/server/services/search";
-import { SearchForm } from "./search-form";
 
 export const metadata: Metadata = { title: "Search" };
 

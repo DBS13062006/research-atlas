@@ -6,9 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { api } from "@/components/paper/api";
+import { BlockSkeleton, EmptyState } from "@/components/common/states";
 import { PaperPicker, type PickedPaper } from "@/components/paper/paper-picker";
-import { BlockSkeleton, EmptyState } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { api } from "@/lib/api-client";
 
 const ForceGraph = dynamic(() => import("@/components/graph/force-graph").then((m) => m.ForceGraph), {
   ssr: false,

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
-import { BlockSkeleton } from "@/components/states";
+import { ConnectExplorer } from "@/app/explore/connect/connect-explorer";
+import { PageHeader } from "@/components/common/page-header";
+import { BlockSkeleton } from "@/components/common/states";
 import { ANONYMOUS } from "@/server/db/client";
 import { getPaperCards } from "@/server/services/papers";
-import { ConnectExplorer } from "./connect-explorer";
 
 export const metadata: Metadata = { title: "Connect" };
 

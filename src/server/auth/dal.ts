@@ -4,9 +4,9 @@ import { cookies } from "next/headers";
 import { connection } from "next/server";
 import { cache } from "react";
 import { atLeast, can, DB_ROLE, type RoleCode } from "@/lib/roles";
+import { SESSION_COOKIE, type SessionUser, validateSessionToken } from "@/server/auth/session";
 import type { DbContext } from "@/server/db/client";
 import type { GraphActor } from "@/server/graph/errors";
-import { SESSION_COOKIE, type SessionUser, validateSessionToken } from "./session";
 
 // Data Access Layer: the one place pages, actions and route handlers learn who is calling.
 // Authorization is decided here and again by PostgreSQL (GRANTs + RLS), never by the proxy alone.

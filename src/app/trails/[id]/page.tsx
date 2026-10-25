@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
-import { BlockSkeleton } from "@/components/states";
+import { TrailEditor } from "@/app/trails/trail-forms";
+import { PageHeader } from "@/components/common/page-header";
+import { BlockSkeleton } from "@/components/common/states";
 import { Badge } from "@/components/ui/badge";
 import { getCurrentUser } from "@/server/auth/dal";
 import { ANONYMOUS, withDb } from "@/server/db/client";
@@ -10,7 +11,6 @@ import { graphDriver } from "@/server/graph/driver";
 import { GraphNotFoundError } from "@/server/graph/errors";
 import { getTrail } from "@/server/graph/trails";
 import { displayNames } from "@/server/services/people";
-import { TrailEditor } from "../trail-forms";
 
 export const metadata: Metadata = { title: "Reading trail" };
 

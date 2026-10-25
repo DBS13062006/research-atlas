@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
-import { BlockSkeleton, EmptyState } from "@/components/states";
+import { PageHeader } from "@/components/common/page-header";
+import { BlockSkeleton, EmptyState } from "@/components/common/states";
 import { Badge } from "@/components/ui/badge";
 import { cachedObservatory } from "@/server/cached";
 

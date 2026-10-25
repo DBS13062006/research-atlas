@@ -2,7 +2,12 @@ import "server-only";
 
 import { randomUUID } from "node:crypto";
 import neo4j, { type Driver, type ManagedTransaction } from "neo4j-driver";
-import { type GraphActor, GraphForbiddenError, GraphNotFoundError, GraphValidationError } from "./errors";
+import {
+  type GraphActor,
+  GraphForbiddenError,
+  GraphNotFoundError,
+  GraphValidationError,
+} from "@/server/graph/errors";
 
 // Reading Trails: an ordered route through papers, stored only in Neo4j as
 // (:Trail)-[:STEP {position, annotation}]->(:Paper). Positions are always 1..n with no gaps.

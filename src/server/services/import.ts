@@ -7,7 +7,7 @@ import { type DbContext, withDb } from "@/server/db/client";
 import { documentText, embeddingProvider } from "@/server/embeddings/provider";
 import { env } from "@/server/env";
 import { graphDriver } from "@/server/graph/driver";
-import { syncGraphNow } from "./admin";
+import { syncGraphNow } from "@/server/services/admin";
 
 export class ImportError extends Error {
   constructor(

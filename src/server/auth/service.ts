@@ -1,8 +1,8 @@
 import "server-only";
 
+import { hashPassword, verifyPassword } from "@/server/auth/password";
+import { createSession } from "@/server/auth/session";
 import { withAuthDb } from "@/server/db/client";
-import { hashPassword, verifyPassword } from "./password";
-import { createSession } from "./session";
 
 // Sign-up and log-in. Messages never reveal whether an email exists; a missing account still costs
 // one Argon2id verification so response times do not leak it either.

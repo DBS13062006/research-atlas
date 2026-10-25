@@ -4,15 +4,15 @@ import { Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { BlockSkeleton, EmptyState, ErrorState } from "@/components/common/states";
+import { PaperPicker, type PickedPaper } from "@/components/paper/paper-picker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { api } from "@/lib/api-client";
 import { label, relativeTime } from "@/lib/format";
 import { atLeast, type RoleCode } from "@/lib/roles";
-import { BlockSkeleton, EmptyState, ErrorState } from "../states";
-import { api } from "./api";
-import { PaperPicker, type PickedPaper } from "./paper-picker";
 
 const TYPES = ["EXTENDS", "IMPROVES_UPON", "CONTRADICTS", "REPLICATES", "RELATED_TO"] as const;
 type Relation = {

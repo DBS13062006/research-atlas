@@ -6,14 +6,14 @@ import { useCallback, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
+import { BlockSkeleton, EmptyState } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { api } from "@/lib/api-client";
 import { relativeTime } from "@/lib/format";
 import type { RoleCode } from "@/lib/roles";
-import { BlockSkeleton, EmptyState } from "../states";
-import { api } from "./api";
 
 type Note = { note_id: number; note_text: string; is_private: boolean; updated_at: string; is_mine: boolean };
 

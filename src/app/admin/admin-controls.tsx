@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { api } from "@/components/paper/api";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { api } from "@/lib/api-client";
 
 export function RoleSelect({ userId, role, name }: { userId: number; role: string; name: string }) {
   const router = useRouter();

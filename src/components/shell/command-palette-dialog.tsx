@@ -2,7 +2,6 @@
 
 import { FileText, Layers, UserRound } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { api } from "@/components/paper/api";
 import {
   Command,
   CommandDialog,
@@ -12,6 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { api } from "@/lib/api-client";
 import { NAV_SECTIONS } from "@/lib/nav";
 
 type PaperHit = { paper_id: number; title: string; publication_year: number | null };

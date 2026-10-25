@@ -5,7 +5,7 @@ import { reciprocalRankFusion } from "@/lib/rrf";
 import { type DbContext, withDb } from "@/server/db/client";
 import { embeddingProvider, queryText } from "@/server/embeddings/provider";
 import { graphDriver } from "@/server/graph/driver";
-import { getPaperCards, type PaperCard } from "./papers";
+import { getPaperCards, type PaperCard } from "@/server/services/papers";
 
 // Three ways to search the same corpus, so the difference is visible side by side:
 //   lexical  — PostgreSQL full-text search (fn_search_papers), with a trigram fallback for typos

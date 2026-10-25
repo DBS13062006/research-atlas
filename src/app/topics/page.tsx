@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
-import { ListSkeleton } from "@/components/states";
-import { type TopicBranch, TopicTree } from "@/components/topic-tree";
+import { PageHeader } from "@/components/common/page-header";
+import { ListSkeleton } from "@/components/common/states";
+import { type TopicBranch, TopicTree } from "@/components/topics/topic-tree";
 import { cachedTopicTree } from "@/server/cached";
 import type { TopicNode } from "@/server/services/catalog";
 

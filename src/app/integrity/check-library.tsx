@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { api } from "@/components/paper/api";
-import { EmptyState } from "@/components/states";
+import { EmptyState } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api-client";
 
 type Hit = {
   collection_name: string;

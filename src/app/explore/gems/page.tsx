@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
-import { EmptyState, ListSkeleton } from "@/components/states";
+import { PageHeader } from "@/components/common/page-header";
+import { EmptyState, ListSkeleton } from "@/components/common/states";
 import { formatNumber } from "@/lib/format";
 import { cachedGems } from "@/server/cached";
 

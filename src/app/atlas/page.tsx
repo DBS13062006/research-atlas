@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { AtlasExplorer } from "@/components/atlas/atlas-explorer";
-import { PageHeader } from "@/components/page-header";
-import { BlockSkeleton, ErrorState } from "@/components/states";
+import { PageHeader } from "@/components/common/page-header";
+import { BlockSkeleton, ErrorState } from "@/components/common/states";
 import { getCurrentUser } from "@/server/auth/dal";
 import { cachedAtlasPoints, cachedFronts } from "@/server/cached";
 
