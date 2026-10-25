@@ -198,6 +198,42 @@ export async function applyRows(
   }
 }
 
+// COAUTHOR is derived from AUTHORED. When authorships change, the co-authorships of the authors
+// involved are recomputed (pairs between other authors on the same papers cannot change).
+export async function refreshCoauthors(driver: Driver, authorIds: number[]) {
+  if (authorIds.length === 0) return;
+  const session = driver.session();
+  try {
+    await session.executeWrite(async (tx) => {
+      await tx.run("UNWIND $ids AS id MATCH (:Author {authorId: id})-[c:COAUTHOR]-() DELETE c", {
+        ids: authorIds,
+      });
+      await tx.run(
+        `UNWIND $ids AS id
+         MATCH (a:Author {authorId: id})-[:AUTHORED]->(p:Paper)<-[:AUTHORED]-(b:Author)
+         WITH a, b, count(DISTINCT p) AS papers
+         WITH CASE WHEN a.authorId < b.authorId THEN a ELSE b END AS x,
+              CASE WHEN a.authorId < b.authorId THEN b ELSE a END AS y, papers
+         MERGE (x)-[c:COAUTHOR]->(y) SET c.papers = papers`,
+        { ids: authorIds },
+      );
+    });
+  } finally {
+    await session.close();
+  }
+}
+
+function touchedAuthors(group: OutboxRow[]): number[] {
+  if (group[0].aggregate !== "paper_author") return [];
+  const ids = group.map((r) => {
+    const source = (r.operation === "UPSERT" ? r.payload : r.aggregate_key) as {
+      author_id?: number | string;
+    };
+    return Number(source?.author_id);
+  });
+  return [...new Set(ids.filter((id) => Number.isSafeInteger(id)))];
+}
+
 type OutboxRow = {
   outbox_id: string;
   aggregate: string;
@@ -241,6 +277,7 @@ export async function drainOutbox(inTransaction: InTransaction, driver: Driver, 
             group[0].operation,
             group.map((r) => (r.operation === "UPSERT" ? r.payload : r.aggregate_key)),
           );
+          await refreshCoauthors(driver, touchedAuthors(group));
           await tx`UPDATE graph_outbox SET processed_at = now(), last_error = NULL WHERE outbox_id = ANY(${ids}::BIGINT[])`;
           processed += group.length;
         } catch (err) {

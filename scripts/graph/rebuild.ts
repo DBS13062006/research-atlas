@@ -1,6 +1,7 @@
 // pnpm graph:rebuild — wipes the projected part of the graph and reloads it from PostgreSQL in batches
 // of 1,000. Graph-native data (trails, curated relations) and job-owned paper properties (embedding,
 // map coordinates, analytics scores) are kept; only papers that no longer exist in PostgreSQL go.
+// COAUTHOR edges hang off the recreated Author nodes, so they are derived again at the end.
 // Outbox rows written before the rebuild started are marked processed, later ones stay pending.
 import { closeGraphDriver, graphDriver } from "../../src/server/graph/driver";
 import {
@@ -9,6 +10,7 @@ import {
   PROJECTED_RELS,
   REBUILD_ORDER,
 } from "../../src/server/graph/projection";
+import { deriveCoauthors } from "./coauthors";
 import { ownerSql } from "./common";
 
 async function main(): Promise<void> {
@@ -48,6 +50,12 @@ async function main(): Promise<void> {
         n += rows.length;
       }
       console.log(`${step.aggregate.padEnd(14)} ${n}`);
+    }
+    const derived = driver.session();
+    try {
+      console.log(`${"coauthor".padEnd(14)} ${await deriveCoauthors(derived)} (re-derived)`);
+    } finally {
+      await derived.close();
     }
     if (max) {
       const r =

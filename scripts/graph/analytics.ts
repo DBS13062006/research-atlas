@@ -4,6 +4,7 @@
 //   top-10 vector neighbours with score ≥ 0.75 → (:Paper)-[:SIMILAR_TO {score, model}]->(:Paper)
 // Seeds are fixed so the results are the same on every run.
 import { closeGraphDriver, graphDriver } from "../../src/server/graph/driver";
+import { deriveCoauthors } from "./coauthors";
 
 async function main(): Promise<void> {
   const session = graphDriver().session();
@@ -44,15 +45,7 @@ async function main(): Promise<void> {
       await session.run("CALL gds.graph.drop($name, false) YIELD graphName RETURN graphName", { name });
     }
 
-    await session.run("MATCH ()-[c:COAUTHOR]->() CALL (c) { DELETE c } IN TRANSACTIONS OF 10000 ROWS");
-    await session.run(
-      `MATCH (a1:Author)-[:AUTHORED]->(p:Paper)<-[:AUTHORED]-(a2:Author)
-       WHERE a1.authorId < a2.authorId
-       WITH a1, a2, count(DISTINCT p) AS papers
-       CALL (a1, a2, papers) { MERGE (a1)-[c:COAUTHOR]->(a2) SET c.papers = papers } IN TRANSACTIONS OF 5000 ROWS`,
-    );
-    const co = await session.run("MATCH ()-[c:COAUTHOR]->() RETURN count(c) AS n");
-    step(`co-authorship (${co.records[0].get("n")} pairs)`);
+    step(`co-authorship (${await deriveCoauthors(session)} pairs)`);
 
     await session.run("MATCH ()-[s:SIMILAR_TO]->() CALL (s) { DELETE s } IN TRANSACTIONS OF 10000 ROWS");
     const meta = await session.run(

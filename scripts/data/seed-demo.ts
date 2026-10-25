@@ -8,13 +8,7 @@ import { closeGraphDriver, graphDriver } from "../../src/server/graph/driver";
 import { createRelation } from "../../src/server/graph/relations";
 import { addStep, createTrail } from "../../src/server/graph/trails";
 import { ownerUrl } from "../db/urls";
-
-export const DEMO_USERS = [
-  { email: "admin@research-atlas.test", name: "Asha Admin", role: "ADMIN" },
-  { email: "curator@research-atlas.test", name: "Cyrus Curator", role: "CURATOR" },
-  { email: "rhea@research-atlas.test", name: "Rhea Researcher", role: "RESEARCHER" },
-  { email: "ravi@research-atlas.test", name: "Ravi Researcher", role: "RESEARCHER" },
-] as const;
+import { DEMO_USERS } from "./demo-users";
 
 type Pick = { paper_id: string };
 
