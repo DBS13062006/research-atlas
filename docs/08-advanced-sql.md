@@ -7,18 +7,20 @@ Each is covered by pgTAP tests in [`db/tests/`](../db/tests); the test file is n
 
 ## 8.1 Functions
 
-| Function                                           | Returns                                            | Technique                                                             | Used by                         | Tests                      |
-| -------------------------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------- | -------------------------- |
-| `app_current_user_id()`                            | bigint                                             | `current_setting('app.user_id', true)`, `STABLE`                      | RLS policies, audit, procedures | `20_functions`             |
-| `fn_has_permission(user_id, code)`                 | boolean                                            | four-table join, `SECURITY DEFINER`                                   | procedures, UI gating           | `20_functions`             |
-| `fn_topic_path(topic_id)`                          | text                                               | recursive CTE up the tree, `string_agg … ORDER BY depth DESC`         | breadcrumbs, `v_paper_card`     | `20_functions`             |
-| `fn_topic_descendants(topic_id)`                   | table(topic_id, depth)                             | recursive CTE down the tree                                           | topic pages, `fn_topic_growth`  | `20_functions`             |
-| `fn_paper_lineage(paper_id, direction, max_depth)` | table(paper_id, depth, path)                       | recursive CTE with `SEARCH BREADTH FIRST` and `CYCLE`, `DISTINCT ON`  | Lineage view, API               | `20_functions`             |
-| `fn_author_h_index(author_id)`                     | int                                                | `row_number()` window                                                 | author page, `mv_author_stats`  | `20_functions`, `50_views` |
-| `fn_search_papers(query, limit, offset)`           | table(paper_id, title, rank, headline, matched_by) | `websearch_to_tsquery`, `ts_rank_cd`, `ts_headline`, trigram fallback | lexical search                  | `20_functions`             |
-| `fn_retraction_exposure(paper_id)`                 | table(retracted_paper_id, hops, path)              | recursive CTE limited to 2 hops, joined to `retraction`               | Integrity Radar                 | `20_functions`             |
-| `fn_topic_growth(topic_id, from, to)`              | table(year, papers, yoy_pct)                       | `generate_series` fills empty years, `LAG()`                          | Research fronts, Q19            | `20_functions`             |
-| `fn_ensure_audit_partition(ts)`                    | text                                               | dynamic DDL with `format('%I', …)`                                    | audit partitions                | migration                  |
+| Function                                           | Returns                                            | Technique                                                                 | Used by                         | Tests                      |
+| -------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------- | -------------------------- |
+| `app_current_user_id()`                            | bigint                                             | `current_setting('app.user_id', true)`, `STABLE`                          | RLS policies, audit, procedures | `20_functions`             |
+| `fn_has_permission(user_id, code)`                 | boolean                                            | four-table join, `SECURITY DEFINER`                                       | procedures, UI gating           | `20_functions`             |
+| `fn_topic_path(topic_id)`                          | text                                               | recursive CTE up the tree, `string_agg … ORDER BY depth DESC`             | breadcrumbs, `v_paper_card`     | `20_functions`             |
+| `fn_topic_descendants(topic_id)`                   | table(topic_id, depth)                             | recursive CTE down the tree                                               | topic pages, `fn_topic_growth`  | `20_functions`             |
+| `fn_paper_lineage(paper_id, direction, max_depth)` | table(paper_id, depth, path)                       | recursive CTE with `SEARCH BREADTH FIRST` and `CYCLE`, `DISTINCT ON`      | Lineage view, API               | `20_functions`             |
+| `fn_author_h_index(author_id)`                     | int                                                | `row_number()` window                                                     | author page, `mv_author_stats`  | `20_functions`, `50_views` |
+| `fn_search_papers(query, limit, offset)`           | table(paper_id, title, rank, headline, matched_by) | `websearch_to_tsquery`, `ts_rank_cd`, `ts_headline`, trigram fallback     | lexical search                  | `20_functions`             |
+| `fn_retraction_exposure(paper_id)`                 | table(retracted_paper_id, hops, path)              | recursive CTE limited to 2 hops, joined to `retraction`                   | Integrity Radar                 | `20_functions`             |
+| `fn_topic_growth(topic_id, from, to)`              | table(year, papers, yoy_pct)                       | `generate_series` fills empty years, `LAG()`                              | Research fronts, Q19            | `20_functions`             |
+| `fn_ensure_audit_partition(ts)`                    | text                                               | dynamic DDL with `format('%I', …)`                                        | audit partitions                | migration                  |
+| `fn_user_display_names(ids)`                       | table(user_id, name)                               | narrow `SECURITY DEFINER` read past forced RLS: names only                | trail and relation bylines      | `60_rbac`                  |
+| `fn_lab_side_effects()`                            | table(source, row_id, target, operation, detail)   | rows whose `xmin` is the current transaction, with a changed-columns diff | Query Lab trigger demos         | `40_triggers`              |
 
 ### The lineage walk
 
@@ -141,7 +143,15 @@ for different users.
 | Data-modifying CTE (`DELETE … RETURNING` counted)  | `sp_purge_expired_sessions`, `fn_session_delete` |
 | Non-recursive CTE chains for readability           | Q03, `fn_topic_growth`                           |
 
-## 8.6 Errors a caller can see
+## 8.6 Seeing it run: the Query Lab
+
+Every object in this chapter can be exercised live at `/lab` as the signed-in user's own role:
+routines R01–R06 call the functions and procedures (R04's `RAISE NOTICE` is shown), trigger demos T01–T04
+show the rows the triggers wrote to `audit_log` and `graph_outbox` (read back through
+`fn_lab_side_effects`), and constraint proofs P01–P10 show each guard refusing bad data. All runs are
+rolled back unless an administrator commits.
+
+## 8.7 Errors a caller can see
 
 | SQLSTATE                        | Raised by                                             | HTTP status in the API |
 | ------------------------------- | ----------------------------------------------------- | ---------------------- |
