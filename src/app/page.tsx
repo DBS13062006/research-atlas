@@ -30,7 +30,7 @@ async function Counters() {
   );
 }
 
-async function Map() {
+async function MapPreview() {
   await connection();
   const points = await cachedAtlasPoints().catch(() => []);
   if (points.length === 0) return null;
@@ -87,7 +87,7 @@ export default function Home() {
             </Suspense>
           </div>
           <Suspense fallback={<Skeleton className="h-[380px] w-full rounded-xl" />}>
-            <Map />
+            <MapPreview />
           </Suspense>
         </div>
       </section>

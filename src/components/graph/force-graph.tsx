@@ -50,7 +50,7 @@ export function ForceGraph({
   height?: number;
   ariaLabel: string;
 }) {
-  const wrap = useRef<HTMLDivElement>(null);
+  const wrap = useRef<HTMLElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const gRef = useRef<SVGGElement>(null);
   const [width, setWidth] = useState(720);
@@ -128,15 +128,10 @@ export function ForceGraph({
   }, [hover, layout]);
 
   return (
-    <div ref={wrap} className="w-full overflow-hidden rounded-xl border bg-card">
-      <svg
-        ref={svgRef}
-        width={width}
-        height={height}
-        role="group"
-        aria-label={ariaLabel}
-        className="block cursor-grab active:cursor-grabbing"
-      >
+    <figure ref={wrap} className="m-0 w-full overflow-hidden rounded-xl border bg-card">
+      <figcaption className="sr-only">{ariaLabel}</figcaption>
+      <svg ref={svgRef} width={width} height={height} className="block cursor-grab active:cursor-grabbing">
+        <title>{ariaLabel}</title>
         <defs>
           <marker
             id="fg-arrow"
@@ -199,7 +194,6 @@ export function ForceGraph({
               </>
             );
             return n.href ? (
-              // biome-ignore lint/a11y/useValidAnchor: SVG anchor navigates via the router for client transitions
               <a
                 key={n.id}
                 href={n.href}
@@ -217,18 +211,13 @@ export function ForceGraph({
                 <g transform={`translate(${n.x},${n.y})`}>{content}</g>
               </a>
             ) : (
-              <g
-                key={n.id}
-                transform={`translate(${n.x},${n.y})`}
-                onMouseEnter={() => setHover(n.id)}
-                onMouseLeave={() => setHover(null)}
-              >
+              <g key={n.id} transform={`translate(${n.x},${n.y})`}>
                 {content}
               </g>
             );
           })}
         </g>
       </svg>
-    </div>
+    </figure>
   );
 }

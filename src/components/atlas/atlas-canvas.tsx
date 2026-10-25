@@ -326,7 +326,6 @@ export function AtlasCanvas({
           cursor: interactive ? (drag.current ? "grabbing" : "grab") : "default",
           touchAction: "none",
         }}
-        // biome-ignore lint/a11y/noNoninteractiveTabindex: the canvas is keyboard-operable (see onKeyDown)
         tabIndex={interactive ? 0 : -1}
         role="img"
         aria-label={

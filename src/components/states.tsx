@@ -79,7 +79,7 @@ export function SignInPrompt({ next, what }: { next: string; what: string }) {
 
 export function ListSkeleton({ rows = 6 }: { rows?: number }) {
   return (
-    <div className="space-y-3" aria-busy="true" aria-label="Loading">
+    <div className="space-y-3" role="status" aria-busy="true" aria-label="Loading">
       {Array.from({ length: rows }, (_, i) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: static placeholder rows
         <div key={i} className="space-y-2 rounded-xl border p-4">
@@ -92,5 +92,12 @@ export function ListSkeleton({ rows = 6 }: { rows?: number }) {
 }
 
 export function BlockSkeleton({ className = "h-80" }: { className?: string }) {
-  return <Skeleton className={`w-full rounded-xl ${className}`} aria-busy="true" aria-label="Loading" />;
+  return (
+    <Skeleton
+      className={`w-full rounded-xl ${className}`}
+      role="status"
+      aria-busy="true"
+      aria-label="Loading"
+    />
+  );
 }

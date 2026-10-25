@@ -101,27 +101,32 @@ export function PaperPicker({
         ) : null}
       </div>
       {results.length > 0 ? (
-        <ul
+        <div
           id={`${id}-list`}
           role="listbox"
+          aria-label={`${label} suggestions`}
           className="absolute z-20 mt-1 max-h-72 w-full overflow-auto rounded-lg border bg-popover p-1 shadow-lg"
         >
           {results.map((r, i) => (
-            <li key={r.paper_id} role="option" aria-selected={i === active}>
-              <button
-                type="button"
-                className={`w-full rounded-md px-2 py-1.5 text-left text-sm ${i === active ? "bg-muted" : "hover:bg-muted"}`}
-                onMouseEnter={() => setActive(i)}
-                onClick={() => onChange(r)}
-              >
-                {r.title}
-                {r.publication_year ? (
-                  <span className="ml-2 font-mono text-xs text-muted-foreground">{r.publication_year}</span>
-                ) : null}
-              </button>
-            </li>
+            <div
+              key={r.paper_id}
+              role="option"
+              tabIndex={-1}
+              aria-selected={i === active}
+              className={`cursor-pointer rounded-md px-2 py-1.5 text-sm ${i === active ? "bg-muted" : "hover:bg-muted"}`}
+              onMouseEnter={() => setActive(i)}
+              onClick={() => onChange(r)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") onChange(r);
+              }}
+            >
+              {r.title}
+              {r.publication_year ? (
+                <span className="ml-2 font-mono text-xs text-muted-foreground">{r.publication_year}</span>
+              ) : null}
+            </div>
           ))}
-        </ul>
+        </div>
       ) : null}
     </div>
   );
