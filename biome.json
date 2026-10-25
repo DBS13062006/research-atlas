@@ -19,7 +19,8 @@
       "!docs/er",
       "!docs/report/assets",
       "!docs/screenshots",
-      "!db/seed/fixture.sql"
+      "!db/seed/fixture.sql",
+      "!pnpm-lock.yaml"
     ]
   },
   "formatter": {
