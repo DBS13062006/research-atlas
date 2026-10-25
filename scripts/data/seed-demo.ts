@@ -4,6 +4,9 @@
 import postgres from "postgres";
 import { hashPassword } from "../../src/server/auth/hash";
 import { env } from "../../src/server/env";
+import { closeGraphDriver, graphDriver } from "../../src/server/graph/driver";
+import { createRelation } from "../../src/server/graph/relations";
+import { addStep, createTrail } from "../../src/server/graph/trails";
 import { ownerUrl } from "../db/urls";
 
 export const DEMO_USERS = [
@@ -142,6 +145,7 @@ async function main(): Promise<void> {
       >`SELECT paper_id::TEXT FROM paper WHERE venue_id IS NULL OR abstract IS NULL ORDER BY cited_by_count DESC LIMIT 5`;
       await add(c5, review, ["NOT_READ"], ["MEDIUM"]);
     });
+    await seedGraph(sql, ids);
     const [s] = await sql<{ users: number; collections: number; entries: number; notes: number }[]>`
       SELECT (SELECT count(*) FROM user_account)::INT AS users, (SELECT count(*) FROM collection)::INT AS collections,
              (SELECT count(*) FROM collection_paper)::INT AS entries, (SELECT count(*) FROM note)::INT AS notes`;
@@ -153,6 +157,88 @@ async function main(): Promise<void> {
     );
   } finally {
     await sql.end();
+  }
+}
+
+// Reading trails and curated relations live only in Neo4j. Skipped (with a message) when the graph is down.
+async function seedGraph(sql: postgres.Sql, ids: Record<string, string>): Promise<void> {
+  const driver = graphDriver();
+  try {
+    await driver.verifyConnectivity();
+  } catch {
+    console.log("Neo4j is not reachable: demo trails and relations skipped");
+    return;
+  }
+  try {
+    const demo = Object.values(ids).map(Number);
+    const session = driver.session();
+    await session.run("MATCH (t:Trail) WHERE t.ownerId IN $ids DETACH DELETE t", { ids: demo });
+    await session.run(
+      "MATCH (:Paper)-[r]->(:Paper) WHERE r.createdBy IN $ids AND r.relationId IS NOT NULL DELETE r",
+      { ids: demo },
+    );
+    await session.close();
+    const actor = (email: string, role: "RESEARCHER" | "CURATOR") => ({
+      userId: Number(ids[email]),
+      isCurator: role === "CURATOR",
+      isAdmin: false,
+    });
+    const rhea = actor("rhea@research-atlas.test", "RESEARCHER");
+    const ravi = actor("ravi@research-atlas.test", "RESEARCHER");
+    const cyrus = actor("curator@research-atlas.test", "CURATOR");
+
+    // A trail along a real citation chain: the most locally cited SNN paper, then papers that build on it.
+    const [anchor] = await sql<{ paper_id: number }[]>`
+      SELECT paper_id::INT FROM paper WHERE title ~* 'spiking' ORDER BY local_citation_count DESC LIMIT 1`;
+    const chain = await sql<{ paper_id: number; title: string }[]>`
+      SELECT l.paper_id::INT, p.title FROM fn_paper_lineage(${anchor.paper_id}, 'descendants', 2) l
+      JOIN paper p USING (paper_id) ORDER BY l.depth, p.cited_by_count DESC LIMIT 4`;
+    const t1 = await createTrail(
+      driver,
+      {
+        title: "How spiking networks learned to train",
+        description: "From early learning rules to surrogate gradients and deep SNNs.",
+        visibility: "PUBLIC",
+      },
+      rhea,
+    );
+    await addStep(
+      driver,
+      t1,
+      anchor.paper_id,
+      "Start here: the paper the rest of this trail builds on.",
+      rhea,
+    );
+    for (const [i, c] of chain.entries()) {
+      await addStep(driver, t1, c.paper_id, i === 0 ? "Builds directly on the first stop." : null, rhea);
+    }
+    const rag = await sql<{ paper_id: number }[]>`
+      SELECT paper_id::INT FROM paper WHERE title ~* 'retrieval-augmented|retrieval augmented' ORDER BY cited_by_count DESC LIMIT 4`;
+    const t2 = await createTrail(driver, { title: "Getting started with RAG", visibility: "PRIVATE" }, ravi);
+    for (const r of rag) await addStep(driver, t2, r.paper_id, null, ravi);
+
+    const pairs = await sql<{ citing: number; cited: number }[]>`
+      SELECT c.citing_paper_id::INT AS citing, c.cited_paper_id::INT AS cited
+      FROM citation c JOIN paper a ON a.paper_id = c.citing_paper_id
+      WHERE a.title ~* 'spiking|attention|graph|reinforcement'
+      ORDER BY a.cited_by_count DESC LIMIT 4`;
+    const kinds = ["EXTENDS", "IMPROVES_UPON", "REPLICATES", "RELATED_TO"] as const;
+    for (const [i, p] of pairs.entries()) {
+      await createRelation(
+        driver,
+        {
+          fromPaperId: p.citing,
+          toPaperId: p.cited,
+          type: kinds[i],
+          note: i === 0 ? "Same architecture, larger scale." : null,
+          confidence: 3 + (i % 3),
+        },
+        i === 3 ? cyrus : i % 2 === 0 ? rhea : ravi,
+      );
+    }
+    console.log(`graph seed: 2 trails, ${pairs.length} curated relations`);
+  } finally {
+    await closeGraphDriver();
   }
 }
 
