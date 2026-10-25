@@ -189,3 +189,9 @@ The Lineage and Connect pages answer each question twice and show both timings:
 
 At this size PostgreSQL is competitive on traversals; Neo4j earns its place with the vector index, the graph
 algorithms and the graph-native features, which would be awkward or impossible in SQL alone.
+
+<!-- chapter-nav -->
+
+---
+
+[← Advanced SQL](08-advanced-sql.md) · [Documentation index](README.md) · [Authentication and RBAC →](10-auth-rbac.md)

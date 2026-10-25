@@ -48,7 +48,7 @@ GROUP BY p.paper_id, v.venue_name, t.topic_name, r.status;
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 4897 | Deep Residual Learning for Image Recognition | 2016-06-01 | IEEE Computer Society Conference on Computer Vision and Pattern Recog… | Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun | Advanced Neural Network Applications | NULL | 234936 | 826 |
 
-**Plan:** Aggregate · planning 0.65 ms · execution 0.11 ms · operators: Aggregate, Sort, Nested Loop, Index Scan using pk_paper, Index Scan using pk_venue, Index Scan using uq_one_primary_topic, Index Scan using pk_topic, Index Scan using uq_retraction_paper, …
+**Plan:** Aggregate · planning 0.61 ms · execution 0.15 ms · operators: Aggregate, Sort, Nested Loop, Index Scan using pk_paper, Index Scan using pk_venue, Index Scan using uq_one_primary_topic, Index Scan using pk_topic, Index Scan using uq_retraction_paper, …
 
 ### Q02 · Which author pairs collaborate most
 
@@ -77,7 +77,7 @@ LIMIT 20;
 
 _20 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.26 ms · execution 62.27 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper_author, Hash, Seq Scan on author
+**Plan:** Limit · planning 0.28 ms · execution 63.94 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper_author, Hash, Seq Scan on author
 
 ### Q03 · Which methods are benchmarked on which datasets, including unpaired ones
 
@@ -112,7 +112,7 @@ ORDER BY papers DESC, method, dataset;
 
 _1168 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.08 ms · execution 2.18 ms · operators: Sort, Hash Join, Aggregate, Seq Scan on paper_method, Hash, Seq Scan on paper_dataset, Seq Scan on method, Seq Scan on dataset
+**Plan:** Sort · planning 0.10 ms · execution 2.22 ms · operators: Sort, Hash Join, Aggregate, Seq Scan on paper_method, Hash, Seq Scan on paper_dataset, Seq Scan on method, Seq Scan on dataset
 
 ### Q04 · Top 3 papers in every leaf topic
 
@@ -143,7 +143,7 @@ ORDER BY t.topic_name, top3.cited_by_count DESC;
 
 _2053 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.12 ms · execution 15.27 ms · operators: Sort, Nested Loop, Seq Scan on topic, Limit, Bitmap Heap Scan on paper_topic, Bitmap Index Scan using ix_paper_topic_topic_id, Index Scan using pk_paper
+**Plan:** Sort · planning 0.11 ms · execution 14.95 ms · operators: Sort, Nested Loop, Seq Scan on topic, Limit, Bitmap Heap Scan on paper_topic, Bitmap Index Scan using ix_paper_topic_topic_id, Index Scan using pk_paper
 
 ### Q05 · Papers with no topic, found two ways
 
@@ -165,7 +165,7 @@ WHERE NOT EXISTS (SELECT 1 FROM paper_topic pt WHERE pt.paper_id = p.paper_id);
 | LEFT JOIN … IS NULL | 0 |
 | NOT EXISTS | 0 |
 
-**Plan:** Append · planning 0.08 ms · execution 2.51 ms · operators: Append, Aggregate, Hash Join, Index Only Scan using pk_paper, Hash, Seq Scan on paper_topic
+**Plan:** Append · planning 0.08 ms · execution 2.65 ms · operators: Append, Aggregate, Hash Join, Index Only Scan using pk_paper, Hash, Seq Scan on paper_topic
 
 ### Q06 · Authors with both journal and conference papers
 
@@ -194,7 +194,7 @@ LIMIT 50;
 
 _50 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.30 ms · execution 3.29 ms · operators: Limit, Sort, Nested Loop, Aggregate, Seq Scan on venue, Index Scan using ix_paper_venue_id, Index Only Scan using pk_paper_author, Index Scan using pk_author, …
+**Plan:** Limit · planning 0.32 ms · execution 3.26 ms · operators: Limit, Sort, Nested Loop, Aggregate, Seq Scan on venue, Index Scan using ix_paper_venue_id, Index Only Scan using pk_paper_author, Index Scan using pk_author, …
 
 ### Q07 · Institution leaderboard by papers and citations
 
@@ -225,7 +225,7 @@ LIMIT 20;
 
 _20 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.12 ms · execution 12.99 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper_author, Hash, Seq Scan on institution, Index Only Scan using ix_paper_cited_by_keyset
+**Plan:** Limit · planning 0.14 ms · execution 13.10 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper_author, Hash, Seq Scan on institution, Index Only Scan using ix_paper_cited_by_keyset
 
 ## Nested queries
 
@@ -255,7 +255,7 @@ LIMIT 25;
 
 _25 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.14 ms · execution 163.89 ms · operators: Limit, Result, Sort, Nested Loop, Seq Scan on paper, Aggregate, Index Scan using ix_paper_venue_id, Index Scan using pk_venue
+**Plan:** Limit · planning 0.13 ms · execution 160.61 ms · operators: Limit, Result, Sort, Nested Loop, Seq Scan on paper, Aggregate, Index Scan using ix_paper_venue_id, Index Scan using pk_venue
 
 ### Q09 · Authors active in every year 2021-2024
 
@@ -286,7 +286,7 @@ ORDER BY a.author_name;
 
 _29 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.12 ms · execution 60.16 ms · operators: Sort, Nested Loop, Seq Scan on author, Function Scan, Index Scan using ix_paper_author_author_id, Index Scan using pk_paper
+**Plan:** Sort · planning 0.13 ms · execution 61.01 ms · operators: Sort, Nested Loop, Seq Scan on author, Function Scan, Index Scan using ix_paper_author_author_id, Index Scan using pk_paper
 
 ### Q10 · Datasets used more than every dataset in the medical domain
 
@@ -316,7 +316,7 @@ ORDER BY papers DESC;
 
 _6 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.09 ms · execution 0.22 ms · operators: Sort, Aggregate, Hash Join, Seq Scan on paper_dataset, Hash, Seq Scan on dataset, Materialize
+**Plan:** Sort · planning 0.07 ms · execution 0.20 ms · operators: Sort, Aggregate, Hash Join, Seq Scan on paper_dataset, Hash, Seq Scan on dataset, Materialize
 
 ### Q11 · Topics whose median citations beat the global median
 
@@ -347,7 +347,7 @@ LIMIT 25;
 
 _25 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.13 ms · execution 5.68 ms · operators: Limit, Aggregate, Index Only Scan using ix_paper_cited_by_keyset, Sort, Hash Join, Seq Scan on paper_topic, Hash, Seq Scan on topic
+**Plan:** Limit · planning 0.12 ms · execution 5.66 ms · operators: Limit, Aggregate, Index Only Scan using ix_paper_cited_by_keyset, Sort, Hash Join, Seq Scan on paper_topic, Hash, Seq Scan on topic
 
 ### Q12 · Users with notes on papers outside all their collections
 
@@ -370,7 +370,7 @@ ORDER BY u.name, n.updated_at DESC;
 | --- | --- | --- |
 | Rhea Researcher | Continuous control with deep reinforcement learning | 2026-10-25T07:06:09.483Z |
 
-**Plan:** Sort · planning 0.14 ms · execution 0.03 ms · operators: Sort, Nested Loop, Hash Join, Seq Scan on collection_paper, Hash, Seq Scan on collection, Seq Scan on note, Seq Scan on user_account, …
+**Plan:** Sort · planning 0.15 ms · execution 0.03 ms · operators: Sort, Nested Loop, Hash Join, Seq Scan on collection_paper, Hash, Seq Scan on collection, Seq Scan on note, Seq Scan on user_account, …
 
 ### Q13 · Most-cited paper per year
 
@@ -403,7 +403,7 @@ ORDER BY year;
 
 _55 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.09 ms · execution 657.27 ms · operators: Sort, Seq Scan on paper, Aggregate, Bitmap Heap Scan on paper, Bitmap Index Scan using ix_paper_publication_date
+**Plan:** Sort · planning 0.10 ms · execution 640.63 ms · operators: Sort, Seq Scan on paper, Aggregate, Bitmap Heap Scan on paper, Bitmap Index Scan using ix_paper_publication_date
 
 ## Recursive queries
 
@@ -437,7 +437,7 @@ ORDER BY path;
 
 _176 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.04 ms · execution 0.88 ms · operators: Sort, Recursive Union, Index Scan using pk_topic, Hash Join, Seq Scan on topic, Hash, WorkTable Scan, CTE Scan
+**Plan:** Sort · planning 0.03 ms · execution 0.92 ms · operators: Sort, Recursive Union, Index Scan using pk_topic, Hash Join, Seq Scan on topic, Hash, WorkTable Scan, CTE Scan
 
 ### Q15 · What a paper builds on, three levels deep
 
@@ -472,7 +472,7 @@ LIMIT 100;
 
 _100 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.11 ms · execution 27.76 ms · operators: Limit, Recursive Union, Index Only Scan using pk_citation, Nested Loop, WorkTable Scan, Unique, Sort, Hash Join, …
+**Plan:** Limit · planning 0.11 ms · execution 28.18 ms · operators: Limit, Recursive Union, Index Only Scan using pk_citation, Nested Loop, WorkTable Scan, Unique, Sort, Hash Join, …
 
 ### Q16 · Shortest citation path between two papers
 
@@ -544,7 +544,7 @@ LIMIT 100;
 
 _100 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.14 ms · execution 82.69 ms · operators: Limit, Recursive Union, Hash Join, Seq Scan on citation, Hash, Seq Scan on retraction, Merge Join, Index Scan using ix_citation_cited_paper_id, …
+**Plan:** Limit · planning 0.16 ms · execution 82.47 ms · operators: Limit, Recursive Union, Hash Join, Seq Scan on citation, Hash, Seq Scan on retraction, Merge Join, Index Scan using ix_citation_cited_paper_id, …
 
 ## Analytics queries
 
@@ -580,7 +580,7 @@ ORDER BY topic_name, rank_in_topic;
 
 _1118 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.14 ms · execution 3.77 ms · operators: Sort, Subquery Scan, WindowAgg, Hash Join, Index Scan using uq_one_primary_topic, Hash, Seq Scan on topic, Seq Scan on paper
+**Plan:** Sort · planning 0.13 ms · execution 3.93 ms · operators: Sort, Subquery Scan, WindowAgg, Hash Join, Index Scan using uq_one_primary_topic, Hash, Seq Scan on topic, Seq Scan on paper
 
 ### Q19 · Topic growth and three-year moving average
 
@@ -608,7 +608,7 @@ ORDER BY g.year;
 
 _15 rows; the first 5 are shown._
 
-**Plan:** WindowAgg · planning 0.01 ms · execution 1.22 ms · operators: WindowAgg, Sort, Function Scan
+**Plan:** WindowAgg · planning 0.01 ms · execution 1.20 ms · operators: WindowAgg, Sort, Function Scan
 
 ### Q20 · Papers by field and year with subtotals
 
@@ -638,7 +638,7 @@ ORDER BY grouping(f.topic_name), field, grouping(p.publication_year), year;
 
 _109 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.18 ms · execution 3.14 ms · operators: Sort, Aggregate, Hash Join, Index Scan using uq_one_primary_topic, Hash, Seq Scan on paper, Seq Scan on topic
+**Plan:** Sort · planning 0.17 ms · execution 3.31 ms · operators: Sort, Aggregate, Hash Join, Index Scan using uq_one_primary_topic, Hash, Seq Scan on paper, Seq Scan on topic
 
 ### Q21 · Open versus closed access per venue
 
@@ -668,7 +668,7 @@ LIMIT 20;
 
 _20 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.06 ms · execution 1.27 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper, Hash, Seq Scan on venue
+**Plan:** Limit · planning 0.05 ms · execution 1.23 ms · operators: Limit, Sort, Aggregate, Hash Join, Seq Scan on paper, Hash, Seq Scan on venue
 
 ## Set operations queries
 
@@ -735,7 +735,7 @@ WHERE p.paper_id = $1;
 | --- |
 | { "doi": "10.1109/cvpr.2016.90", "year": 2016, "cites": 26, "title": … |
 
-**Plan:** Index Scan using pk_paper · planning 0.10 ms · execution 0.17 ms · operators: Index Scan using pk_paper, Index Scan using pk_venue, Aggregate, Nested Loop, Index Scan using uq_paper_author_order, Index Scan using pk_author, Sort, Index Scan using pk_paper_topic, …
+**Plan:** Index Scan using pk_paper · planning 0.09 ms · execution 0.15 ms · operators: Index Scan using pk_paper, Index Scan using pk_venue, Aggregate, Nested Loop, Index Scan using uq_paper_author_order, Index Scan using pk_author, Sort, Index Scan using pk_paper_topic, …
 
 ## Search queries
 
@@ -759,7 +759,7 @@ LIMIT 10;
 | --- | --- | --- |
 | Quoc Viet Le | 0.625 | 38 |
 
-**Plan:** Limit · planning 0.24 ms · execution 0.15 ms · operators: Limit, Sort, Bitmap Heap Scan on author, Bitmap Index Scan using ix_author_name_trgm, Aggregate, Index Only Scan using ix_paper_author_author_id
+**Plan:** Limit · planning 0.25 ms · execution 0.15 ms · operators: Limit, Sort, Bitmap Heap Scan on author, Bitmap Index Scan using ix_author_name_trgm, Aggregate, Index Only Scan using ix_paper_author_author_id
 
 ### Q25 · Ranked full-text search with highlights
 
@@ -788,4 +788,10 @@ LIMIT 10;
 
 _10 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.04 ms · execution 1.04 ms · operators: Limit, Result, Sort, Bitmap Heap Scan on paper, Bitmap Index Scan using ix_paper_search_vector
+**Plan:** Limit · planning 0.04 ms · execution 1.06 ms · operators: Limit, Result, Sort, Bitmap Heap Scan on paper, Bitmap Index Scan using ix_paper_search_vector
+
+<!-- chapter-nav -->
+
+---
+
+[← DML](06-dml.md) · [Documentation index](README.md) · [Advanced SQL →](08-advanced-sql.md)

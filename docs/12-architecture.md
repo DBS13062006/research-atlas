@@ -3,43 +3,10 @@
 Research Atlas is a polyglot system with one door in. PostgreSQL 18 is the system of record, Neo4j 2026.09
 is the knowledge graph and vector index, and a Next.js 16.4 application is the only client of either.
 
-```mermaid
-flowchart LR
-  subgraph Browser
-    UI["Pages: atlas, search, paper, explore,<br/>library, trails, curate, admin, Query Lab"]
-  end
-  subgraph Next["Next.js 16.4 (Node 24)"]
-    Proxy["proxy.ts<br/>(redirect only)"]
-    RSC["Server components<br/>+ 'use cache'"]
-    API["/api/v1 route handlers<br/>Zod · role gate · problem+json"]
-    DAL["Data access layer<br/>session → role"]
-  end
-  subgraph PG["PostgreSQL 18 (system of record)"]
-    Tables["24 tables · constraints<br/>functions · procedures · triggers"]
-    RLS["GRANTs + forced RLS<br/>ra_anon … ra_admin"]
-    Outbox["graph_outbox"]
-    Audit["audit_log (partitioned)"]
-  end
-  subgraph N4J["Neo4j 2026.09 + GDS"]
-    Graph["Property graph"]
-    Vec["Vector index (768-d)"]
-    Native["Trails · curated relations"]
-  end
-  Jobs["Scripts: ingest · embed (Ollama)<br/>UMAP · analytics · sync"]
-  UI --> Proxy --> RSC
-  UI --> API
-  RSC --> DAL
-  API --> DAL
-  DAL -->|"SET LOCAL ROLE + app.user_id"| RLS --> Tables
-  Tables -->|triggers| Outbox
-  Tables -->|triggers| Audit
-  Outbox -->|drain: UNWIND batches| Graph
-  RSC -->|Cypher| Graph
-  API -->|Cypher| Native
-  RSC -->|SEARCH| Vec
-  Jobs --> Tables
-  Jobs --> Graph
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/architecture-dark.png">
+  <img alt="Architecture: Browser → Next.js → PostgreSQL (system of record) → outbox → Neo4j; pipeline scripts feed both" src="assets/architecture-light.png">
+</picture>
 
 ## 12.1 Components
 
@@ -101,9 +68,15 @@ graph/             schema.cypher and the Cypher catalog C01–C12
 scripts/           ingest, embed, layout, graph, db, docs, setup and verify tooling
 src/
   app/             pages and /api/v1 route handlers
-  components/      UI (shadcn/ui on Base UI), atlas, graphs, charts, lab, library, paper
-  lib/             shared types, schemas, formatting, query-catalog parser
+  components/      shell, common states, atlas, graphs, charts, lab, library, paper, ui (shadcn/ui on Base UI)
+  lib/             shared types, Zod schemas, formatting, API client, query-catalog parser
   server/          auth, db, graph, api, services, embeddings (server-only)
 tests/             unit, integration (Vitest) and e2e (Playwright + axe)
 docs/              these chapters, ER and schema diagrams, screenshots, report
 ```
+
+<!-- chapter-nav -->
+
+---
+
+[← API](11-api.md) · [Documentation index](README.md) · [Technology choices →](13-tech-justification.md)

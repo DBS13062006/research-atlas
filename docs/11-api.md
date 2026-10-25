@@ -206,3 +206,9 @@ constraint, because every constraint has a name.
 | `GET`  | `/api/v1/lab/catalog` | researcher   | Every Query Lab catalog file: SQL queries, DML, proofs, routines, triggers and Cypher |
 | `POST` | `/api/v1/lab/run`     | researcher   | Run a SQL catalog file as your database role (rolled back unless an admin commits)    |
 | `POST` | `/api/v1/lab/cypher`  | researcher   | Run a Cypher catalog file (always rolled back); mode=profile returns the PROFILE plan |
+
+<!-- chapter-nav -->
+
+---
+
+[← Authentication and RBAC](10-auth-rbac.md) · [Documentation index](README.md) · [Architecture →](12-architecture.md)

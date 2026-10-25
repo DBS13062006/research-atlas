@@ -178,3 +178,9 @@ shows them live: run proof P09 or P10 as a researcher.
 | Every API endpoint × every role returns the expected status | `tests/integration/api-roles.test.ts`            |
 | Lockout, cookie flags, cross-site refusal                   | `tests/integration/api-roles.test.ts`            |
 | Pages redirect or show 403 for the wrong role               | `tests/e2e/access.spec.ts`                       |
+
+<!-- chapter-nav -->
+
+---
+
+[← NoSQL and vectors](09-nosql.md) · [Documentation index](README.md) · [API →](11-api.md)

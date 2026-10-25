@@ -14,7 +14,7 @@ production build on every push.
 | Triggers                 | pgTAP                  | derived columns, guards, audit rows, outbox rows, side-effect reader                                                   | in the 361    | `pnpm db:test`         |
 | Views                    | pgTAP                  | `security_invoker` behaviour, materialized view contents                                                               | in the 361    | `pnpm db:test`         |
 | RBAC and RLS             | pgTAP with `SET ROLE`  | allowed actions succeed, forbidden ones raise 42501, other users' rows are invisible                                   | in the 361    | `pnpm db:test`         |
-| Migrations               | dbmate                 | a fresh database rolls back to zero and migrates up again                                                              | 18 migrations | `pnpm verify:all`      |
+| Migrations               | dbmate                 | a fresh database rolls back to zero and migrates up again                                                              | 16 migrations | `pnpm verify:all`      |
 | SQL catalog              | Node runner            | all 55 files run as their role; read queries return rows on the real corpus; proofs fail with the constraint they name | 55            | `pnpm queries:run`     |
 | Cypher catalog           | Node runner            | all 12 files run and return rows (writes rolled back)                                                                  | 12            | `pnpm cypher:run`      |
 | Graph consistency        | `graph:check`          | 17 counts match between PostgreSQL and Neo4j, derived co-authorship included                                           | 17            | `pnpm graph:check`     |
@@ -76,3 +76,9 @@ ok   desktop /papers/952    performance 100  accessibility 100  best-practices 1
 type-check, the pgTAP suite against a PostgreSQL 18 service container built with pgTAP, the SQL catalog
 on the test seed, and a production build. Tests that need Neo4j, Ollama or the full corpus run locally
 through `pnpm verify:all`.
+
+<!-- chapter-nav -->
+
+---
+
+[← Technology choices](13-tech-justification.md) · [Documentation index](README.md) · [User guide →](15-user-guide.md)

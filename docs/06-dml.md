@@ -31,9 +31,9 @@ RETURNING method_id, method_name, introduced_year;
 
 | method_id | method_name | introduced_year |
 | --- | --- | --- |
-| 525 | Liquid State Machine | 2002 |
-| 526 | Echo State Network | 2001 |
-| 527 | Modern Hopfield Network | 2020 |
+| 531 | Liquid State Machine | 2002 |
+| 532 | Echo State Network | 2001 |
+| 533 | Modern Hopfield Network | 2020 |
 
 ## D02 · Add every paper of a topic to a collection
 
@@ -96,7 +96,7 @@ RETURNING cp.collection_id, cp.paper_id, cp.reading_status, cp.read_at;
 
 | collection_id | paper_id | reading_status | read_at |
 | --- | --- | --- | --- |
-| 27 | 4911 | READ | 2026-10-25T07:14:04.788Z |
+| 27 | 4911 | READ | 2026-10-25T07:58:17.091Z |
 
 ## D05 · Raise a priority and show the before and after values
 
@@ -272,3 +272,9 @@ RETURNING citing_paper_id, cited_paper_id;
 | 152 | 4935 |
 
 _25 rows; the first 5 are shown._
+
+<!-- chapter-nav -->
+
+---
+
+[← DDL and constraints](05-ddl.md) · [Documentation index](README.md) · [Queries →](07-queries.md)

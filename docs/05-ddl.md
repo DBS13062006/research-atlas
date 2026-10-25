@@ -392,3 +392,9 @@ WHERE user_id <> app_current_user_id() AND is_private;
 | private_notes_of_others_visible_to_me |
 | --- |
 | 0 |
+
+<!-- chapter-nav -->
+
+---
+
+[← Normalization](04-normalization.md) · [Documentation index](README.md) · [DML →](06-dml.md)

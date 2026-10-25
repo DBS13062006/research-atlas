@@ -18,7 +18,8 @@ const REPORT_DIR = resolve("docs/report");
 const SOURCE = join(REPORT_DIR, "report.src.md");
 
 function section(file: string, prefix: string, level: number | null): string {
-  const lines = readFileSync(file, "utf8").split("\n");
+  // The chapter navigation footer belongs to the web docs, not the report.
+  const lines = readFileSync(file, "utf8").split("<!-- chapter-nav -->")[0].split("\n");
   const start = lines.findIndex((l) => /^#{1,6} /.test(l) && l.replace(/^#+ /, "").startsWith(prefix));
   if (start === -1) throw new Error(`${file}: no heading starting with "${prefix}"`);
   const own = lines[start].match(/^#+/)?.[0].length ?? 1;

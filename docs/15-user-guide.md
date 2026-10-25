@@ -77,3 +77,9 @@ button switches between the dark Midnight and light Parchment themes.
 | Sign-in says “Too many failed attempts”            | wait fifteen minutes, or run `pnpm seed:demo` to reset the demo accounts                                     |
 | Changes made in the database do not show on a page | catalog pages are cached; any write through the app or **Sync graph now** clears them, or restart the server |
 | `pnpm verify:all` fails at the build               | stop `next dev` first; the build and the dev server compete for memory                                       |
+
+<!-- chapter-nav -->
+
+---
+
+[← Testing](14-testing.md) · [Documentation index](README.md)

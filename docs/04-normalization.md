@@ -97,3 +97,9 @@ other's value (a READ entry can have any timestamp), so there is no FD between t
 
 `paper.publication_year` is also derived, but it is a `VIRTUAL` generated column (PostgreSQL 18): it is
 computed on read and never stored, so it introduces no redundancy at all.
+
+<!-- chapter-nav -->
+
+---
+
+[← Relational schema](03-relational-schema.md) · [Documentation index](README.md) · [DDL and constraints →](05-ddl.md)

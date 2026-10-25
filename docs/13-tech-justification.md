@@ -88,3 +88,9 @@ checks and are navigable with Tab; the atlas map stays fast on canvas.
 **Context.** Neo4j's native `VECTOR` type needs the block store format, which only the Enterprise edition
 offers. **Decision.** Store `LIST<FLOAT>` and index it with a vector index. **Consequences.** The same index,
 `SEARCH` clause and filters work; only storage is less compact.
+
+<!-- chapter-nav -->
+
+---
+
+[← Architecture](12-architecture.md) · [Documentation index](README.md) · [Testing →](14-testing.md)

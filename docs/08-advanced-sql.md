@@ -163,3 +163,9 @@ rolled back unless an administrator commits.
 | `RA001`                         | `sp_register_user`: email already registered          | 409                    |
 | `RA002`                         | `trg_protect_last_admin`                              | 409                    |
 | `22023` invalid_parameter_value | procedures validating their arguments                 | 400                    |
+
+<!-- chapter-nav -->
+
+---
+
+[← Queries](07-queries.md) · [Documentation index](README.md) · [NoSQL and vectors →](09-nosql.md)

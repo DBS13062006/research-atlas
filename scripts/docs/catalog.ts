@@ -18,6 +18,18 @@ const ROLLBACK = Symbol("rollback");
 const SAMPLE_ROWS = 5;
 const EXPLAINABLE = /^\s*(WITH|SELECT|INSERT|UPDATE|DELETE|MERGE|TABLE|VALUES)\b/i;
 
+// Previous / index / next links, the same footer the hand-written chapters carry.
+const CHAPTER_NAV: Record<string, string> = {
+  "05-ddl.md":
+    "[← Normalization](04-normalization.md) · [Documentation index](README.md) · [DML →](06-dml.md)",
+  "06-dml.md":
+    "[← DDL and constraints](05-ddl.md) · [Documentation index](README.md) · [Queries →](07-queries.md)",
+  "07-queries.md":
+    "[← DML](06-dml.md) · [Documentation index](README.md) · [Advanced SQL →](08-advanced-sql.md)",
+};
+const withNav = (file: string, body: string) =>
+  `${body.trimEnd()}\n\n<!-- chapter-nav -->\n\n---\n\n${CHAPTER_NAV[file]}\n`;
+
 type Outcome = {
   entry: CatalogEntry;
   params: string[];
@@ -187,30 +199,33 @@ async function main(): Promise<void> {
     const groups = [...new Set(queries.map((q) => q.entry.category))];
     writeFileSync(
       "docs/07-queries.md",
-      [
-        "# 7. Queries",
-        "",
-        `Twenty-five read queries, each a standalone file in [\`db/queries/\`](../db/queries) with a metadata header. The SQL,`,
-        "the sample output and the plan summary below were produced from the loaded corpus by `pnpm docs:catalog`",
-        `on ${stamp}: each query ran as its declared role inside a transaction that was rolled back, and its plan`,
-        "comes from `EXPLAIN (ANALYZE, BUFFERS)`. The same files run live in the Query Lab (`/lab`).",
-        "",
-        "| Group | Queries |",
-        "| --- | --- |",
-        ...groups.map(
-          (g) =>
-            `| ${g} | ${queries
-              .filter((q) => q.entry.category === g)
-              .map((q) => q.entry.id)
-              .join(", ")} |`,
-        ),
-        "",
-        ...groups.flatMap((g) => [
-          `## ${g[0].toUpperCase()}${g.slice(1)} queries`,
+      withNav(
+        "07-queries.md",
+        [
+          "# 7. Queries",
           "",
-          ...queries.filter((q) => q.entry.category === g).flatMap((q) => [section(q), ""]),
-        ]),
-      ].join("\n"),
+          `Twenty-five read queries, each a standalone file in [\`db/queries/\`](../db/queries) with a metadata header. The SQL,`,
+          "the sample output and the plan summary below were produced from the loaded corpus by `pnpm docs:catalog`",
+          `on ${stamp}: each query ran as its declared role inside a transaction that was rolled back, and its plan`,
+          "comes from `EXPLAIN (ANALYZE, BUFFERS)`. The same files run live in the Query Lab (`/lab`).",
+          "",
+          "| Group | Queries |",
+          "| --- | --- |",
+          ...groups.map(
+            (g) =>
+              `| ${g} | ${queries
+                .filter((q) => q.entry.category === g)
+                .map((q) => q.entry.id)
+                .join(", ")} |`,
+          ),
+          "",
+          ...groups.flatMap((g) => [
+            `## ${g[0].toUpperCase()}${g.slice(1)} queries`,
+            "",
+            ...queries.filter((q) => q.entry.category === g).flatMap((q) => [section(q), ""]),
+          ]),
+        ].join("\n"),
+      ),
     );
 
     // ── 06 DML
@@ -218,19 +233,22 @@ async function main(): Promise<void> {
     for (const e of load("dml")) dml.push(await run(sql, e, false));
     writeFileSync(
       "docs/06-dml.md",
-      [
-        "# 6. Data manipulation",
-        "",
-        "Ten DML files in [`db/queries/dml/`](../db/queries/dml), one per technique. Each ran as its declared role",
-        `on ${stamp} inside a transaction that was rolled back, so the outputs below are real but changed nothing.`,
-        "In the Query Lab an administrator may switch on “Commit for real”.",
-        "",
-        "| File | Statement | Demonstrates |",
-        "| --- | --- | --- |",
-        ...dml.map((d) => `| ${d.entry.id} | ${d.entry.title} | ${d.entry.concepts} |`),
-        "",
-        ...dml.flatMap((d) => [section(d, "##"), ""]),
-      ].join("\n"),
+      withNav(
+        "06-dml.md",
+        [
+          "# 6. Data manipulation",
+          "",
+          "Ten DML files in [`db/queries/dml/`](../db/queries/dml), one per technique. Each ran as its declared role",
+          `on ${stamp} inside a transaction that was rolled back, so the outputs below are real but changed nothing.`,
+          "In the Query Lab an administrator may switch on “Commit for real”.",
+          "",
+          "| File | Statement | Demonstrates |",
+          "| --- | --- | --- |",
+          ...dml.map((d) => `| ${d.entry.id} | ${d.entry.title} | ${d.entry.concepts} |`),
+          "",
+          ...dml.flatMap((d) => [section(d, "##"), ""]),
+        ].join("\n"),
+      ),
     );
 
     // ── 05 DDL
@@ -279,46 +297,49 @@ async function main(): Promise<void> {
     const esc = (s: string) => s.replace(/\|/g, "\\|");
     writeFileSync(
       "docs/05-ddl.md",
-      [
-        "# 5. DDL and constraints",
-        "",
-        "The schema is built by dbmate migrations in [`db/migrations/`](../db/migrations). Each has an `up` and a",
-        "`down` section, and `pnpm verify:all` rolls a fresh database back to zero and up again. Every constraint,",
-        `index and trigger has a name, so an error message says which rule was broken. Tables below were read from`,
-        `the live catalog (\`pg_constraint\`, \`pg_trigger\`, \`pg_indexes\`) by \`pnpm docs:catalog\` on ${stamp}.`,
-        "The psql snapshots in [`docs/report/assets/ddl/`](report/assets/ddl) show the same objects with `\\d+`.",
-        "",
-        "## 5.1 Migrations",
-        "",
-        "| Migration | Purpose |",
-        "| --- | --- |",
-        ...migrations,
-        "",
-        `## 5.2 Named constraints (${constraints.length})`,
-        "",
-        "| Table | Constraint | Kind | Rule |",
-        "| --- | --- | --- | --- |",
-        ...constraints.map((c) => `| ${c.table} | \`${c.name}\` | ${c.kind} | \`${esc(c.def)}\` |`),
-        "",
-        `## 5.3 Secondary indexes (${indexes.length})`,
-        "",
-        "| Table | Index | Definition |",
-        "| --- | --- | --- |",
-        ...indexes.map((i) => `| ${i.table} | \`${i.name}\` | \`${esc(i.def)}\` |`),
-        "",
-        `## 5.4 Triggers (${triggers.length})`,
-        "",
-        "| Table | Trigger | When | Function |",
-        "| --- | --- | --- | --- |",
-        ...triggers.map((t) => `| ${t.table} | \`${t.name}\` | ${t.timing} | \`${t.def}\` |`),
-        "",
-        "## 5.5 Constraint proofs",
-        "",
-        "Each proof is an action the rules must refuse. It runs as the role a real user would have; the message",
-        "is what PostgreSQL returned (pgTAP checks the same cases in `db/tests/10_constraints.sql`).",
-        "",
-        ...proofs.flatMap((p) => [section(p, "###"), ""]),
-      ].join("\n"),
+      withNav(
+        "05-ddl.md",
+        [
+          "# 5. DDL and constraints",
+          "",
+          "The schema is built by dbmate migrations in [`db/migrations/`](../db/migrations). Each has an `up` and a",
+          "`down` section, and `pnpm verify:all` rolls a fresh database back to zero and up again. Every constraint,",
+          `index and trigger has a name, so an error message says which rule was broken. Tables below were read from`,
+          `the live catalog (\`pg_constraint\`, \`pg_trigger\`, \`pg_indexes\`) by \`pnpm docs:catalog\` on ${stamp}.`,
+          "The psql snapshots in [`docs/report/assets/ddl/`](report/assets/ddl) show the same objects with `\\d+`.",
+          "",
+          "## 5.1 Migrations",
+          "",
+          "| Migration | Purpose |",
+          "| --- | --- |",
+          ...migrations,
+          "",
+          `## 5.2 Named constraints (${constraints.length})`,
+          "",
+          "| Table | Constraint | Kind | Rule |",
+          "| --- | --- | --- | --- |",
+          ...constraints.map((c) => `| ${c.table} | \`${c.name}\` | ${c.kind} | \`${esc(c.def)}\` |`),
+          "",
+          `## 5.3 Secondary indexes (${indexes.length})`,
+          "",
+          "| Table | Index | Definition |",
+          "| --- | --- | --- |",
+          ...indexes.map((i) => `| ${i.table} | \`${i.name}\` | \`${esc(i.def)}\` |`),
+          "",
+          `## 5.4 Triggers (${triggers.length})`,
+          "",
+          "| Table | Trigger | When | Function |",
+          "| --- | --- | --- | --- |",
+          ...triggers.map((t) => `| ${t.table} | \`${t.name}\` | ${t.timing} | \`${t.def}\` |`),
+          "",
+          "## 5.5 Constraint proofs",
+          "",
+          "Each proof is an action the rules must refuse. It runs as the role a real user would have; the message",
+          "is what PostgreSQL returned (pgTAP checks the same cases in `db/tests/10_constraints.sql`).",
+          "",
+          ...proofs.flatMap((p) => [section(p, "###"), ""]),
+        ].join("\n"),
+      ),
     );
     console.log(
       `docs:catalog wrote 05 (${constraints.length} constraints, ${indexes.length} indexes, ${triggers.length} triggers, ${proofs.length} proofs), 06 (${dml.length} DML), 07 (${queries.length} queries)`,

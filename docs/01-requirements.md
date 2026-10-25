@@ -51,3 +51,9 @@ Every request runs under that role, so the database itself refuses what a role m
 | Performance               | Lighthouse performance 92–94 on mobile and 100 on desktop for the home and paper pages; indexes on every foreign key and search path |
 | Accessibility             | WCAG 2.2 AA: axe-core reports no serious or critical issue on any page in either theme                                               |
 | Reproducibility           | A committed 200-paper fixture and `pnpm setup:fixture` bring a fresh clone to a working atlas; `pnpm verify:all` runs every check    |
+
+<!-- chapter-nav -->
+
+---
+
+[Documentation index](README.md) · [ER model →](02-er-model.md)

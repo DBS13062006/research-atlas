@@ -73,3 +73,9 @@ double line means total participation: every instance of that entity must take p
 Reading trails, curated relations (EXTENDS, IMPROVES_UPON, CONTRADICTS, REPLICATES, RELATED_TO), co-authorship,
 semantic similarity, communities and influence scores live in Neo4j. They are graph-native: either created
 there by users or computed there by graph algorithms. Chapter 9 describes that model.
+
+<!-- chapter-nav -->
+
+---
+
+[← Requirements](01-requirements.md) · [Documentation index](README.md) · [Relational schema →](03-relational-schema.md)

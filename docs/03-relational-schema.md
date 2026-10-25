@@ -89,3 +89,9 @@ foreign key that is not the leading column of a primary key has its own B-tree i
 `audit_log` is `PARTITION BY RANGE (occurred_at)` with one partition per month, created by
 `fn_ensure_audit_partition()`, plus a default partition. Old months can be detached and archived without
 touching current data, and time-range queries scan only the relevant partitions.
+
+<!-- chapter-nav -->
+
+---
+
+[← ER model](02-er-model.md) · [Documentation index](README.md) · [Normalization →](04-normalization.md)

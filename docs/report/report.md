@@ -609,7 +609,7 @@ ORDER BY papers DESC, method, dataset;
 
 _1168 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.08 ms · execution 2.18 ms · operators: Sort, Hash Join, Aggregate, Seq Scan on paper_method, Hash, Seq Scan on paper_dataset, Seq Scan on method, Seq Scan on dataset
+**Plan:** Sort · planning 0.10 ms · execution 2.22 ms · operators: Sort, Hash Join, Aggregate, Seq Scan on paper_method, Hash, Seq Scan on paper_dataset, Seq Scan on method, Seq Scan on dataset
 
 ### Q04 · Top 3 papers in every leaf topic
 
@@ -640,7 +640,7 @@ ORDER BY t.topic_name, top3.cited_by_count DESC;
 
 _2053 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.12 ms · execution 15.27 ms · operators: Sort, Nested Loop, Seq Scan on topic, Limit, Bitmap Heap Scan on paper_topic, Bitmap Index Scan using ix_paper_topic_topic_id, Index Scan using pk_paper
+**Plan:** Sort · planning 0.11 ms · execution 14.95 ms · operators: Sort, Nested Loop, Seq Scan on topic, Limit, Bitmap Heap Scan on paper_topic, Bitmap Index Scan using ix_paper_topic_topic_id, Index Scan using pk_paper
 
 ## Nested and correlated
 
@@ -673,7 +673,7 @@ ORDER BY a.author_name;
 
 _29 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.12 ms · execution 60.16 ms · operators: Sort, Nested Loop, Seq Scan on author, Function Scan, Index Scan using ix_paper_author_author_id, Index Scan using pk_paper
+**Plan:** Sort · planning 0.13 ms · execution 61.01 ms · operators: Sort, Nested Loop, Seq Scan on author, Function Scan, Index Scan using ix_paper_author_author_id, Index Scan using pk_paper
 
 ## Recursive
 
@@ -710,7 +710,7 @@ LIMIT 100;
 
 _100 rows; the first 5 are shown._
 
-**Plan:** Limit · planning 0.11 ms · execution 27.76 ms · operators: Limit, Recursive Union, Index Only Scan using pk_citation, Nested Loop, WorkTable Scan, Unique, Sort, Hash Join, …
+**Plan:** Limit · planning 0.11 ms · execution 28.18 ms · operators: Limit, Recursive Union, Index Only Scan using pk_citation, Nested Loop, WorkTable Scan, Unique, Sort, Hash Join, …
 
 ### Q16 · Shortest citation path between two papers
 
@@ -778,7 +778,7 @@ ORDER BY grouping(f.topic_name), field, grouping(p.publication_year), year;
 
 _109 rows; the first 5 are shown._
 
-**Plan:** Sort · planning 0.18 ms · execution 3.14 ms · operators: Sort, Aggregate, Hash Join, Index Scan using uq_one_primary_topic, Hash, Seq Scan on paper, Seq Scan on topic
+**Plan:** Sort · planning 0.17 ms · execution 3.31 ms · operators: Sort, Aggregate, Hash Join, Index Scan using uq_one_primary_topic, Hash, Seq Scan on paper, Seq Scan on topic
 
 # 11. Procedures, functions, triggers and CTEs (rubric 8)
 
@@ -1278,7 +1278,7 @@ shows them live: run proof P09 or P10 as a researcher.
 | Triggers                 | pgTAP                  | derived columns, guards, audit rows, outbox rows, side-effect reader                                                   | in the 361    | `pnpm db:test`         |
 | Views                    | pgTAP                  | `security_invoker` behaviour, materialized view contents                                                               | in the 361    | `pnpm db:test`         |
 | RBAC and RLS             | pgTAP with `SET ROLE`  | allowed actions succeed, forbidden ones raise 42501, other users' rows are invisible                                   | in the 361    | `pnpm db:test`         |
-| Migrations               | dbmate                 | a fresh database rolls back to zero and migrates up again                                                              | 18 migrations | `pnpm verify:all`      |
+| Migrations               | dbmate                 | a fresh database rolls back to zero and migrates up again                                                              | 16 migrations | `pnpm verify:all`      |
 | SQL catalog              | Node runner            | all 55 files run as their role; read queries return rows on the real corpus; proofs fail with the constraint they name | 55            | `pnpm queries:run`     |
 | Cypher catalog           | Node runner            | all 12 files run and return rows (writes rolled back)                                                                  | 12            | `pnpm cypher:run`      |
 | Graph consistency        | `graph:check`          | 17 counts match between PostgreSQL and Neo4j, derived co-authorship included                                           | 17            | `pnpm graph:check`     |
@@ -1339,17 +1339,17 @@ ok   desktop /papers/952    performance 100  accessibility 100  best-practices 1
 
 ## History
 
-36 commits between 2026-10-25 and 2026-10-25, every one on `main` and pushed to GitHub, each
+37 commits between 2026-10-25 and 2026-10-25, every one on `main` and pushed to GitHub, each
 checked by the CI workflow.
 
 | Author | Commits |
 | --- | --- |
-| Daruru Bhuvan Sai | 36 |
+| Daruru Bhuvan Sai | 37 |
 
 | Commit type | Count |
 | --- | --- |
 | `feat` | 16 |
-| `docs` | 6 |
+| `docs` | 7 |
 | `build` | 3 |
 | `chore` | 3 |
 | `fix` | 3 |
