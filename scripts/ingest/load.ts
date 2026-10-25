@@ -5,9 +5,9 @@
 // COPY demo (D10) has real rows to load.
 import { mkdirSync, writeFileSync } from "node:fs";
 import postgres from "postgres";
+import { toPayload } from "../../src/lib/openalex-transform";
 import { ownerUrl } from "../db/urls";
 import { readCorpus } from "./lib/corpus";
-import { toPayload } from "./lib/transform";
 
 const BATCH = 200;
 const HELD_BACK = 25;

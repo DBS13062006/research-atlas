@@ -2,9 +2,9 @@
 // the citation graph is connected (classic foundations everyone cites) rather than star-shaped.
 // Fetched by id in batches of 50.
 
+import { type OAWork, WORK_FIELDS } from "../../src/lib/openalex-transform";
 import { addToCorpus, readCorpus, writeCorpus } from "./lib/corpus";
 import { BudgetExhaustedError, openalex, shortId, usage } from "./lib/openalex";
-import { type OAWork, WORK_FIELDS } from "./lib/transform";
 
 const MIN_IN_CORPUS_CITATIONS = 5;
 const MAX_ADDITIONS = 900;

@@ -1,6 +1,7 @@
 // Turns an OpenAlex work into the JSON payload sp_import_paper expects. Every value is normalised to
 // satisfy the schema's CHECK constraints (lower-case bare DOIs, closed vocabularies, ISSN format …).
-import { shortId } from "./openalex";
+export const shortId = (url: string | null | undefined): string | null =>
+  url ? (url.split("/").pop() ?? null) : null;
 
 export type OAWork = {
   id: string;

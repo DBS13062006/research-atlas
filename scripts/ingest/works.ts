@@ -2,10 +2,10 @@
 // fetched with cursor paging, a select= list and the gzip cache. Also seeds the integrity set:
 // retracted computer-science works and the papers that cite them.
 
+import { type OAWork, WORK_FIELDS } from "../../src/lib/openalex-transform";
 import { addToCorpus, readCorpus, writeCorpus } from "./lib/corpus";
 import { BudgetExhaustedError, openalexList, shortId, usage } from "./lib/openalex";
 import { CS_FIELD_ID, FROM_YEAR, RECENT_FROM_YEAR, THEMES } from "./lib/themes";
-import { type OAWork, WORK_FIELDS } from "./lib/transform";
 
 const TYPES = "type:article|preprint|review";
 

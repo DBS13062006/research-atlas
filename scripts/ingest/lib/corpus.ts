@@ -2,7 +2,7 @@
 // stored as gzip-compressed JSON lines in data/cache/ (git-ignored, rebuilt from the API cache).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { gunzipSync, gzipSync } from "node:zlib";
-import type { OAWork } from "./transform";
+import type { OAWork } from "../../../src/lib/openalex-transform";
 
 export type CorpusEntry = { work: OAWork; themes: string[]; via: "theme" | "expand" | "integrity" };
 

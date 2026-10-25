@@ -1,14 +1,15 @@
 // pnpm graph:sync — drains pending graph_outbox rows into Neo4j. With --watch it keeps listening for
 // NOTIFY graph_outbox and drains within a second of each change (development mode).
 import { closeGraphDriver, graphDriver } from "../../src/server/graph/driver";
-import { drainOutbox } from "../../src/server/graph/projection";
+import { drainOutbox, type InTransaction } from "../../src/server/graph/projection";
 import { ownerSql } from "./common";
 
 async function main(): Promise<void> {
   const sql = ownerSql();
   const driver = graphDriver();
   const started = Date.now();
-  const { processed } = await drainOutbox(sql, driver);
+  const inTx: InTransaction = (fn) => sql.begin(fn) as ReturnType<typeof fn>;
+  const { processed } = await drainOutbox(inTx, driver);
   console.log(
     `graph:sync processed ${processed} outbox rows in ${((Date.now() - started) / 1000).toFixed(1)} s`,
   );
@@ -22,7 +23,7 @@ async function main(): Promise<void> {
     clearTimeout(pending);
     pending = setTimeout(async () => {
       try {
-        const r = await drainOutbox(sql, driver);
+        const r = await drainOutbox(inTx, driver);
         if (r.processed > 0) console.log(`synced ${r.processed}`);
       } catch (err) {
         console.error(err instanceof Error ? err.message : err);

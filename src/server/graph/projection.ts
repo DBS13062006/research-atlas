@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { Driver } from "neo4j-driver";
-import type { Sql } from "postgres";
+import type { Sql, TransactionSql } from "postgres";
 
 // How each PostgreSQL table is projected into the graph. The same idempotent Cypher serves the
 // outbox replay (pnpm graph:sync, curator actions) and the full rebuild (pnpm graph:rebuild).
@@ -209,10 +209,14 @@ type OutboxRow = {
 // Replays pending outbox rows in id order, grouping consecutive rows with the same aggregate and
 // operation into one UNWIND batch. A failing group records the error and stops the drain, so later
 // changes never overtake an earlier one that has not reached the graph yet.
-export async function drainOutbox(sql: Sql, driver: Driver, { batchSize = 2000 } = {}) {
+// `inTransaction` runs a callback in a PostgreSQL transaction: sql.begin for scripts (owner), or
+// withDb as ra_admin for the web app.
+export type InTransaction = <T>(fn: (tx: TransactionSql) => Promise<T>) => Promise<T>;
+
+export async function drainOutbox(inTransaction: InTransaction, driver: Driver, { batchSize = 2000 } = {}) {
   let processed = 0;
   for (;;) {
-    const done = await sql.begin(async (tx) => {
+    const done = await inTransaction(async (tx) => {
       const rows = await tx<OutboxRow[]>`
         SELECT outbox_id::TEXT, aggregate, operation, aggregate_key, payload
         FROM graph_outbox WHERE processed_at IS NULL
