@@ -3,7 +3,7 @@
 The schema is built by dbmate migrations in [`db/migrations/`](../db/migrations). Each has an `up` and a
 `down` section, and `pnpm verify:all` rolls a fresh database back to zero and up again. Every constraint,
 index and trigger has a name, so an error message says which rule was broken. Tables below were read from
-the live catalog (`pg_constraint`, `pg_trigger`, `pg_indexes`) by `pnpm docs:catalog` on 2026-10-25.
+the live catalog (`pg_constraint`, `pg_trigger`, `pg_indexes`) by `pnpm docs:catalog` on 2026-11-17.
 The psql snapshots in [`docs/report/assets/ddl/`](report/assets/ddl) show the same objects with `\d+`.
 
 ## 5.1 Migrations
@@ -349,7 +349,7 @@ new row for relation "paper" violates check constraint "chk_paper_doi_format"
 
 ### P08 · Demote every administrator at once
 
-**Technique:** statement-level AFTER trigger with a transition table, custom SQLSTATE RA002 · **runs as** `ra_admin` · [`proofs/P08_last_admin.sql`](../db/queries/proofs/P08_last_admin.sql)
+**Technique:** BEFORE UPDATE row trigger that sees rows changed earlier in the same statement, custom SQLSTATE RA002 · **runs as** `ra_admin` · [`proofs/P08_last_admin.sql`](../db/queries/proofs/P08_last_admin.sql)
 
 ```sql
 UPDATE user_account
